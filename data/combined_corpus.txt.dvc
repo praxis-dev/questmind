@@ -1,0 +1,5 @@
+outs:
+- md5: 747a8bec7f8c1797f67bb16f738cd271
+  size: 2297529
+  hash: md5
+  path: combined_corpus.txt
