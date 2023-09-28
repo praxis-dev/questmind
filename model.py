@@ -1,38 +1,29 @@
+from langchain.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain import PromptTemplate
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
-import chainlit as clreturn_type_kwargs
+import chainlit as cl
 
-DB_FAISS_PATH = "vectorstores/db_faiss"
+DB_FAISS_PATH = 'vectorstores/db_faiss'
 
-custom_prompt_template = """
-Assume you are philosopher Seneca. Use your stoic wisdom to help people the time of strife.  
+custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice.
+
 Context: {context}
 Question: {question}
 
-Provide complete answer without abrupt endings. 
 Your answer:
 """
 
 
 def set_custom_prompt():
-
-    prompt = PromptTemplate(template=custom_prompt_template, input_variables=[
-                            'context', 'question'])
-
+    """
+    Prompt template for QA retrieval for each vectorstore
+    """
+    prompt = PromptTemplate(template=custom_prompt_template,
+                            input_variables=['context', 'question'])
     return prompt
-
-
-def load_llm():
-    llm = CTransformers(
-        model="llama-2-7b-chat.ggmlv3.q8_0.bin",
-        model_type="llama",
-        max_new_tokens=512,
-        temperature=0.9
-    )
-    return llm
 
 
 def retrieval_qa_chain(llm, prompt, db):
@@ -46,11 +37,20 @@ def retrieval_qa_chain(llm, prompt, db):
     return qa_chain
 
 
-def qa_bot():
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={'device': "cpu"})
+def load_llm():
+    # Load the locally downloaded model here
+    llm = CTransformers(
+        model="TheBloke/Llama-2-7B-Chat-GGML",
+        model_type="llama",
+        max_new_tokens=512,
+        temperature=0.5
+    )
+    return llm
 
+
+def qa_bot():
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",
+                                       model_kwargs={'device': 'cpu'})
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
     llm = load_llm()
     qa_prompt = set_custom_prompt()
@@ -59,12 +59,12 @@ def qa_bot():
     return qa
 
 
-query = "How should I think about death?"
+query = "what is fate?"
 
 
 def final_result(query):
     qa_result = qa_bot()
-    response = qa_result({"query": query})
+    response = qa_result({'query': query})
     return response
 
 
