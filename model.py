@@ -50,7 +50,7 @@ def retrieval_qa_chain(llm, prompt, db):
 
 def load_llm():
     llm = CTransformers(
-        model="TheBloke/Llama-2-7B-Chat-GGML",
+        model="TheBloke/Llama-2-13B-Chat-GGML",
         model_type="llama",
         max_new_tokens=2048,
         temperature=0.3
@@ -68,7 +68,7 @@ def qa_bot():
     return qa
 
 
-query = "What is apathy?"
+query = "Why do people buy beer?"
 
 
 def postprocessing(text):
