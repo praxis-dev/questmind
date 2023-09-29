@@ -1,10 +1,25 @@
+import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import DirectoryLoader, TextLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 
-DATA_PATH = "data/"
+DATA_PATH = "data/texts"
 DB_FAISS_PATH = "vectorstores/db_faiss"
+QUESTIONS_PATH = os.path.join('data', 'questions', 'questions.txt')
+
+
+def ingest_questions():
+
+    questions = []
+
+    with open(QUESTIONS_PATH, 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                questions.append(line)
+
+    return questions
 
 
 def create_vector_db():
@@ -24,4 +39,5 @@ def create_vector_db():
 
 
 if __name__ == "__main__":
+    ingest_questions()
     create_vector_db()

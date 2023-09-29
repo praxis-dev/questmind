@@ -6,40 +6,24 @@ from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
 import chainlit as cl
 from sentence_transformers import SentenceTransformer, util
+from ingest import ingest_questions
+
+questions = ingest_questions()
 
 DB_FAISS_PATH = 'vectorstores/db_faiss'
 
-philosophical_questions = [
-    "What is the meaning of life?",
-    "Is there a purpose to existence?",
-    "What is reality?",
-    "Do we have free will?",
-    "What is consciousness?",
-    "What is truth?",
-    "What is good and evil?",
-    "What is the nature of time?",
-    "What is love?",
-    "What is suffering?",
-    "How should we live our lives?",
-    "What is the nature of being?",
-    "Is there life after death?",
-    "What is knowledge?",
-    "Why is there something rather than nothing?"
-]
-
-
 model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-philosophical_embeddings = model_st.encode(philosophical_questions)
+philosophical_embeddings = model_st.encode(questions)
 
 
 def is_philosophy_related(text):
     text_embedding = model_st.encode(text)
     similarities = [util.pytorch_cos_sim(
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
-    return max(similarities) > 0.75
+    return max(similarities) > 0.5
 
 
-custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice.
+custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style.
 
 Context: {context}
 Question: {question}
@@ -68,8 +52,8 @@ def load_llm():
     llm = CTransformers(
         model="TheBloke/Llama-2-7B-Chat-GGML",
         model_type="llama",
-        max_new_tokens=1024,
-        temperature=0.5
+        max_new_tokens=2048,
+        temperature=0.3
     )
     return llm
 
@@ -84,15 +68,29 @@ def qa_bot():
     return qa
 
 
-query = "what is consciousness?"
+query = "What is apathy?"
+
+
+def postprocessing(text):
+    if text.endswith('.'):
+        return text
+    elif '.' in text:
+        last_dot_position = text.rfind('.')
+        return text[:last_dot_position + 1]
+    else:
+        return text
 
 
 def final_result(query):
     if not is_philosophy_related(query):
         return "I don't know this"
     qa_result = qa_bot()
-    response = qa_result({'query': query})
-    return response
+    response_dict = qa_result({'query': query})
+
+    response_text = response_dict.get('result', '')
+
+    refined_response = postprocessing(response_text)
+    return refined_response
 
 
 print(final_result(query=query))
