@@ -50,11 +50,12 @@ def retrieval_qa_chain(llm, prompt, db):
 
 def load_llm():
     llm = CTransformers(
-        model="TheBloke/Llama-2-13B-Chat-GGML",
+        model="TheBloke/Llama-2-13B-Chat-GGUF",
         model_type="llama",
-        max_new_tokens=2048,
-        temperature=0.3
+        max_new_tokens=512 - (MAX_QUERY_TOKENS - 1),
+        temperature=0.3,
     )
+
     return llm
 
 
@@ -68,29 +69,41 @@ def qa_bot():
     return qa
 
 
-query = "Why do people buy beer?"
+query = "Should we percieve fear as a threat? And what can we learn from it?"
 
+tokenized_query = model_st.tokenizer.tokenize(query)
+token_count = len(tokenized_query)
+print("Tokenized Query:", tokenized_query)
+print("Query Token Count:", token_count)
 
-def postprocessing(text):
-    if text.endswith('.'):
-        return text
-    elif '.' in text:
-        last_dot_position = text.rfind('.')
-        return text[:last_dot_position + 1]
-    else:
-        return text
+MAX_QUERY_TOKENS = 24
+if token_count > MAX_QUERY_TOKENS:
+    print("Your question should be shorter in terms of token count.")
+else:
+    def postprocessing(text):
+        if text.endswith('.'):
+            return text
+        elif '.' in text:
+            last_dot_position = text.rfind('.')
+            return text[:last_dot_position + 1]
+        else:
+            return text
 
+    def final_result(query):
+        if not is_philosophy_related(query):
+            return "I don't know this"
+        qa_result = qa_bot()
+        response_dict = qa_result({'query': query})
 
-def final_result(query):
-    if not is_philosophy_related(query):
-        return "I don't know this"
-    qa_result = qa_bot()
-    response_dict = qa_result({'query': query})
+        response_text = response_dict.get('result', '')
 
-    response_text = response_dict.get('result', '')
+        tokenized_response = model_st.tokenizer.tokenize(response_text)
+        response_token_count = len(tokenized_response)
 
-    refined_response = postprocessing(response_text)
-    return refined_response
+        print("Tokenized Response:", tokenized_response)
+        print("Response Token Count:", response_token_count)
 
+        refined_response = postprocessing(response_text)
+        return refined_response
 
-print(final_result(query=query))
+    print(final_result(query=query))

@@ -26,7 +26,7 @@ def create_vector_db():
     loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     documents = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500, chunk_overlap=50)
+        chunk_size=500, chunk_overlap=25)
     texts = text_splitter.split_documents(documents)
 
     embeddings = HuggingFaceEmbeddings(
