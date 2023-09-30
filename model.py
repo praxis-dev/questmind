@@ -52,7 +52,7 @@ def load_llm():
     llm = CTransformers(
         model="TheBloke/Llama-2-13B-Chat-GGUF",
         model_type="llama",
-        max_new_tokens=512 - (MAX_QUERY_TOKENS - 1),
+        max_new_tokens=512 - (MAX_QUERY_TOKENS + 1),
         temperature=0.3,
     )
 
