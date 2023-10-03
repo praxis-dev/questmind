@@ -6,4 +6,4 @@ senecaenv/
 
 .dvc/cache/
 
-llama-2-7b-chat.ggmlv3.q8_0.bin
+llama-2-13b-chat.Q4_K_M.gguf

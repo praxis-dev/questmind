@@ -48,12 +48,15 @@ def retrieval_qa_chain(llm, prompt, db):
     return qa_chain
 
 
+config = {'max_new_tokens': 512, 'repetition_penalty': 1.1,
+          "temperature": 0.7, "context_length": 1024}
+
+
 def load_llm():
     llm = CTransformers(
-        model="TheBloke/Llama-2-13B-Chat-GGUF",
+        model="./llama-2-13b-chat.Q4_K_M.gguf",
         model_type="llama",
-        max_new_tokens=512 - (MAX_QUERY_TOKENS + 1),
-        temperature=0.3,
+        config=config
     )
 
     return llm
@@ -69,7 +72,7 @@ def qa_bot():
     return qa
 
 
-query = "Should we percieve fear as a threat? And what can we learn from it?"
+query = "What do you think about war?"
 
 tokenized_query = model_st.tokenizer.tokenize(query)
 token_count = len(tokenized_query)
