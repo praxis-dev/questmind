@@ -23,12 +23,12 @@ def is_philosophy_related(text):
     return max(similarities) > 0.5
 
 
-custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style.
+custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style. In your responses, you call the person who asks you for advice only "my friend".
 
 Context: {context}
 Question: {question}
 
-Useful answer of Seneca:
+Useful answer of Seneca without citing or making up quotes from other philosophers:
 """
 
 
@@ -48,7 +48,10 @@ def retrieval_qa_chain(llm, prompt, db):
     return qa_chain
 
 
-config = {'max_new_tokens': 512, 'repetition_penalty': 1.1,
+MAX_QUERY_TOKENS = 35
+
+
+config = {'max_new_tokens': 1024 - MAX_QUERY_TOKENS, 'repetition_penalty': 1.1,
           "temperature": 0.7, "context_length": 1024}
 
 
@@ -72,14 +75,13 @@ def qa_bot():
     return qa
 
 
-query = "What do you think about war?"
+query = "What if I'm tired of living?"
 
 tokenized_query = model_st.tokenizer.tokenize(query)
 token_count = len(tokenized_query)
 print("Tokenized Query:", tokenized_query)
 print("Query Token Count:", token_count)
 
-MAX_QUERY_TOKENS = 24
 if token_count > MAX_QUERY_TOKENS:
     print("Your question should be shorter in terms of token count.")
 else:
