@@ -4,7 +4,7 @@ from langchain.vectorstores import FAISS
 from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
 from sentence_transformers import SentenceTransformer, util
-from ingest import ingest_questions
+from .ingest import ingest_questions
 import os
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -76,32 +76,27 @@ def qa_bot():
     return qa
 
 
-query = "Give me advice to endure hardship?"
+def postprocessing(text):
+    if text.endswith('.'):
+        return text
+    elif '.' in text:
+        last_dot_position = text.rfind('.')
+        return text[:last_dot_position + 1]
+    else:
+        return text
 
-tokenized_query = model_st.tokenizer.tokenize(query)
-token_count = len(tokenized_query)
 
-if token_count > MAX_QUERY_TOKENS:
-    print("Your question should be shorter in terms of token count.")
-else:
-    def postprocessing(text):
-        if text.endswith('.'):
-            return text
-        elif '.' in text:
-            last_dot_position = text.rfind('.')
-            return text[:last_dot_position + 1]
-        else:
-            return text
+def get_response(query: str) -> str:
+    tokenized_query = model_st.tokenizer.tokenize(query)
+    token_count = len(tokenized_query)
+    if token_count > MAX_QUERY_TOKENS:
+        print("Your question should be shorter in terms of token count.")
+    if not is_philosophy_related(query):
+        return "I don't know this"
+    qa_result = qa_bot()
+    response_dict = qa_result({'query': query})
 
-    def final_result(query):
-        if not is_philosophy_related(query):
-            return "I don't know this"
-        qa_result = qa_bot()
-        response_dict = qa_result({'query': query})
+    response_text = response_dict.get('result', '')
 
-        response_text = response_dict.get('result', '')
-
-        refined_response = postprocessing(response_text)
-        return refined_response
-
-    print(final_result(query=query))
+    refined_response = postprocessing(response_text)
+    return refined_response

@@ -1,7 +1,4 @@
 #!/bin/sh
 
-# Run the ingest.py script
 python src/ingest.py
-
-# Execute a long-lived command
-tail -f /dev/null
+uvicorn src.api:app --host 0.0.0.0 --port 80

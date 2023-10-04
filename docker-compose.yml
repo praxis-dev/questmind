@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8080:80"
     volumes:
       - ./data:/app/data
       - ./src:/app/src
