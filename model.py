@@ -1,4 +1,3 @@
-from langchain.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain import PromptTemplate
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
@@ -75,12 +74,10 @@ def qa_bot():
     return qa
 
 
-query = "What if I'm tired of living?"
+query = "What should I know if I want not only to endure, but to thrive?"
 
 tokenized_query = model_st.tokenizer.tokenize(query)
 token_count = len(tokenized_query)
-print("Tokenized Query:", tokenized_query)
-print("Query Token Count:", token_count)
 
 if token_count > MAX_QUERY_TOKENS:
     print("Your question should be shorter in terms of token count.")
@@ -101,12 +98,6 @@ else:
         response_dict = qa_result({'query': query})
 
         response_text = response_dict.get('result', '')
-
-        tokenized_response = model_st.tokenizer.tokenize(response_text)
-        response_token_count = len(tokenized_response)
-
-        print("Tokenized Response:", tokenized_response)
-        print("Response Token Count:", response_token_count)
 
         refined_response = postprocessing(response_text)
         return refined_response
