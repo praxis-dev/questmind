@@ -1,7 +1,5 @@
 langchain
 torch
-accelerate
-bitsandbytes
-transformers
+ctransformers
 sentence_transformers
-faiss_cpu
+faiss-gpu

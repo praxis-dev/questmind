@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./vectorstores:/app/vectorstores
+#  backend:
+#    build:
+#      context: ./path-to-backend
+#      dockerfile: Dockerfile-backend
+#    depends_on:
+#      - model
