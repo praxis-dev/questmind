@@ -1,6 +1,0 @@
-outs:
-- md5: 296e807995f0ee6746d698181c7bc52c.dir
-  size: 11587242
-  nfiles: 2
-  hash: md5
-  path: vectorstores

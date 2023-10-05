@@ -3,17 +3,18 @@ version: "3"
 services:
   model:
     build:
-      context: .
+      context: ./model
       dockerfile: Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - ./data:/app/data
-      - ./src:/app/src
-      - ./vectorstores:/app/vectorstores
-#  backend:
-#    build:
-#      context: ./path-to-backend
-#      dockerfile: Dockerfile-backend
-#    depends_on:
-#      - model
+      - ./model/data:/app/data
+      - ./model/src:/app/src
+      - ./model/vectorstores:/app/vectorstores
+
+  # backend:
+  #   build:
+  #     context: ./backend   # Point to the backend directory
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - model

@@ -1,4 +1,0 @@
-[core]
-    remote = mys3bucket
-['remote "mys3bucket"']
-    url = s3://senecadvc/data

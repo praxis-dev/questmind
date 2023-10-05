@@ -1,0 +1,8 @@
+langchain
+torch
+ctransformers
+sentence_transformers
+faiss-gpu
+
+fastapi==0.68.0
+uvicorn==0.15.0

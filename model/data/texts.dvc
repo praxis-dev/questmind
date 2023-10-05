@@ -1,0 +1,6 @@
+outs:
+- md5: 56ec75e1fdc2fbbeb072345013e6517a.dir
+  size: 2297529
+  nfiles: 1
+  hash: md5
+  path: texts
