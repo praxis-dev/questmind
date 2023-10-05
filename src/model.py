@@ -55,10 +55,12 @@ MAX_QUERY_TOKENS = 35
 config = {'max_new_tokens': 1024 - MAX_QUERY_TOKENS, 'repetition_penalty': 1.1,
           "temperature": 0.4, "context_length": 1024}
 
+LLM_PATH = "/app/src/llama-2-13b-chat.Q4_K_M.gguf"
+
 
 def load_llm():
     llm = CTransformers(
-        model="./llama-2-13b-chat.Q4_K_M.gguf",
+        model="/app/src/llama-2-13b-chat.Q4_K_M.gguf",
         model_type="llama",
         config=config
     )
