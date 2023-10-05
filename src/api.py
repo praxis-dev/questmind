@@ -1,6 +1,11 @@
+import logging
+
 from fastapi import FastAPI
 from .model import get_response
 from pydantic import BaseModel
+
+logging.basicConfig(level=logging.INFO,
+                    format='[%(asctime)s] %(levelname)s: %(message)s')
 
 
 class Question(BaseModel):
@@ -12,5 +17,6 @@ app = FastAPI()
 
 @app.post("/respond/")
 def get_wisdom(question_data: Question):
+    logging.info(f"Received query: {question_data.question[:50]}...")
     response = get_response(question_data.question)
     return {"response": response}

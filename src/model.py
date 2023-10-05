@@ -1,3 +1,5 @@
+import logging
+
 from langchain import PromptTemplate
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
@@ -6,6 +8,10 @@ from langchain.chains import RetrievalQA
 from sentence_transformers import SentenceTransformer, util
 from .ingest import ingest_questions
 import os
+
+logging.basicConfig(level=logging.INFO,
+                    format='[%(asctime)s] %(levelname)s: %(message)s')
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -18,6 +24,8 @@ philosophical_embeddings = model_st.encode(questions)
 
 
 def is_philosophy_related(text):
+    logging.info("Checking if the text is philosophy-related.")
+
     text_embedding = model_st.encode(text)
     similarities = [util.pytorch_cos_sim(
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
@@ -59,6 +67,8 @@ LLM_PATH = "/app/src/llama-2-13b-chat.Q4_K_M.gguf"
 
 
 def load_llm():
+    logging.info("Loading the LLM model.")
+
     llm = CTransformers(
         model="/app/src/llama-2-13b-chat.Q4_K_M.gguf",
         model_type="llama",
@@ -69,6 +79,8 @@ def load_llm():
 
 
 def qa_bot():
+    logging.info("Initializing the QA bot.")
+
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={'device': 'cpu'})
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
@@ -79,6 +91,8 @@ def qa_bot():
 
 
 def postprocessing(text):
+    logging.info("Postprocessing the response.")
+
     if text.endswith('.'):
         return text
     elif '.' in text:
