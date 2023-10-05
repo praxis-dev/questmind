@@ -12,9 +12,11 @@ services:
       - ./model/src:/app/src
       - ./model/vectorstores:/app/vectorstores
 
-  # backend:
-  #   build:
-  #     context: ./backend   # Point to the backend directory
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - model
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      - model
