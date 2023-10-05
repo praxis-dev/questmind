@@ -29,7 +29,7 @@ def is_philosophy_related(text):
     text_embedding = model_st.encode(text)
     similarities = [util.pytorch_cos_sim(
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
-    return max(similarities) > 0.5
+    return max(similarities) > 0.3
 
 
 custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style. In your responses, you call the person who asks you for advice only "my friend".
