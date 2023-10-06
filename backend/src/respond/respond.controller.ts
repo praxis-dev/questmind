@@ -1,24 +1,39 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { map } from 'rxjs/operators';
 
 @Controller('respond')
 export class RespondController {
   constructor(private readonly httpService: HttpService) {}
 
   @Post()
-  async respond(@Body('question') question: string): Promise<string> {
-    const response = await this.httpService.post(
-      'http://0.0.0.0:8080/respond/',
-      {
-        question,
-      },
-    );
+  async respond(@Body('question') question: string): Promise<any> {
+    try {
+      const response = await this.httpService
+        .post(
+          'http://model:80/respond/',
+          {
+            question,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .toPromise();
 
-    // Use the pipe() operator to transform the Observable into a Promise.
-    const data = await response
-      .pipe(map((response) => response.data))
-      .toPromise();
-    return data;
+      return response.data;
+    } catch (error) {
+      console.error(
+        'Detailed Error:',
+        error.response ? error.response.data : error.message,
+      );
+      throw new InternalServerErrorException('Model communication failed.');
+    }
   }
 }

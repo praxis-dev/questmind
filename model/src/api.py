@@ -17,6 +17,5 @@ app = FastAPI()
 
 @app.post("/respond/")
 def get_wisdom(question_data: Question):
-    logging.info(f"Received query: {question_data.question[:50]}...")
     response = get_response(question_data.question)
     return {"response": response}
