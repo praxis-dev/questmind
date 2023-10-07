@@ -6,8 +6,7 @@ import axios from "axios";
 import { useResponsiveStyles } from "../library/hooks";
 import { Breakpoint, ViewStyles } from "../library/styles";
 
-const { Title } = Typography;
-const { TextArea } = Input;
+import QueryInput from "../components/QueryInput";
 
 const QueryResponse: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
@@ -30,6 +29,7 @@ const QueryResponse: React.FC = () => {
   });
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Adjusted type here
     setQuestion(e.target.value);
   };
 
@@ -60,9 +60,9 @@ const QueryResponse: React.FC = () => {
 
   return (
     <div style={styles.section}>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <Space style={styles.chatSpace} direction="vertical">
+      <div style={styles.mainCol}>
+        <div style={styles.contentSpace}>
+          <Space direction="vertical" style={styles.chatSpace}>
             {chatMessages.map((message, index) => (
               <Card
                 key={index}
@@ -78,42 +78,55 @@ const QueryResponse: React.FC = () => {
               </Card>
             )}
           </Space>
-        </Col>
-        <Col span={24}>
-          <Space direction="vertical" style={styles.querySpace}>
-            <TextArea
-              rows={4}
-              value={question}
-              onChange={handleQuestionChange}
-              placeholder="Type your question here..."
+          <div style={styles.querySpace}>
+            <QueryInput
+              question={question}
+              onQuestionChange={handleQuestionChange}
+              onSubmit={handleSubmit}
             />
-            <Button
-              type="primary"
-              onClick={handleSubmit}
-              style={{ marginTop: "1rem" }}
-            >
-              Submit
-            </Button>
-          </Space>
-        </Col>
-      </Row>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 const baseStyles: ViewStyles = {
-  section: {
-    maxWidth: 1000,
+  mainCol: {
+    width: "100%",
     height: "100%",
-    margin: "0 auto",
-    padding: 30,
     border: "1px solid red",
   },
+
+  section: {
+    boxSizing: "border-box",
+    maxWidth: 1000,
+    margin: "0 auto",
+    padding: 20,
+    border: "1px solid black",
+    height: "100%",
+  },
+
+  contentSpace: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "100%",
+    border: "1px solid green",
+    justifyContent: "space-between",
+  },
+
   chatSpace: {
     width: "100%",
+    border: "1px solid blue",
+    height: "80%",
+    overflowY: "scroll",
   },
-  responseSpace: {
+
+  querySpace: {
     width: "100%",
+    height: "20%",
+    minHeight: 180,
     border: "1px solid red",
   },
   responseCard: {
