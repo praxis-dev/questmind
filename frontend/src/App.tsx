@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import QueryResponse from "./components/QueryResponse";
+import QueryResponse from "./pages/QueryResponse";
 
 function App() {
   return (
