@@ -30,7 +30,6 @@ const QueryResponse: React.FC = () => {
   });
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // Adjusted type here
     setQuestion(e.target.value);
   };
 

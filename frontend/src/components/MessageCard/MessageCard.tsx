@@ -5,7 +5,7 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 interface MessageCardProps {
   title: string;
-  content: string | ReactNode; // <-- Allow both string and JSX elements
+  content: string | ReactNode;
 }
 
 const MessageCard: React.FC<MessageCardProps> = ({ title, content }) => {
