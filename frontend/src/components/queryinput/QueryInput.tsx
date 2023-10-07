@@ -2,8 +2,8 @@ import React from "react";
 import { Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
-import { useResponsiveStyles } from "../library/hooks";
-import { Breakpoint, ViewStyles } from "../library/styles";
+import { useResponsiveStyles } from "../../library/hooks";
+import { Breakpoint, ViewStyles } from "../../library/styles";
 
 interface QueryInputProps {
   question: string;

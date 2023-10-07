@@ -6,7 +6,8 @@ import axios from "axios";
 import { useResponsiveStyles } from "../library/hooks";
 import { Breakpoint, ViewStyles } from "../library/styles";
 
-import QueryInput from "../components/QueryInput";
+import QueryInput from "../components/queryinput/QueryInput";
+import MessageCard from "../components/MessageCard/MessageCard";
 
 const QueryResponse: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
@@ -64,18 +65,29 @@ const QueryResponse: React.FC = () => {
         <div style={styles.contentSpace}>
           <Space direction="vertical" style={styles.chatSpace}>
             {chatMessages.map((message, index) => (
-              <Card
+              <MessageCard
                 key={index}
                 title={message.type === "user" ? "You" : "AI Response"}
-                style={styles.responseCard}
-              >
-                <Typography.Text>{message.text}</Typography.Text>
-              </Card>
+                content={message.text}
+              />
             ))}
             {isLoading && (
-              <Card title="AI is thinking...">
-                <Spin />
-              </Card>
+              <MessageCard
+                title="AI is thinking..."
+                content={
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        borderRadius: "50%",
+                        animation: "spin 1s linear infinite",
+                        borderTop: "4px solid #555",
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    ></div>
+                  </div>
+                }
+              />
             )}
           </Space>
           <div style={styles.querySpace}>
@@ -95,7 +107,6 @@ const baseStyles: ViewStyles = {
   mainCol: {
     width: "100%",
     height: "100%",
-    border: "1px solid red",
   },
 
   section: {
@@ -103,7 +114,6 @@ const baseStyles: ViewStyles = {
     maxWidth: 1000,
     margin: "0 auto",
     padding: 20,
-    border: "1px solid black",
     height: "100%",
   },
 
@@ -112,13 +122,11 @@ const baseStyles: ViewStyles = {
     flexDirection: "column",
     width: "100%",
     height: "100%",
-    border: "1px solid green",
     justifyContent: "space-between",
   },
 
   chatSpace: {
     width: "100%",
-    border: "1px solid blue",
     height: "80%",
     overflowY: "scroll",
   },
@@ -127,12 +135,10 @@ const baseStyles: ViewStyles = {
     width: "100%",
     height: "20%",
     minHeight: 180,
-    border: "1px solid red",
   },
   responseCard: {
     whiteSpace: "pre-line",
     textAlign: "left",
-    border: "1px solid #d9d9d9",
   },
 };
 
