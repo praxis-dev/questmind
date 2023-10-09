@@ -47,7 +47,7 @@ const QueryResponse: React.FC = () => {
         question,
       });
 
-      setIsTyping(true); // Set isTyping true here
+      setIsTyping(true);
 
       setTimeout(() => {
         setChatMessages((prevMessages) => [
@@ -55,7 +55,7 @@ const QueryResponse: React.FC = () => {
           { type: "ai", text: result.data.response },
         ]);
         setIsLoading(false);
-        setIsTyping(false); // Reset isTyping when typing is done
+        setIsTyping(false);
       }, 500);
     } catch (error) {
       console.error("Error fetching response:", error);
@@ -68,7 +68,7 @@ const QueryResponse: React.FC = () => {
       if (chatSpaceRef.current) {
         const element = chatSpaceRef.current;
         const isAtBottom =
-          element.scrollHeight - element.clientHeight <= element.scrollTop + 5; // Add a little threshold (5 pixels)
+          element.scrollHeight - element.clientHeight <= element.scrollTop + 5;
 
         setHasUserScrolled(!isAtBottom);
       }
@@ -130,10 +130,11 @@ const QueryResponse: React.FC = () => {
                 onContentUpdate={() => {
                   if (!hasUserScrolled && chatSpaceRef.current) {
                     const element = chatSpaceRef.current;
-                    element.scrollTo({
-                      top: element.scrollHeight,
-                      behavior: "smooth",
-                    });
+                    setTimeout(() => {
+                      element.scrollTo({
+                        top: element.scrollHeight,
+                      });
+                    }, 0);
                   }
                 }}
               />
