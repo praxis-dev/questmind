@@ -6,6 +6,10 @@ import axios from "axios";
 import { useResponsiveStyles } from "../library/hooks";
 import { Breakpoint, ViewStyles } from "../library/styles";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setIsLoading } from "../store/slices/loadingSlice";
+import { RootState } from "../store";
+
 import QueryInput from "../components/queryinput/QueryInput";
 import MessageCard from "../components/MessageCard/MessageCard";
 
@@ -17,9 +21,11 @@ const QueryResponse: React.FC = () => {
   const [chatMessages, setChatMessages] = useState<
     Array<{ type: "user" | "ai"; text: string }>
   >([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasUserScrolled, setHasUserScrolled] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading);
+  const dispatch = useDispatch();
 
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
 
@@ -41,7 +47,7 @@ const QueryResponse: React.FC = () => {
       ]);
 
       setQuestion("");
-      setIsLoading(true);
+      dispatch(setIsLoading(true));
 
       const result = await axios.post("http://localhost:8081/respond/", {
         question,
@@ -54,12 +60,12 @@ const QueryResponse: React.FC = () => {
           ...prevMessages,
           { type: "ai", text: result.data.response },
         ]);
-        setIsLoading(false);
+        dispatch(setIsLoading(false));
         setIsTyping(false);
       }, 500);
     } catch (error) {
       console.error("Error fetching response:", error);
-      setIsLoading(false);
+      dispatch(setIsLoading(false));
     }
   };
 

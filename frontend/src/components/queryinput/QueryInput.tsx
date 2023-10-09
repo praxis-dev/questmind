@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 import "./QueryInput.css";
 
@@ -26,6 +29,17 @@ const QueryInput: React.FC<QueryInputProps> = ({
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const isTyping = useSelector((state: RootState) => state.typing.isTyping);
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading);
+
+  useEffect(() => {
+    console.log("isTyping changed:", isTyping);
+  }, [isTyping]);
+
+  useEffect(() => {
+    console.log("isLoading changed:", isLoading);
+  }, [isLoading]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -46,6 +60,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
       />
       <div style={styles.buttonArea}>
         <Button
+          disabled={isTyping || isLoading}
           style={styles.floatButton}
           onClick={onSubmit}
           icon={<SendOutlined />}

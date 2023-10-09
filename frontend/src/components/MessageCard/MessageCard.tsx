@@ -3,6 +3,10 @@ import React, { ReactNode, useState, useEffect } from "react";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setIsTyping } from "../../store/slices/typingSlice";
+import { RootState } from "../../store";
+
 interface MessageCardProps {
   title: string;
   content: string | ReactNode;
@@ -31,28 +35,39 @@ const MessageCard: React.FC<MessageCardProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxTypingDelay = 100;
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (!isStringContent) return;
 
-    if (type === "user") {
-      setDisplayedContent(contentStr.split(""));
-      return;
-    }
+    if (type === "ai") {
+      dispatch(setIsTyping(true));
 
-    const typingEffect = setInterval(() => {
-      if (currentIndex < contentStr.length) {
-        setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
-        setCurrentIndex((prev) => prev + 1);
-        if (typeof onContentUpdate === "function") {
-          onContentUpdate();
+      const typingEffect = setInterval(() => {
+        if (currentIndex < contentStr.length) {
+          setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
+          setCurrentIndex((prev) => prev + 1);
+          if (typeof onContentUpdate === "function") {
+            onContentUpdate();
+          }
+        } else {
+          dispatch(setIsTyping(false));
+          clearInterval(typingEffect);
         }
-      } else {
-        clearInterval(typingEffect);
-      }
-    }, Math.random() * maxTypingDelay);
+      }, Math.random() * maxTypingDelay);
 
-    return () => clearInterval(typingEffect);
-  }, [type, contentStr, currentIndex, isStringContent, onContentUpdate]);
+      return () => clearInterval(typingEffect);
+    } else {
+      setDisplayedContent(contentStr.split(""));
+    }
+  }, [
+    type,
+    contentStr,
+    currentIndex,
+    isStringContent,
+    onContentUpdate,
+    dispatch,
+  ]);
 
   return (
     <div style={styles.cardWrapper}>
