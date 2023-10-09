@@ -43,6 +43,24 @@ const QueryResponse: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  useEffect(() => {
+    const handleContentUpdate = () => {
+      if (chatSpaceRef.current) {
+        const element = chatSpaceRef.current;
+        element.scrollTo({
+          top: element.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    };
+
+    window.addEventListener("contentUpdated", handleContentUpdate);
+
+    return () => {
+      window.removeEventListener("contentUpdated", handleContentUpdate);
+    };
+  }, []);
+
   const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setQuestion(e.target.value);
   };

@@ -37,6 +37,8 @@ const MessageCard: React.FC<MessageCardProps> = ({ title, content, type }) => {
       if (currentIndex < contentStr.length) {
         setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
         setCurrentIndex((prev) => prev + 1);
+        const event = new Event("contentUpdated");
+        window.dispatchEvent(event);
       } else {
         clearInterval(typingEffect);
       }
