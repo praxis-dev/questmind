@@ -79,6 +79,7 @@ const QueryResponse: React.FC = () => {
           <Space
             direction="vertical"
             style={styles.chatSpace}
+            className="chatSpace"
             ref={chatSpaceRef}
           >
             {chatMessages.map((message, index) => (
