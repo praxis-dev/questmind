@@ -80,6 +80,7 @@ const baseStyles: ViewStyles = {
     fontFamily: "monospace",
     whiteSpace: "pre-line",
     textAlign: "left",
+    lineHeight: "1.5",
   },
 };
 

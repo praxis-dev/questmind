@@ -70,6 +70,7 @@ const baseStyles: ViewStyles = {
     height: "100%",
     width: "89%",
     resize: "none",
+    lineHeight: "1.5",
   },
   buttonArea: {
     display: "flex",
