@@ -49,23 +49,27 @@ const QueryResponse: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      setChatMessages([...chatMessages, { type: "user", text: question }]);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { type: "user", text: question },
+      ]);
 
       setQuestion("");
-
       setIsLoading(true);
 
       const result = await axios.post("http://localhost:8081/respond/", {
         question,
       });
 
-      setChatMessages([
-        ...chatMessages,
-        { type: "user", text: question },
-        { type: "ai", text: result.data.response },
-      ]);
-
-      setIsLoading(false);
+      setTimeout(() => {
+        setTimeout(() => {
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            { type: "ai", text: result.data.response },
+          ]);
+          setIsLoading(false);
+        }, 500);
+      }, 200);
     } catch (error) {
       console.error("Error fetching response:", error);
       setIsLoading(false);
@@ -87,11 +91,13 @@ const QueryResponse: React.FC = () => {
                 key={index}
                 title={message.type === "user" ? "You" : "AI Response"}
                 content={message.text}
+                type={message.type}
               />
             ))}
             {isLoading && (
               <MessageCard
                 title="AI is thinking..."
+                type={"ai"}
                 content={
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <div

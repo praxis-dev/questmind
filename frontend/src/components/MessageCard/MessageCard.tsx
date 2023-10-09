@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -6,9 +6,10 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 interface MessageCardProps {
   title: string;
   content: string | ReactNode;
+  type: "user" | "ai";
 }
 
-const MessageCard: React.FC<MessageCardProps> = ({ title, content }) => {
+const MessageCard: React.FC<MessageCardProps> = ({ title, content, type }) => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -17,10 +18,39 @@ const MessageCard: React.FC<MessageCardProps> = ({ title, content }) => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const isStringContent = typeof content === "string";
+  const contentStr = isStringContent ? content : "";
+
+  const [displayedContent, setDisplayedContent] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const maxTypingDelay = 100;
+
+  useEffect(() => {
+    if (!isStringContent) return;
+
+    if (type === "user") {
+      setDisplayedContent(contentStr.split(""));
+      return;
+    }
+
+    const typingEffect = setInterval(() => {
+      if (currentIndex < contentStr.length) {
+        setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
+        setCurrentIndex((prev) => prev + 1);
+      } else {
+        clearInterval(typingEffect);
+      }
+    }, Math.random() * maxTypingDelay);
+
+    return () => clearInterval(typingEffect);
+  }, [type, contentStr, currentIndex, isStringContent]);
+
   return (
     <div style={styles.cardWrapper}>
       <div style={styles.cardTitle}>{title}</div>
-      <div style={styles.cardContent}>{content}</div>
+      <div style={styles.cardContent}>
+        {isStringContent ? displayedContent.join("") : content}
+      </div>
     </div>
   );
 };
