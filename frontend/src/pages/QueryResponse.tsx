@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Input, Card, Typography, Row, Col, Space, Spin } from "antd";
+import { Space } from "antd";
 import axios from "axios";
 
 import { useResponsiveStyles } from "../library/hooks";
@@ -9,6 +9,8 @@ import { Breakpoint, ViewStyles } from "../library/styles";
 import QueryInput from "../components/queryinput/QueryInput";
 import MessageCard from "../components/MessageCard/MessageCard";
 
+import "./QueryResponse.css";
+
 const QueryResponse: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
   const [response, setResponse] = useState<string | null>(null);
@@ -16,6 +18,18 @@ const QueryResponse: React.FC = () => {
     Array<{ type: "user" | "ai"; text: string }>
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const chatSpaceRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatSpaceRef.current) {
+      const element = chatSpaceRef.current;
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [chatMessages]);
 
   useEffect(() => {
     console.log(response);
@@ -62,7 +76,11 @@ const QueryResponse: React.FC = () => {
     <div style={styles.section}>
       <div style={styles.mainCol}>
         <div style={styles.contentSpace}>
-          <Space direction="vertical" style={styles.chatSpace}>
+          <Space
+            direction="vertical"
+            style={styles.chatSpace}
+            ref={chatSpaceRef}
+          >
             {chatMessages.map((message, index) => (
               <MessageCard
                 key={index}
@@ -127,7 +145,8 @@ const baseStyles: ViewStyles = {
   chatSpace: {
     width: "100%",
     height: "80%",
-    overflowY: "scroll",
+    overflowY: "auto",
+    marginBottom: 20,
   },
 
   querySpace: {

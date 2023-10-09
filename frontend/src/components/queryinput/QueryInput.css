@@ -1,0 +1,10 @@
+/* QueryInput.css */
+.textAreaStyle {
+  border: 1px solid transparent;
+  transition: border-color 1s ease; /* Notice the change to border-color */
+}
+
+.textAreaStyle:focus {
+  border-color: black; /* Only changing border color */
+  outline: none;
+}

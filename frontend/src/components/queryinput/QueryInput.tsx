@@ -5,6 +5,8 @@ import { SendOutlined } from "@ant-design/icons";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
+import "./QueryInput.css";
+
 interface QueryInputProps {
   question: string;
   onQuestionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -24,13 +26,23 @@ const QueryInput: React.FC<QueryInputProps> = ({
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
   return (
     <div style={styles.queryWrapper}>
       <textarea
+        autoFocus
         value={question}
         onChange={onQuestionChange}
         placeholder="Type your question here..."
+        className="textAreaStyle"
         style={styles.textArea}
+        onKeyDown={handleKeyDown}
       />
       <div style={styles.buttonArea}>
         <Button
@@ -46,6 +58,8 @@ const QueryInput: React.FC<QueryInputProps> = ({
 const baseStyles: ViewStyles = {
   queryWrapper: {
     display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     height: "100%",
@@ -54,9 +68,8 @@ const baseStyles: ViewStyles = {
     boxSizing: "border-box",
     padding: "0.5rem",
     height: "100%",
-    width: "90%",
+    width: "89%",
     resize: "none",
-    border: "none",
   },
   buttonArea: {
     display: "flex",
