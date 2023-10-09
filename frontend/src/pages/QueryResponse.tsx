@@ -196,15 +196,15 @@ const baseStyles: ViewStyles = {
 
   chatSpace: {
     width: "100%",
-    height: "80%",
+    height: "90%",
     overflowY: "auto",
     marginBottom: 20,
   },
 
   querySpace: {
     width: "100%",
-    height: "20%",
-    minHeight: 180,
+    height: "10%",
+    minHeight: 100,
   },
   responseCard: {
     whiteSpace: "pre-line",
