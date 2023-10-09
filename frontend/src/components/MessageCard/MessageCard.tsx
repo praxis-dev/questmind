@@ -7,9 +7,15 @@ interface MessageCardProps {
   title: string;
   content: string | ReactNode;
   type: "user" | "ai";
+  onContentUpdate?: () => void;
 }
 
-const MessageCard: React.FC<MessageCardProps> = ({ title, content, type }) => {
+const MessageCard: React.FC<MessageCardProps> = ({
+  title,
+  content,
+  type,
+  onContentUpdate,
+}) => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -37,15 +43,16 @@ const MessageCard: React.FC<MessageCardProps> = ({ title, content, type }) => {
       if (currentIndex < contentStr.length) {
         setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
         setCurrentIndex((prev) => prev + 1);
-        const event = new Event("contentUpdated");
-        window.dispatchEvent(event);
+        if (typeof onContentUpdate === "function") {
+          onContentUpdate();
+        }
       } else {
         clearInterval(typingEffect);
       }
     }, Math.random() * maxTypingDelay);
 
     return () => clearInterval(typingEffect);
-  }, [type, contentStr, currentIndex, isStringContent]);
+  }, [type, contentStr, currentIndex, isStringContent, onContentUpdate]);
 
   return (
     <div style={styles.cardWrapper}>

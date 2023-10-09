@@ -18,52 +18,20 @@ const QueryResponse: React.FC = () => {
     Array<{ type: "user" | "ai"; text: string }>
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasUserScrolled, setHasUserScrolled] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (chatSpaceRef.current) {
+    if (isTyping && chatSpaceRef.current) {
       const element = chatSpaceRef.current;
       element.scrollTo({
         top: element.scrollHeight,
         behavior: "smooth",
       });
     }
-  }, [chatMessages]);
-
-  useEffect(() => {
-    console.log(response);
-  }, [response]);
-
-  const styles = useResponsiveStyles(baseStyles, {
-    [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
-    [Breakpoint.Large]: largeScreenStyles,
-    [Breakpoint.Medium]: mediumScreenStyles,
-    [Breakpoint.Small]: smallScreenStyles,
-    [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
-  });
-
-  useEffect(() => {
-    const handleContentUpdate = () => {
-      if (chatSpaceRef.current) {
-        const element = chatSpaceRef.current;
-        element.scrollTo({
-          top: element.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    };
-
-    window.addEventListener("contentUpdated", handleContentUpdate);
-
-    return () => {
-      window.removeEventListener("contentUpdated", handleContentUpdate);
-    };
-  }, []);
-
-  const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setQuestion(e.target.value);
-  };
+  }, [isTyping]);
 
   const handleSubmit = async () => {
     try {
@@ -79,19 +47,68 @@ const QueryResponse: React.FC = () => {
         question,
       });
 
+      setIsTyping(true); // Set isTyping true here
+
       setTimeout(() => {
-        setTimeout(() => {
-          setChatMessages((prevMessages) => [
-            ...prevMessages,
-            { type: "ai", text: result.data.response },
-          ]);
-          setIsLoading(false);
-        }, 500);
-      }, 200);
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          { type: "ai", text: result.data.response },
+        ]);
+        setIsLoading(false);
+        setIsTyping(false); // Reset isTyping when typing is done
+      }, 500);
     } catch (error) {
       console.error("Error fetching response:", error);
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (chatSpaceRef.current) {
+        const element = chatSpaceRef.current;
+        const isAtBottom =
+          element.scrollHeight - element.clientHeight <= element.scrollTop + 5; // Add a little threshold (5 pixels)
+
+        setHasUserScrolled(!isAtBottom);
+      }
+    };
+
+    if (chatSpaceRef.current) {
+      chatSpaceRef.current.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (chatSpaceRef.current) {
+        chatSpaceRef.current.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasUserScrolled && chatSpaceRef.current) {
+      const element = chatSpaceRef.current;
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [chatMessages, hasUserScrolled]);
+
+  useEffect(() => {
+    console.log(response);
+  }, [response]);
+
+  const styles = useResponsiveStyles(baseStyles, {
+    [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
+    [Breakpoint.Large]: largeScreenStyles,
+    [Breakpoint.Medium]: mediumScreenStyles,
+    [Breakpoint.Small]: smallScreenStyles,
+    [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
+  });
+
+  const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setQuestion(e.target.value);
   };
 
   return (
@@ -110,6 +127,15 @@ const QueryResponse: React.FC = () => {
                 title={message.type === "user" ? "You" : "AI Response"}
                 content={message.text}
                 type={message.type}
+                onContentUpdate={() => {
+                  if (!hasUserScrolled && chatSpaceRef.current) {
+                    const element = chatSpaceRef.current;
+                    element.scrollTo({
+                      top: element.scrollHeight,
+                      behavior: "smooth",
+                    });
+                  }
+                }}
               />
             ))}
             {isLoading && (
