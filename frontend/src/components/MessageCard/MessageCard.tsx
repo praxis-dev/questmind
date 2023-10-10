@@ -6,8 +6,9 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsTyping } from "../../store/slices/typingSlice";
 
-import { ShareAltOutlined } from "@ant-design/icons";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "antd";
+import { HourglassOutlined } from "@ant-design/icons";
 
 import { RootState } from "../../store";
 
@@ -43,11 +44,15 @@ const MessageCard: React.FC<MessageCardProps> = ({
 
   const [displayedContent, setDisplayedContent] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCurrentMessageTyping, setIsCurrentMessageTyping] = useState(false);
+
   const maxTypingDelay = 100;
 
   const dispatch = useDispatch();
 
-  const shareToTwitter = () => {
+  const shareToTwitter = (event: React.MouseEvent) => {
+    event.preventDefault();
+
     const aiResponse = title === "Sage AI" ? contentStr : "";
 
     const tweetText = encodeURIComponent(
@@ -63,7 +68,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
     if (!isStringContent) return;
 
     if (type === "ai") {
-      dispatch(setIsTyping(true));
+      setIsCurrentMessageTyping(true); // Set local state
 
       const typingEffect = setInterval(() => {
         if (currentIndex < contentStr.length) {
@@ -73,7 +78,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
             onContentUpdate();
           }
         } else {
-          dispatch(setIsTyping(false));
+          setIsCurrentMessageTyping(false); // Reset local state
           clearInterval(typingEffect);
         }
       }, Math.random() * maxTypingDelay);
@@ -82,28 +87,25 @@ const MessageCard: React.FC<MessageCardProps> = ({
     } else {
       setDisplayedContent(contentStr.split(""));
     }
-  }, [
-    type,
-    contentStr,
-    currentIndex,
-    isStringContent,
-    onContentUpdate,
-    dispatch,
-  ]);
+  }, [type, contentStr, currentIndex, isStringContent, onContentUpdate]);
 
   return (
     <div style={styles.cardWrapper}>
       <div style={styles.topRow}>
         <div style={styles.cardTitle}>{title}</div>
-        {type === "ai" && showShareButton && (
-          <Button
-            type="link"
-            icon={<ShareAltOutlined style={styles.shareIcon} />}
-            size="small"
-            disabled={isTyping}
-            onClick={shareToTwitter}
-          />
-        )}
+        {type === "ai" &&
+          showShareButton &&
+          (isCurrentMessageTyping ? (
+            <HourglassOutlined style={styles.disabledShareIcon} />
+          ) : (
+            <SocialIcon
+              url="www.x.com"
+              style={styles.shareIcon}
+              fgColor="black"
+              bgColor="transparent"
+              onClick={(event) => shareToTwitter(event)}
+            />
+          ))}
       </div>
       <div style={styles.cardContent}>
         {isStringContent ? displayedContent.join("") : content}
@@ -114,7 +116,13 @@ const MessageCard: React.FC<MessageCardProps> = ({
 
 const baseStyles: ViewStyles = {
   shareIcon: {
-    color: "gray",
+    height: "1.5rem",
+    width: "1.5rem",
+  },
+
+  disabledShareIcon: {
+    fontSize: "1rem",
+    color: "grey",
   },
 
   cardWrapper: {
@@ -131,6 +139,7 @@ const baseStyles: ViewStyles = {
     maxWidth: "100%",
     height: "1.5rem",
     marginBottom: "0.5rem",
+    paddingRight: "15px",
   },
 
   cardTitle: {
