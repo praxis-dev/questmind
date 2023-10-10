@@ -156,6 +156,16 @@ const QueryResponse: React.FC = () => {
                     }, 0);
                   }
                 }}
+                showShareButton={
+                  message.text !==
+                    "Hello, I'm an AI trained in philosophy. Ask me for sage advice." &&
+                  message.text !== "This is not my area of expertise."
+                }
+                userQuestion={
+                  message.type === "ai"
+                    ? chatMessages[index - 1]?.text
+                    : undefined
+                }
               />
             ))}
             {isLoading && (

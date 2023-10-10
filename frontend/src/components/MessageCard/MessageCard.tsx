@@ -6,11 +6,18 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsTyping } from "../../store/slices/typingSlice";
 
+import { ShareAltOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+
+import { RootState } from "../../store";
+
 interface MessageCardProps {
   title: string;
   content: string | ReactNode;
   type: "user" | "ai";
   onContentUpdate?: () => void;
+  showShareButton?: boolean;
+  userQuestion?: string;
 }
 
 const MessageCard: React.FC<MessageCardProps> = ({
@@ -18,6 +25,8 @@ const MessageCard: React.FC<MessageCardProps> = ({
   content,
   type,
   onContentUpdate,
+  showShareButton,
+  userQuestion,
 }) => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -30,11 +39,25 @@ const MessageCard: React.FC<MessageCardProps> = ({
   const isStringContent = typeof content === "string";
   const contentStr = isStringContent ? content : "";
 
+  const isTyping = useSelector((state: RootState) => state.typing.isTyping);
+
   const [displayedContent, setDisplayedContent] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxTypingDelay = 100;
 
   const dispatch = useDispatch();
+
+  const shareToTwitter = () => {
+    const aiResponse = title === "Sage AI" ? contentStr : "";
+
+    const tweetText = encodeURIComponent(
+      `Question: ${userQuestion}\n\nAI Response: ${aiResponse}`
+    );
+
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+
+    window.open(twitterUrl, "_blank");
+  };
 
   useEffect(() => {
     if (!isStringContent) return;
@@ -70,7 +93,18 @@ const MessageCard: React.FC<MessageCardProps> = ({
 
   return (
     <div style={styles.cardWrapper}>
-      <div style={styles.cardTitle}>{title}</div>
+      <div style={styles.topRow}>
+        <div style={styles.cardTitle}>{title}</div>
+        {type === "ai" && showShareButton && (
+          <Button
+            type="link"
+            icon={<ShareAltOutlined style={styles.shareIcon} />}
+            size="small"
+            disabled={isTyping}
+            onClick={shareToTwitter}
+          />
+        )}
+      </div>
       <div style={styles.cardContent}>
         {isStringContent ? displayedContent.join("") : content}
       </div>
@@ -79,15 +113,30 @@ const MessageCard: React.FC<MessageCardProps> = ({
 };
 
 const baseStyles: ViewStyles = {
+  shareIcon: {
+    color: "gray",
+  },
+
   cardWrapper: {
     padding: "0.5rem",
     marginBottom: "1rem",
     maxWidth: "100%",
   },
+
+  topRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "100%",
+    height: "1.5rem",
+    marginBottom: "0.5rem",
+  },
+
   cardTitle: {
     fontFamily: "monospace",
-    marginBottom: "0.5rem",
     textAlign: "left",
+    marginRight: "10px",
   },
   cardContent: {
     fontFamily: "monospace",
