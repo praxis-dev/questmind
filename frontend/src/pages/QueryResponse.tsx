@@ -13,6 +13,8 @@ import { RootState } from "../store";
 import QueryInput from "../components/queryinput/QueryInput";
 import MessageCard from "../components/MessageCard/MessageCard";
 
+import { ScalingSquaresSpinner } from "react-epic-spinners";
+
 import "./QueryResponse.css";
 
 const QueryResponse: React.FC = () => {
@@ -141,7 +143,7 @@ const QueryResponse: React.FC = () => {
             {chatMessages.map((message, index) => (
               <MessageCard
                 key={index}
-                title={message.type === "user" ? "You" : "AI Response"}
+                title={message.type === "user" ? "You" : "Sage AI"}
                 content={message.text}
                 type={message.type}
                 onContentUpdate={() => {
@@ -157,23 +159,9 @@ const QueryResponse: React.FC = () => {
               />
             ))}
             {isLoading && (
-              <MessageCard
-                title="AI is thinking..."
-                type={"ai"}
-                content={
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <div
-                      style={{
-                        borderRadius: "50%",
-                        animation: "spin 1s linear infinite",
-                        borderTop: "4px solid #555",
-                        width: "20px",
-                        height: "20px",
-                      }}
-                    ></div>
-                  </div>
-                }
-              />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <ScalingSquaresSpinner color="grey" size={27} />
+              </div>
             )}
           </Space>
           <div style={styles.querySpace}>

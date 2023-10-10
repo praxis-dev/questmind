@@ -5,7 +5,6 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setIsTyping } from "../../store/slices/typingSlice";
-import { RootState } from "../../store";
 
 interface MessageCardProps {
   title: string;
