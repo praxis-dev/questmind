@@ -80,7 +80,6 @@ const MessageCard: React.FC<MessageCardProps> = ({
 
 const baseStyles: ViewStyles = {
   cardWrapper: {
-    borderRadius: "4px",
     padding: "0.5rem",
     marginBottom: "1rem",
     maxWidth: "100%",

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setIsLoading } from "../store/slices/loadingSlice";
 import { RootState } from "../store";
 
-import QueryInput from "../components/queryinput/QueryInput";
+import QueryInput from "../components/QueryInput/QueryInput";
 import MessageCard from "../components/MessageCard/MessageCard";
 
 import { ScalingSquaresSpinner } from "react-epic-spinners";
@@ -34,7 +34,7 @@ const QueryResponse: React.FC = () => {
   useEffect(() => {
     const introductoryMessage: { type: "ai"; text: string } = {
       type: "ai",
-      text: "Hello, I'm an AI trained in stoic philosophy. Ask me for sage advice.",
+      text: "Hello, I'm an AI trained in philosophy. Ask me for sage advice.",
     };
 
     if (chatMessages.length === 0) {
@@ -188,7 +188,7 @@ const baseStyles: ViewStyles = {
     maxWidth: 1000,
     margin: "0 auto",
     padding: 20,
-    height: "100%",
+    height: "96%",
   },
 
   contentSpace: {
