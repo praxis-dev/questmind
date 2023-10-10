@@ -30,6 +30,17 @@ const QueryResponse: React.FC = () => {
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const introductoryMessage: { type: "ai"; text: string } = {
+      type: "ai",
+      text: "Hello, I'm an AI trained in stoic philosophy. Ask me for sage advice.",
+    };
+
+    if (chatMessages.length === 0) {
+      setChatMessages([introductoryMessage]);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isTyping && chatSpaceRef.current) {
       const element = chatSpaceRef.current;
       element.scrollTo({
