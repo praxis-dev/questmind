@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
+import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
+
+import About from "../About/About";
 
 const Header: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
@@ -13,6 +16,13 @@ const Header: React.FC = () => {
     [Breakpoint.Small]: smallScreenStyles,
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
+
+  const showAboutModal = () => {
+    setIsAboutVisible(true);
+  };
+
+  const [isAboutVisible, setIsAboutVisible] = useState(false);
+
   return (
     <div style={styles.headerContainer}>
       <div style={styles.iconsContainer}>
@@ -20,8 +30,19 @@ const Header: React.FC = () => {
           icon={<InfoCircleOutlined style={styles.aboutIcon} />}
           type="link"
           style={styles.aboutButton}
+          onClick={showAboutModal}
         />
       </div>
+
+      <Modal
+        open={isAboutVisible}
+        onCancel={() => setIsAboutVisible(false)}
+        centered
+        footer={null}
+        width="600px"
+      >
+        <About />
+      </Modal>
     </div>
   );
 };
