@@ -53,10 +53,10 @@ const MessageCard: React.FC<MessageCardProps> = ({
   const shareToTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
 
-    const aiResponse = title === "Sage AI" ? contentStr : "";
+    const aiResponse = title === "QuestMind:" ? contentStr : "";
 
     const tweetText = encodeURIComponent(
-      `Question: ${userQuestion}\n\nAI Response: ${aiResponse}`
+      `Question: ${userQuestion}\n\n QuestMind: ${aiResponse}`
     );
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;

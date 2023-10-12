@@ -143,7 +143,7 @@ const QueryResponse: React.FC = () => {
             {chatMessages.map((message, index) => (
               <MessageCard
                 key={index}
-                title={message.type === "user" ? "You" : "Sage AI"}
+                title={message.type === "user" ? "You" : "QuestMind:"}
                 content={message.text}
                 type={message.type}
                 onContentUpdate={() => {
