@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import { Space } from "antd";
-import axios from "axios";
 
 import { useResponsiveStyles } from "../library/hooks";
 import { Breakpoint, ViewStyles } from "../library/styles";
