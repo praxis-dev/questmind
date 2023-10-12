@@ -29,8 +29,21 @@ const QueryInput: React.FC<QueryInputProps> = ({
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const MAX_LENGTH = 550;
+  const charsLeft = MAX_LENGTH - question.length;
+  let counterMessage = "";
+
+  if (charsLeft >= 0) {
+    counterMessage = `${charsLeft} characters left`;
+  } else {
+    const excessChars = Math.abs(charsLeft);
+    counterMessage = `Reduce query length by ${excessChars} characters`;
+  }
+
   const isTyping = useSelector((state: RootState) => state.typing.isTyping);
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
+
+  const isDisabled = charsLeft < 0 || isTyping || isLoading;
 
   useEffect(() => {
     console.log("isTyping changed:", isTyping);
@@ -48,29 +61,44 @@ const QueryInput: React.FC<QueryInputProps> = ({
   };
 
   return (
-    <div style={styles.queryWrapper}>
-      <textarea
-        autoFocus
-        value={question}
-        onChange={onQuestionChange}
-        placeholder="Type your question here..."
-        className="textAreaStyle"
-        style={styles.textArea}
-        onKeyDown={handleKeyDown}
-      />
-      <div style={styles.buttonArea}>
-        <Button
-          disabled={isTyping || isLoading}
-          style={styles.floatButton}
-          onClick={onSubmit}
-          icon={<SendOutlined />}
+    <div style={styles.componentWrapper}>
+      <div style={styles.charsLeftContainer}>
+        {charsLeft < 50 && <>{counterMessage}</>}
+      </div>
+      <div style={styles.queryWrapper}>
+        <textarea
+          autoFocus
+          value={question}
+          onChange={onQuestionChange}
+          placeholder="Type your question here..."
+          className="textAreaStyle"
+          style={styles.textArea}
+          onKeyDown={handleKeyDown}
         />
+        <div style={styles.buttonArea}>
+          <Button
+            disabled={isDisabled}
+            style={styles.floatButton}
+            onClick={onSubmit}
+            icon={<SendOutlined />}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
 const baseStyles: ViewStyles = {
+  componentWrapper: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+
   queryWrapper: {
     display: "flex",
     flexDirection: "row",
@@ -79,6 +107,7 @@ const baseStyles: ViewStyles = {
     width: "100%",
     height: "100%",
   },
+
   textArea: {
     boxSizing: "border-box",
     padding: "0.5rem",
@@ -87,6 +116,7 @@ const baseStyles: ViewStyles = {
     resize: "none",
     lineHeight: "1.5",
   },
+
   buttonArea: {
     display: "flex",
     alignItems: "center",
@@ -94,10 +124,22 @@ const baseStyles: ViewStyles = {
     width: "10%",
     height: "100%",
   },
+
   floatButton: {
     width: "100%",
     height: "100%",
     border: "none",
+  },
+
+  charsLeftContainer: {
+    height: "2rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
+    lineHeight: "1.5",
+    fontSize: "0.8rem",
+    paddingLeft: "1rem",
   },
 };
 

@@ -61,7 +61,7 @@ MAX_QUERY_TOKENS = 35
 
 
 config = {'max_new_tokens': 1024 - MAX_QUERY_TOKENS, 'repetition_penalty': 1.1,
-          "temperature": 0.4, "context_length": 1024}
+          "temperature": 0.6, "context_length": 1024}
 
 LLM_PATH = "/app/src/llama-2-13b-chat.Q4_K_M.gguf"
 
@@ -103,10 +103,6 @@ def postprocessing(text):
 
 
 def get_response(query: str) -> str:
-    tokenized_query = model_st.tokenizer.tokenize(query)
-    token_count = len(tokenized_query)
-    if token_count > MAX_QUERY_TOKENS:
-        print("Your question should be shorter in terms of token count.")
     if not is_philosophy_related(query):
         return ("This is not my area of expertise.")
     qa_result = qa_bot()
