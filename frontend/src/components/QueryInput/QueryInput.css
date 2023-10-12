@@ -1,7 +1,19 @@
 .textAreaStyle {
+  box-sizing: border-box;
   border: 1px solid transparent;
   transition: border-color 1s ease;
   border-radius: 0.5rem;
+  overflow: auto !important;
+  padding: 0.5rem;
+}
+
+.textAreaStyle::-webkit-scrollbar {
+  display: none !important;
+}
+
+.textAreaStyle {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 .textAreaStyle:focus {
