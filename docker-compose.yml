@@ -23,3 +23,10 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - model
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8082:80"
