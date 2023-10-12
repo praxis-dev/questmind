@@ -13,6 +13,8 @@ import { RootState } from "../store";
 import QueryInput from "../components/QueryInput/QueryInput";
 import MessageCard from "../components/MessageCard/MessageCard";
 
+import { fetchResponse } from "../services/fetchResponse";
+
 import { ScalingSquaresSpinner } from "react-epic-spinners";
 
 import "./QueryResponse.css";
@@ -62,16 +64,14 @@ const QueryResponse: React.FC = () => {
       setQuestion("");
       dispatch(setIsLoading(true));
 
-      const result = await axios.post("http://localhost:8081/respond/", {
-        question,
-      });
+      const responseText = await fetchResponse(question);
 
       setIsTyping(true);
 
       setTimeout(() => {
         setChatMessages((prevMessages) => [
           ...prevMessages,
-          { type: "ai", text: result.data.response },
+          { type: "ai", text: responseText },
         ]);
         dispatch(setIsLoading(false));
         setIsTyping(false);
