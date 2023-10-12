@@ -56,7 +56,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
     const aiResponse = title === "QuestMind:" ? contentStr : "";
 
     const tweetText = encodeURIComponent(
-      `Question: ${userQuestion}\n\n QuestMind: ${aiResponse}`
+      `Question: ${userQuestion}\n\nQuestMind: ${aiResponse} \n\n#QuestMind \n\nAsk your own question at https://questmind.ai`
     );
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
@@ -68,7 +68,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
     if (!isStringContent) return;
 
     if (type === "ai") {
-      setIsCurrentMessageTyping(true); // Set local state
+      setIsCurrentMessageTyping(true);
 
       const typingEffect = setInterval(() => {
         if (currentIndex < contentStr.length) {
@@ -78,7 +78,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
             onContentUpdate();
           }
         } else {
-          setIsCurrentMessageTyping(false); // Reset local state
+          setIsCurrentMessageTyping(false);
           clearInterval(typingEffect);
         }
       }, Math.random() * maxTypingDelay);
