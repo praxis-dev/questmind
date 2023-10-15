@@ -45,14 +45,6 @@ const QueryInput: React.FC<QueryInputProps> = ({
 
   const isDisabled = charsLeft < 0 || isTyping || isLoading;
 
-  useEffect(() => {
-    console.log("isTyping changed:", isTyping);
-  }, [isTyping]);
-
-  useEffect(() => {
-    console.log("isLoading changed:", isLoading);
-  }, [isLoading]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

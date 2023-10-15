@@ -1,6 +1,6 @@
 langchain
 torch
-ctransformers
+ctransformers[cuda]
 sentence_transformers
 faiss-gpu
 

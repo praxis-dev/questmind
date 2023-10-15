@@ -1,5 +1,7 @@
 import logging
 
+import torch
+
 from langchain import PromptTemplate
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
@@ -12,6 +14,9 @@ import os
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(levelname)s: %(message)s')
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+gpu_layers_value = 50 if device.type == "cuda" else 0
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -19,7 +24,8 @@ questions = ingest_questions()
 
 DB_FAISS_PATH = '/app/vectorstores/db_faiss'
 
-model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+model_st = SentenceTransformer(
+    'sentence-transformers/all-MiniLM-L6-v2', device=device)
 philosophical_embeddings = model_st.encode(questions)
 
 
@@ -61,16 +67,18 @@ MAX_QUERY_TOKENS = 35
 
 
 config = {'max_new_tokens': 1024 - MAX_QUERY_TOKENS, 'repetition_penalty': 1.1,
-          "temperature": 0.6, "context_length": 1024}
+          "temperature": 0.6, "context_length": 1024, "gpu_layers": gpu_layers_value
+          }
 
 LLM_PATH = "/app/src/llama-2-13b-chat.Q4_K_M.gguf"
 
 
 def load_llm():
     logging.info("Loading the LLM model.")
+    logging.info(f"gpu_layers value: {config['gpu_layers']}")
 
     llm = CTransformers(
-        model="/app/src/llama-2-13b-chat.Q4_K_M.gguf",
+        model=LLM_PATH,
         model_type="llama",
         config=config
     )
@@ -82,7 +90,7 @@ def qa_bot():
     logging.info("Initializing the QA bot.")
 
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={'device': 'cpu'})
+        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={'device': device})
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
     llm = load_llm()
     qa_prompt = set_custom_prompt()

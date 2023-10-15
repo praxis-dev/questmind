@@ -113,10 +113,6 @@ const QueryResponse: React.FC = () => {
     }
   }, [chatMessages, hasUserScrolled]);
 
-  useEffect(() => {
-    console.log(response);
-  }, [response]);
-
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,

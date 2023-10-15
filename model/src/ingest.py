@@ -1,8 +1,13 @@
 import logging
+import torch
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import DirectoryLoader, TextLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+logging.info(f"Device: {device}")
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(levelname)s: %(message)s')
@@ -37,7 +42,7 @@ def create_vector_db():
 
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={"device": "cpu"}
+        model_kwargs={"device": device}
     )
 
     db = FAISS.from_documents(texts, embeddings)
