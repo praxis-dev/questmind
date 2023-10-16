@@ -22,6 +22,10 @@ DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
 
+config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
+          "temperature": 0.6, "context_length": 1024, "gpu_layers": 50
+          }
+
 @stub.function(image=image, gpu="any")
 def detect_device():
     import torch
@@ -65,11 +69,26 @@ def create_vector_db():
     db.save_local(DB_FAISS_PATH)
     
     print("DB saved")
+    
+@stub.function(image=image, gpu="any")
+def is_philosophy_related(text):
+    from sentence_transformers import SentenceTransformer, util
+
+    print("Checking if the text is philosophy-related.")
+    model_st = SentenceTransformer(
+    'sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
+    philosophical_embeddings = model_st.encode(ingest_questions.remote())
+
+    text_embedding = model_st.encode(text)
+    similarities = [util.pytorch_cos_sim(
+        text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
+    return max(similarities) > 0.3
+
 
 
 @stub.local_entrypoint()
 def main():
     print("Device:", detect_device.remote())
-    ingest_questions.remote()
     create_vector_db.remote()
+    print(is_philosophy_related.remote("test"))
     
