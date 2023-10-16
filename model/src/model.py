@@ -24,6 +24,10 @@ questions = ingest_questions()
 
 DB_FAISS_PATH = '/app/vectorstores/db_faiss'
 
+config = {'max_new_tokens': 1024 - MAX_QUERY_TOKENS, 'repetition_penalty': 1.1,
+          "temperature": 0.6, "context_length": 1024, "gpu_layers": gpu_layers_value
+          }
+
 model_st = SentenceTransformer(
     'sentence-transformers/all-MiniLM-L6-v2', device=device)
 philosophical_embeddings = model_st.encode(questions)
