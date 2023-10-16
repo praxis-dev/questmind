@@ -1,6 +1,5 @@
 import sys
 
-import logging
 
 import modal
 
@@ -30,7 +29,7 @@ def detect_device():
 
 @stub.function(image=image, gpu="any")
 def ingest_questions():
-    logging.info("Starting the ingestion of questions.")
+    print("Starting the ingestion of questions.")
 
     questions = []
 
@@ -49,7 +48,7 @@ def create_vector_db():
     from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
 
-    logging.info("Starting the creation of vector database.")
+    print("Starting the creation of vector database.")
 
     loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     documents = loader.load()
@@ -66,9 +65,6 @@ def create_vector_db():
     db.save_local(DB_FAISS_PATH)
     
     print("DB saved")
-
-    logging.info("Finished creating vector database.")
-
 
 
 @stub.local_entrypoint()
