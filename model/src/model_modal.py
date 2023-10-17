@@ -63,7 +63,7 @@ def ingest_questions():
     stub.volume.commit()
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="any", volumes={DB_FAISS_PATH: stub.volume})
 def create_vector_db():
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -85,6 +85,8 @@ def create_vector_db():
 
     db = FAISS.from_documents(texts, embeddings)
     db.save_local(DB_FAISS_PATH)
+    stub.volume.commit()
+
     
     print("DB saved")
     
