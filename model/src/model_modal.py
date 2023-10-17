@@ -10,7 +10,6 @@ image = Image.debian_slim().pip_install(
     "sentence-transformers",
     "faiss-cpu",
     "langchain",
-    "ctransformers",
     "ctransformers[cuda]"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
@@ -43,12 +42,12 @@ Useful answer of Seneca without citing or making up quotes from other philosophe
 """
 
 
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="T4")
 def detect_device():
     import torch
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-@stub.function(image=image, gpu="any", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
 def ingest_questions():
     print("Starting the ingestion of questions.")
     import torch
@@ -67,7 +66,7 @@ def ingest_questions():
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume})
 def create_vector_db():
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -94,7 +93,7 @@ def create_vector_db():
     print("DB saved")
     
     
-@stub.function(image=image, gpu="any", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
 def is_philosophy_related(text):
     import torch
 
@@ -110,7 +109,7 @@ def is_philosophy_related(text):
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
     return max(similarities) > 0.3
 
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="T4")
 def set_custom_prompt():
     from langchain.prompts import PromptTemplate 
     
@@ -118,7 +117,7 @@ def set_custom_prompt():
                             'context', 'question'])
     return prompt
 
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="T4")
 def postprocessing(text):
     print("Postprocessing the response.")
 
@@ -130,7 +129,7 @@ def postprocessing(text):
     else:
         return text
    
-@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume})
 def get_response(query: str) -> str:
     print("Initializing the QA bot.")
     from langchain.embeddings import HuggingFaceEmbeddings
@@ -177,5 +176,5 @@ def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(get_response.remote("How should I live my life?"))
+    print(get_response.remote("How should I live my life if my wife dislikes me and doubts my judgement? We have three children and I don't want to leave them for her. She will not be able to raise them well alone."))
     
