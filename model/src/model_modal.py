@@ -29,6 +29,15 @@ config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
           "temperature": 0.6, "context_length": 1024, "gpu_layers": 50
           }
 
+custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
+
+Context: {context}
+Question: {question}
+
+Useful answer of Seneca without citing or making up quotes from other philosophers:
+"""
+
+
 @stub.function(image=image, gpu="any")
 def detect_device():
     import torch
@@ -96,6 +105,13 @@ def is_philosophy_related(text):
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
     return max(similarities) > 0.3
 
+@stub.function(image=image, gpu="any")
+def set_custom_prompt():
+    from langchain import PromptTemplate
+    
+    prompt = PromptTemplate(template=custom_prompt_template, input_variables=[
+                            'context', 'question'])
+    return prompt
 
 
 @stub.local_entrypoint()
@@ -103,5 +119,5 @@ def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(is_philosophy_related.remote("Write me a python script?"))
+    print(is_philosophy_related.remote("test"))
     
