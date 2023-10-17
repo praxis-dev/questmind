@@ -11,6 +11,7 @@ image = Image.debian_slim().pip_install(
     "faiss-cpu",
     "langchain",
     "ctransformers",
+    "ctransformers[cuda]"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
@@ -111,7 +112,7 @@ def is_philosophy_related(text):
 
 @stub.function(image=image, gpu="any")
 def set_custom_prompt():
-    from langchain import PromptTemplate
+    from langchain.prompts import PromptTemplate 
     
     prompt = PromptTemplate(template=custom_prompt_template, input_variables=[
                             'context', 'question'])
@@ -151,7 +152,7 @@ def get_response(query: str) -> str:
         model_type="llama",
         config=config
     )
-    qa_prompt = set_custom_prompt()
+    qa_prompt = set_custom_prompt.remote()
     
     qa_chain = RetrievalQA.from_chain_type(llm=llm,
                                            chain_type='stuff',
@@ -176,5 +177,5 @@ def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(get_response.remote("How should I endure hardship?"))
+    print(get_response.remote("How should I live my life?"))
     
