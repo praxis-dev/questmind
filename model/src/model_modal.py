@@ -1,16 +1,18 @@
 import sys
 
+from pydantic import BaseModel
 
 import modal
 
-from modal import Image
+from modal import Image, web_endpoint
 
 image = Image.debian_slim().pip_install(
     "torch",
     "sentence-transformers",
     "faiss-cpu",
     "langchain",
-    "ctransformers[cuda]"
+    "ctransformers[cuda]",
+    "pydantic"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
@@ -128,9 +130,14 @@ def postprocessing(text):
         return text[:last_dot_position + 1]
     else:
         return text
+    
+class RequestModel(BaseModel):
+    query: str
    
 @stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume})
-def get_response(query: str) -> str:
+@web_endpoint(method="POST")
+def get_response(request: RequestModel) -> str:
+    query = request.query 
     print("Initializing the QA bot.")
     from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
@@ -176,5 +183,4 @@ def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(get_response.remote("How should I live my life if my wife dislikes me and doubts my judgement? We have three children and I don't want to leave them for her. She will not be able to raise them well alone."))
     
