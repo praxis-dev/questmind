@@ -9,20 +9,24 @@ image = Image.debian_slim().pip_install(
     "torch",
     "sentence-transformers",
     "faiss-cpu",
-    "langchain"
+    "langchain",
+    "ctransformers",
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt"
+).copy_local_file(
+    local_path="/home/i/code/seneca/project/model/src/llama-2-13b-chat.Q4_K_M.gguf", remote_path="/app/model/llama-2-13b-chat.Q4_K_M.gguf"
 )
 
 stub = modal.Stub("model_modal")
-stub.volume = modal.Volume.new()
+volume = modal.NetworkFileSystem.persisted("mindquest-storage-vol")
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
 PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
+LLM_PATH = "/app/model/llama-2-13b-chat.Q4_K_M.gguf"
 
 
 config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
@@ -43,7 +47,7 @@ def detect_device():
     import torch
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-@stub.function(image=image, gpu="any", volumes={PHILOSOPHICAL_EMBEDDINGS_PATH: stub.volume})
+@stub.function(image=image, gpu="any", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
 def ingest_questions():
     print("Starting the ingestion of questions.")
     import torch
@@ -60,15 +64,15 @@ def ingest_questions():
     model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
     philosophical_embeddings = model_st.encode(questions)
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
-    stub.volume.commit()
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="any", volumes={DB_FAISS_PATH: stub.volume})
+@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
 def create_vector_db():
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
+    import os
 
     print("Starting the creation of vector database.")
 
@@ -85,12 +89,11 @@ def create_vector_db():
 
     db = FAISS.from_documents(texts, embeddings)
     db.save_local(DB_FAISS_PATH)
-    stub.volume.commit()
 
-    
     print("DB saved")
     
-@stub.function(image=image, gpu="any", volumes={PHILOSOPHICAL_EMBEDDINGS_PATH: stub.volume})
+    
+@stub.function(image=image, gpu="any", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
 def is_philosophy_related(text):
     import torch
 
@@ -99,7 +102,6 @@ def is_philosophy_related(text):
     print("Checking if the text is philosophy-related.")
     model_st = SentenceTransformer(
     'sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
-    stub.volume.reload() 
     philosophical_embeddings = torch.load(PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
 
     text_embedding = model_st.encode(text)
@@ -115,11 +117,79 @@ def set_custom_prompt():
                             'context', 'question'])
     return prompt
 
+@stub.function(image=image, gpu="any")
+def load_llm():
+    from langchain.llms import CTransformers
+
+    print("Loading the LLM model.")
+
+    llm = CTransformers(
+        model=LLM_PATH,
+        model_type="llama",
+        config=config
+    )
+
+    return llm
+
+@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
+def qa_bot():
+    print("Initializing the QA bot.")
+    from langchain.embeddings import HuggingFaceEmbeddings
+    from langchain.vectorstores import FAISS
+    import os
+    
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": detect_device.remote()})
+    created_files = os.listdir(DB_FAISS_PATH)
+    for file in created_files:
+        print(file)
+
+    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
+    llm = load_llm.remote()
+    qa_prompt = set_custom_prompt()
+    qa = retrieval_qa_chain(llm, qa_prompt, db)
+    return qa
+
+@stub.function(image=image, gpu="any")
+def retrieval_qa_chain(llm, prompt, db):
+    from langchain.chains import RetrievalQA
+
+    qa_chain = RetrievalQA.from_chain_type(llm=llm,
+                                           chain_type='stuff',
+                                           retriever=db.as_retriever(
+                                               search_kwargs={'k': 2}),
+                                           return_source_documents=False,
+                                           chain_type_kwargs={'prompt': prompt})
+    return qa_chain
+
+@stub.function(image=image, gpu="any")
+def postprocessing(text):
+    print("Postprocessing the response.")
+
+    if text.endswith('.'):
+        return text
+    elif '.' in text:
+        last_dot_position = text.rfind('.')
+        return text[:last_dot_position + 1]
+    else:
+        return text
+   
+@stub.function(image=image, gpu="any") 
+def get_response(query: str) -> str:
+    if not is_philosophy_related.remote(query):
+        return ("This is not my area of expertise.")
+    qa_result = qa_bot.remote()
+    response_dict = qa_result({'query': query})
+
+    response_text = response_dict.get('result', '')
+
+    refined_response = postprocessing.remote(response_text)
+    return refined_response
 
 @stub.local_entrypoint()
 def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(is_philosophy_related.remote("test"))
+    print(get_response.remote("What is the meaning of life?"))
     
