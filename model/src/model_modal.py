@@ -17,10 +17,13 @@ image = Image.debian_slim().pip_install(
 )
 
 stub = modal.Stub("model_modal")
+stub.volume = modal.Volume.new()
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
+PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
+
 
 config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
           "temperature": 0.6, "context_length": 1024, "gpu_layers": 50
@@ -31,9 +34,11 @@ def detect_device():
     import torch
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="any", volumes={PHILOSOPHICAL_EMBEDDINGS_PATH: stub.volume})
 def ingest_questions():
     print("Starting the ingestion of questions.")
+    import torch
+    from sentence_transformers import SentenceTransformer, util
 
     questions = []
 
@@ -43,7 +48,11 @@ def ingest_questions():
             if line and not line.startswith('#'):
                 questions.append(line)
     print(questions[:10])
-    return questions
+    model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
+    philosophical_embeddings = model_st.encode(questions)
+    torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
+    stub.volume.commit()
+    print("Finished the creation of embeddings.")
 
 @stub.function(image=image, gpu="any")
 def create_vector_db():
@@ -70,14 +79,17 @@ def create_vector_db():
     
     print("DB saved")
     
-@stub.function(image=image, gpu="any")
+@stub.function(image=image, gpu="any", volumes={PHILOSOPHICAL_EMBEDDINGS_PATH: stub.volume})
 def is_philosophy_related(text):
+    import torch
+
     from sentence_transformers import SentenceTransformer, util
 
     print("Checking if the text is philosophy-related.")
     model_st = SentenceTransformer(
     'sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
-    philosophical_embeddings = model_st.encode(ingest_questions.remote())
+    stub.volume.reload() 
+    philosophical_embeddings = torch.load(PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
 
     text_embedding = model_st.encode(text)
     similarities = [util.pytorch_cos_sim(
@@ -90,5 +102,6 @@ def is_philosophy_related(text):
 def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
-    print(is_philosophy_related.remote("test"))
+    ingest_questions.remote()
+    print(is_philosophy_related.remote("Write me a python script?"))
     
