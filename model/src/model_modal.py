@@ -118,51 +118,6 @@ def set_custom_prompt():
     return prompt
 
 @stub.function(image=image, gpu="any")
-def load_llm():
-    from langchain.llms import CTransformers
-
-    print("Loading the LLM model.")
-
-    llm = CTransformers(
-        model=LLM_PATH,
-        model_type="llama",
-        config=config
-    )
-
-    return llm
-
-@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
-def qa_bot():
-    print("Initializing the QA bot.")
-    from langchain.embeddings import HuggingFaceEmbeddings
-    from langchain.vectorstores import FAISS
-    import os
-    
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": detect_device.remote()})
-    created_files = os.listdir(DB_FAISS_PATH)
-    for file in created_files:
-        print(file)
-
-    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
-    llm = load_llm.remote()
-    qa_prompt = set_custom_prompt()
-    qa = retrieval_qa_chain(llm, qa_prompt, db)
-    return qa
-
-@stub.function(image=image, gpu="any")
-def retrieval_qa_chain(llm, prompt, db):
-    from langchain.chains import RetrievalQA
-
-    qa_chain = RetrievalQA.from_chain_type(llm=llm,
-                                           chain_type='stuff',
-                                           retriever=db.as_retriever(
-                                               search_kwargs={'k': 2}),
-                                           return_source_documents=False,
-                                           chain_type_kwargs={'prompt': prompt})
-    return qa_chain
-
-@stub.function(image=image, gpu="any")
 def postprocessing(text):
     print("Postprocessing the response.")
 
@@ -174,22 +129,52 @@ def postprocessing(text):
     else:
         return text
    
-@stub.function(image=image, gpu="any") 
+@stub.function(image=image, gpu="any", network_file_systems={DB_FAISS_PATH: volume})
 def get_response(query: str) -> str:
+    print("Initializing the QA bot.")
+    from langchain.embeddings import HuggingFaceEmbeddings
+    from langchain.vectorstores import FAISS
+    from langchain.llms import CTransformers
+    from langchain.chains import RetrievalQA
+
+    import os
+    
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": detect_device.remote()})
+    created_files = os.listdir(DB_FAISS_PATH)
+    for file in created_files:
+        print(file)
+
+    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
+    llm = CTransformers(
+        model=LLM_PATH,
+        model_type="llama",
+        config=config
+    )
+    qa_prompt = set_custom_prompt()
+    
+    qa_chain = RetrievalQA.from_chain_type(llm=llm,
+                                           chain_type='stuff',
+                                           retriever=db.as_retriever(
+                                               search_kwargs={'k': 2}),
+                                           return_source_documents=False,
+                                           chain_type_kwargs={'prompt': qa_prompt})
+    
     if not is_philosophy_related.remote(query):
         return ("This is not my area of expertise.")
-    qa_result = qa_bot.remote()
-    response_dict = qa_result({'query': query})
+    
+    response_dict = qa_chain({'query': query})  
 
     response_text = response_dict.get('result', '')
 
     refined_response = postprocessing.remote(response_text)
     return refined_response
 
+
 @stub.local_entrypoint()
 def main():
     print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
-    print(get_response.remote("What is the meaning of life?"))
+    print(get_response.remote("How should I endure hardship?"))
     
