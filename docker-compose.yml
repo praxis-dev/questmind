@@ -1,17 +1,6 @@
 version: "3"
 
 services:
-  model:
-    build:
-      context: ./model
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    volumes:
-      - ./model/data:/app/data
-      - ./model/src:/app/src
-      - ./model/vectorstores:/app/vectorstores
-
   backend:
     build:
       context: ./backend
@@ -21,8 +10,6 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
-    depends_on:
-      - model
 
   frontend:
     build:

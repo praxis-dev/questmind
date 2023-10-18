@@ -11,13 +11,18 @@ export class RespondController {
   constructor(private readonly httpService: HttpService) {}
 
   @Post()
-  async respond(@Body('question') question: string): Promise<any> {
+  async respond(@Body('question') query: string): Promise<any> {
     try {
+      const apiEndpoint = process.env.API_ENDPOINT; // Access the environment variable
+      if (!apiEndpoint) {
+        throw new Error('API_ENDPOINT is not defined in the environment');
+      }
+
       const response = await this.httpService
         .post(
-          'http://model:80/respond/',
+          apiEndpoint, // Use the environment variable here
           {
-            question,
+            query,
           },
           {
             headers: {
@@ -26,6 +31,8 @@ export class RespondController {
           },
         )
         .toPromise();
+
+      console.log('Response:', response.data);
 
       return response.data;
     } catch (error) {

@@ -49,7 +49,7 @@ def detect_device():
     import torch
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume}, allow_cross_region_volumes=True)
 def ingest_questions():
     print("Starting the ingestion of questions.")
     import torch
@@ -68,7 +68,7 @@ def ingest_questions():
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume}, allow_cross_region_volumes=True)
 def create_vector_db():
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -95,7 +95,7 @@ def create_vector_db():
     print("DB saved")
     
     
-@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume}, allow_cross_region_volumes=True)
 def is_philosophy_related(text):
     import torch
 
@@ -134,7 +134,7 @@ def postprocessing(text):
 class RequestModel(BaseModel):
     query: str
    
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume})
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume}, allow_cross_region_volumes=True)
 @web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
     query = request.query 

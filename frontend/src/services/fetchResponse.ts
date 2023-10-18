@@ -12,8 +12,9 @@ export const fetchResponse = async (question: string): Promise<string> => {
     const result = await axios.post(apiUrl, {
       question,
     });
-    return result.data.response;
+    return result.data;
   } catch (error) {
+    console.error("Error fetching response:", error);
     throw new Error("Error fetching response.");
   }
 };
