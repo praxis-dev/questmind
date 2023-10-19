@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 
-@Controller('respond')
+@Controller('api/respond')
 export class RespondController {
   constructor(private readonly httpService: HttpService) {}
 
