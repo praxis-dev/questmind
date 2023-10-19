@@ -10,6 +10,8 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
+    env_file:
+      - ./backend/.env
 
   frontend:
     build:
@@ -17,3 +19,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:80"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/ssl/certs:/etc/ssl/certs
+      - /etc/ssl/private:/etc/ssl/private
+    depends_on:
+      - frontend
+      - backend

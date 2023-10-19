@@ -24,7 +24,8 @@ const About: React.FC = () => {
         <Divider />
         <Typography.Text style={styles.font}>
           Dive into ancient philosophy to answer today's questions. Using
-          classic works, SenecaAI gives relevant insights for our modern world.
+          classic works, QuestMind.ai gives relevant insights for our modern
+          world.
         </Typography.Text>
         <Typography.Text style={styles.font}>By Igor Chesnokov</Typography.Text>
         <Divider />
