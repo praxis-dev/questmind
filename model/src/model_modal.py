@@ -12,13 +12,14 @@ image = Image.debian_slim().pip_install(
     "faiss-cpu",
     "langchain",
     "ctransformers[cuda]",
-    "pydantic"
+    "pydantic",
+    "accelerate",
+    "transformers",
+    "bitsandbytes"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt"
-).copy_local_file(
-    local_path="/home/i/code/seneca/project/model/src/llama-2-13b-chat.Q4_K_M.gguf", remote_path="/app/model/llama-2-13b-chat.Q4_K_M.gguf"
 )
 
 stub = modal.Stub("model_modal")
@@ -28,8 +29,6 @@ DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
 PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
-LLM_PATH = "/app/model/llama-2-13b-chat.Q4_K_M.gguf"
-
 
 config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
           "temperature": 0.6, "context_length": 1024, "gpu_layers": 50
@@ -137,28 +136,124 @@ class RequestModel(BaseModel):
 @stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume}, allow_cross_region_volumes=True)
 @web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
-    query = request.query 
     print("Initializing the QA bot.")
+
+    query = request.query 
+    
+    import torch
+    import transformers
+    from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+    from langchain import HuggingFacePipeline, LLMChain, PromptTemplate
     from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
-    from langchain.llms import CTransformers
     from langchain.chains import RetrievalQA
 
     import os
+
+    import json
+    import textwrap
     
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": detect_device.remote()})
+    
     created_files = os.listdir(DB_FAISS_PATH)
     for file in created_files:
         print(file)
-
+    
+    
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
-    llm = CTransformers(
-        model=LLM_PATH,
-        model_type="llama",
-        config=config
-    )
+    
     qa_prompt = set_custom_prompt.remote()
+
+    tokenizer = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-chat-hf")
+    
+    model = AutoModelForCausalLM.from_pretrained("NousResearch/Llama-2-7b-chat-hf",
+                                             device_map='auto',
+                                             torch_dtype=torch.float16,
+                                             load_in_4bit=True,
+                                             bnb_4bit_quant_type="nf4",
+                                             bnb_4bit_compute_dtype=torch.float16)
+    
+    pipe = pipeline("text-generation",
+                model=model,
+                tokenizer= tokenizer,
+                torch_dtype=torch.float16,
+                device_map="auto",
+                max_new_tokens = 512,
+                do_sample=True,
+                top_k=30,
+                num_return_sequences=1,
+                eos_token_id=tokenizer.eos_token_id
+                )
+    
+    B_INST, E_INST = "[INST]", "[/INST]"
+    B_SYS, E_SYS = "<>\n", "\n<>\n\n"
+    DEFAULT_SYSTEM_PROMPT = """\
+    You are an advanced Life guru and mental health expert that excels at giving advice.
+    Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+    If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.Just say you don't know and you are sorry!"""
+
+    def get_prompt(instruction, new_system_prompt=DEFAULT_SYSTEM_PROMPT, citation=None):
+        SYSTEM_PROMPT = B_SYS + new_system_prompt + E_SYS
+        prompt_template =  B_INST + SYSTEM_PROMPT + instruction + E_INST
+
+        if citation:
+            prompt_template += f"\n\nCitation: {citation}"  # Insert citation here
+
+        return prompt_template
+
+    def cut_off_text(text, prompt):
+        cutoff_phrase = prompt
+        index = text.find(cutoff_phrase)
+        if index != -1:
+            return text[:index]
+        else:
+            return text
+
+    def remove_substring(string, substring):
+        return string.replace(substring, "")
+
+    def generate(text, citation=None):
+        prompt = get_prompt(text, citation=citation)
+        inputs = tokenizer(prompt, return_tensors="pt")
+        with torch.no_grad():
+            outputs = model.generate(**inputs,
+                                    max_length=512,
+                                    eos_token_id=tokenizer.eos_token_id,
+                                    pad_token_id=tokenizer.eos_token_id,
+                                    )
+            final_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+            final_outputs = cut_off_text(final_outputs, '')
+            final_outputs = remove_substring(final_outputs, prompt)
+
+        return final_outputs
+
+    def parse_text(text):
+        wrapped_text = textwrap.fill(text, width=100)
+        print(wrapped_text + '\n\n')
+        
+        
+    llm = HuggingFacePipeline(pipeline = pipe, model_kwargs = {'temperature':0.7,'max_length': 256, 'top_k' :50})
+
+
+    system_prompt = "You are an advanced Life guru and mental health expert that excels at giving advice. "
+    instruction = "Convert the following input text from a stupid human to a well-reasoned and step-by-step throughout advice:\n\n {text}"
+    template = get_prompt(instruction, system_prompt)
+    print(template)
+    
+    prompt = PromptTemplate(template=template, input_variables=["text"])
+
+    llm_chain = LLMChain(prompt=prompt, llm=llm, verbose = False)
+
+
+
+        
+    
+
+    
+
+
+
     
     qa_chain = RetrievalQA.from_chain_type(llm=llm,
                                            chain_type='stuff',
