@@ -41,12 +41,6 @@ Question: {question}
 Useful answer of Seneca without citing or making up quotes from other philosophers:
 """
 
-
-@stub.function(image=image, gpu="T4")
-def detect_device():
-    import torch
-    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 @stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume}, allow_cross_region_volumes=True)
 def ingest_questions():
     print("Starting the ingestion of questions.")
@@ -61,7 +55,7 @@ def ingest_questions():
             if line and not line.startswith('#'):
                 questions.append(line)
     print(questions[:10])
-    model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
+    model_st = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', device="cuda")
     philosophical_embeddings = model_st.encode(questions)
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
     print("Finished the creation of embeddings.")
@@ -84,7 +78,7 @@ def create_vector_db():
 
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={"device": detect_device.remote()}
+        model_kwargs={"device": "cuda"}
     )
 
     db = FAISS.from_documents(texts, embeddings)
@@ -101,7 +95,7 @@ def is_philosophy_related(text):
 
     print("Checking if the text is philosophy-related.")
     model_st = SentenceTransformer(
-    'sentence-transformers/all-MiniLM-L6-v2', device=detect_device.remote())
+    'sentence-transformers/all-MiniLM-L6-v2', device="cuda")
     philosophical_embeddings = torch.load(PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
 
     text_embedding = model_st.encode(text)
@@ -153,7 +147,7 @@ def get_response(request: RequestModel) -> str:
         return ("This is not my area of expertise.")
     
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": detect_device.remote()})
+        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": "cuda"})
     
     created_files = os.listdir(DB_FAISS_PATH)
     for file in created_files:
@@ -205,7 +199,6 @@ def get_response(request: RequestModel) -> str:
 
 @stub.local_entrypoint()
 def main():
-    print("Device:", detect_device.remote())
     create_vector_db.remote()
     ingest_questions.remote()
     

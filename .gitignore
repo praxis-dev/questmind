@@ -12,3 +12,4 @@ senecaenv/
 # Model specific
 model/src/llama-2-13b-chat.Q4_K_M.gguf
 model/vectorstores/
+model/src/model_files/
