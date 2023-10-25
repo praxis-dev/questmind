@@ -19,7 +19,7 @@ image = Image.debian_slim().pip_install(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt"
-)
+).copy_local_dir(local_path="/home/i/code/seneca/project/model/src/model_files", remote_path="/app/model_files")
 
 
 
@@ -142,6 +142,11 @@ def get_response(request: RequestModel) -> str:
 
     import os
     print("Initializing the QA bot.")
+    
+    print("Loading the model. Here are the files in its folder:")
+    model_files = os.listdir("/app/model_files")
+    for file in model_files:    
+        print(file)
 
     query = request.query 
     
@@ -159,9 +164,9 @@ def get_response(request: RequestModel) -> str:
     
     qa_prompt = set_custom_prompt.remote()
 
-    tokenizer = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-chat-hf")
+    tokenizer = AutoTokenizer.from_pretrained("/app/model_files")
     
-    model = AutoModelForCausalLM.from_pretrained("NousResearch/Llama-2-7b-chat-hf",
+    model = AutoModelForCausalLM.from_pretrained("/app/model_files",
                                              device_map='auto',
                                              torch_dtype=torch.float16,
                                              load_in_4bit=True,
