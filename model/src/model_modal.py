@@ -21,8 +21,14 @@ image = Image.debian_slim().pip_install(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt"
 )
 
+
+
 stub = modal.Stub("model_modal")
-volume = modal.NetworkFileSystem.persisted("mindquest-storage-vol")
+data_volume = modal.NetworkFileSystem.persisted("data_volume")
+db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume")
+questions_volume = modal.NetworkFileSystem.persisted("questions_volume")
+philosophical_embeddings_volume = modal.NetworkFileSystem.persisted("philosophical_embeddings_volume")
+model_files_volume = modal.NetworkFileSystem.persisted("model_files_volume")
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
@@ -37,7 +43,7 @@ Question: {question}
 Useful answer of Seneca without citing or making up quotes from other philosophers:
 """
 
-@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume}, allow_cross_region_volumes=True)
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: philosophical_embeddings_volume}, allow_cross_region_volumes=True)
 def ingest_questions():
     print("Starting the ingestion of questions.")
     import torch
@@ -56,7 +62,7 @@ def ingest_questions():
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume}, allow_cross_region_volumes=True)
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True)
 def create_vector_db():
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -83,7 +89,7 @@ def create_vector_db():
     print("DB saved")
     
     
-@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: volume}, allow_cross_region_volumes=True)
+@stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: philosophical_embeddings_volume}, allow_cross_region_volumes=True)
 def is_philosophy_related(text):
     import torch
 
@@ -122,14 +128,14 @@ def postprocessing(text):
 class RequestModel(BaseModel):
     query: str
    
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: volume}, allow_cross_region_volumes=True)
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, timeout=600)
 @web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
       
     import torch
     import transformers
     from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-    from langchain import HuggingFacePipeline
+    from langchain.llms import HuggingFacePipeline
     from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
     from langchain.chains import RetrievalQA
