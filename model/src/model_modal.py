@@ -29,10 +29,6 @@ DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
 PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
 
-config = {'max_new_tokens': 900, 'repetition_penalty': 1.1,
-          "temperature": 0.6, "context_length": 1024, "gpu_layers": 50
-          }
-
 custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
 
 Context: {context}
