@@ -1,5 +1,3 @@
-import sys
-
 from pydantic import BaseModel
 
 import modal
@@ -9,18 +7,19 @@ from modal import Image, web_endpoint
 image = Image.debian_slim().pip_install(
     "torch",
     "sentence-transformers",
-    "faiss-cpu",
     "langchain",
     "pydantic",
     "accelerate",
     "transformers",
-    "bitsandbytes"
+    "bitsandbytes",
+    "openai",
+    "cohere",
+    "tiktoken",
+    "faiss-gpu",
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/questions/questions.txt", remote_path="/app/data/questions/questions.txt"
 ).copy_local_file(
-    local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt"
-).copy_local_dir(local_path="/home/i/code/seneca/project/model/src/model_files", remote_path="/app/model_files")
-
+    local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt")
 
 
 stub = modal.Stub("model_modal")
@@ -34,14 +33,6 @@ DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
 QUESTIONS_PATH = '/app/data/questions/questions.txt'
 PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
-
-custom_prompt_template = """You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You answer in his literary style. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
-
-Context: {context}
-Question: {question}
-
-Useful answer of Seneca without citing or making up quotes from other philosophers:
-"""
 
 @stub.function(image=image, gpu="T4", network_file_systems={PHILOSOPHICAL_EMBEDDINGS_PATH: philosophical_embeddings_volume}, allow_cross_region_volumes=True)
 def ingest_questions():
@@ -64,13 +55,15 @@ def ingest_questions():
 
 @stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True)
 def create_vector_db():
+    from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
-    from langchain.embeddings import HuggingFaceEmbeddings
     from langchain.vectorstores import FAISS
     import os
 
     print("Starting the creation of vector database.")
+
+    openai_api_key = "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"
 
     loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     documents = loader.load()
@@ -78,13 +71,12 @@ def create_vector_db():
         chunk_size=500, chunk_overlap=25)
     texts = text_splitter.split_documents(documents)
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={"device": "cuda"}
-    )
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
     db = FAISS.from_documents(texts, embeddings)
     db.save_local(DB_FAISS_PATH)
+
+    print(os.listdir(DB_FAISS_PATH))
 
     print("DB saved")
     
@@ -104,26 +96,6 @@ def is_philosophy_related(text):
     similarities = [util.pytorch_cos_sim(
         text_embedding, ref_emb).item() for ref_emb in philosophical_embeddings]
     return max(similarities) > 0.3
-
-@stub.function(image=image, gpu="T4")
-def set_custom_prompt():
-    from langchain.prompts import PromptTemplate 
-    
-    prompt = PromptTemplate(template=custom_prompt_template, input_variables=[
-                            'context', 'question'])
-    return prompt
-
-@stub.function(image=image, gpu="T4")
-def postprocessing(text):
-    print("Postprocessing the response.")
-
-    if text.endswith('.'):
-        return text
-    elif '.' in text:
-        last_dot_position = text.rfind('.')
-        return text[:last_dot_position + 1]
-    else:
-        return text
     
 class RequestModel(BaseModel):
     query: str
@@ -132,76 +104,44 @@ class RequestModel(BaseModel):
 @web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
       
-    import torch
-    import transformers
-    from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-    from langchain.llms import HuggingFacePipeline
-    from langchain.embeddings import HuggingFaceEmbeddings
-    from langchain.vectorstores import FAISS
+    from langchain.llms import OpenAI
+    from langchain.embeddings.openai import OpenAIEmbeddings
+    from langchain.prompts import PromptTemplate
+    from langchain.chains import LLMChain
     from langchain.chains import RetrievalQA
-
-    import os
-    print("Initializing the QA bot.")
+    from langchain.prompts import PromptTemplate
+    from langchain.vectorstores import FAISS
     
-    print("Loading the model. Here are the files in its folder:")
-    model_files = os.listdir("/app/model_files")
-    for file in model_files:    
-        print(file)
-
-    query = request.query 
+    query = request.query
     
     if not is_philosophy_related.remote(query):
         return ("This is not my area of expertise.")
-    
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": "cuda"})
-    
-    created_files = os.listdir(DB_FAISS_PATH)
-    for file in created_files:
-        print(file)
-    
+
+    openai_api_key = "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"
+
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
-    
-    qa_prompt = set_custom_prompt.remote()
 
-    tokenizer = AutoTokenizer.from_pretrained("/app/model_files")
+    prompt_template = """
     
-    model = AutoModelForCausalLM.from_pretrained("/app/model_files",
-                                             device_map='auto',
-                                             torch_dtype=torch.float16,
-                                             load_in_4bit=True,
-                                             bnb_4bit_quant_type="nf4",
-                                             bnb_4bit_compute_dtype=torch.float16)
-    
-    pipe = pipeline("text-generation",
-                model=model,
-                tokenizer= tokenizer,
-                torch_dtype=torch.float16,
-                device_map="auto",
-                max_new_tokens = 512,
-                do_sample=True,
-                top_k=30,
-                num_return_sequences=1,
-                eos_token_id=tokenizer.eos_token_id
-                )
-    
-   
-    llm = HuggingFacePipeline(pipeline = pipe, model_kwargs = {'temperature':0.7,'max_length': 256, 'top_k' :50})
+    You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You provide elaborate, comprehensive and encouraging answers in his literary style. You analyze the question and provide instructions for your apprentice so he or she could become a better human being. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
 
+    {context}
 
-    qa_chain = RetrievalQA.from_chain_type(llm=llm,
-                                           chain_type='stuff',
-                                           retriever=db.as_retriever(
-                                               search_kwargs={'k': 2}),
-                                           return_source_documents=False,
-                                           chain_type_kwargs={'prompt': qa_prompt})
-    
-    response_dict = qa_chain({'query': query})  
+    Question: {question}
+    Useful answer of Seneca without citing or making up quotes from other philosophers:
+    """
+    PROMPT = PromptTemplate(
+        template=prompt_template, input_variables=["context", "question"]
+    )
 
-    response_text = response_dict.get('result', '')
+    chain_type_kwargs = {"prompt": PROMPT}
 
-    refined_response = postprocessing.remote(response_text)
-    return refined_response
+    qa = RetrievalQA.from_chain_type(llm=OpenAI(temperature=0.9, openai_api_key=openai_api_key), chain_type="stuff", retriever=db.as_retriever(), chain_type_kwargs=chain_type_kwargs)
+
+    response = qa.run(query)
+    return response
 
 
 @stub.local_entrypoint()
