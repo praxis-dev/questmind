@@ -53,7 +53,7 @@ def ingest_questions():
     torch.save(philosophical_embeddings, PHILOSOPHICAL_EMBEDDINGS_PATH + "/philosophical_embeddings.pt")
     print("Finished the creation of embeddings.")
 
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True)
+@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
 def create_vector_db():
     from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.document_loaders import DirectoryLoader, TextLoader
@@ -63,15 +63,13 @@ def create_vector_db():
 
     print("Starting the creation of vector database.")
 
-    openai_api_key = "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"
-
     loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     documents = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500, chunk_overlap=25)
     texts = text_splitter.split_documents(documents)
 
-    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+    embeddings = OpenAIEmbeddings()
 
     db = FAISS.from_documents(texts, embeddings)
     db.save_local(DB_FAISS_PATH)
@@ -100,32 +98,29 @@ def is_philosophy_related(text):
 class RequestModel(BaseModel):
     query: str
    
-@stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, timeout=600)
+@stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
 @web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
       
     from langchain.llms import OpenAI
     from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.prompts import PromptTemplate
-    from langchain.chains import LLMChain
     from langchain.chains import RetrievalQA
     from langchain.prompts import PromptTemplate
     from langchain.vectorstores import FAISS
+    from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
     
     query = request.query
     
-    if not is_philosophy_related.remote(query):
-        return ("This is not my area of expertise.")
+    callbacks = [StreamingStdOutCallbackHandler()]
 
-    openai_api_key = "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"
-
-    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+    embeddings = OpenAIEmbeddings()
 
     db = FAISS.load_local(DB_FAISS_PATH, embeddings)
 
     prompt_template = """
     
-    You are philosopher Seneca. Use your wisdom to help the one who is asking for your advice. You provide elaborate, comprehensive and encouraging answers in his literary style. You analyze the question and provide instructions for your apprentice so he or she could become a better human being. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
+    You are a philosopher, Seneca. Use your wisdom to help the person who is asking for your advice. You provide elaborate, comprehensive, and encouraging answers in his literary style. You start with an analysis of the problem, and after that, you provide guidance for the person who asks you. Your responses shouldn't be too concise. You strive to provide a full response. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name.
 
     {context}
 
@@ -137,8 +132,10 @@ def get_response(request: RequestModel) -> str:
     )
 
     chain_type_kwargs = {"prompt": PROMPT}
+    
+    llm = OpenAI(temperature=0.9, max_tokens=2048, callbacks=callbacks)
 
-    qa = RetrievalQA.from_chain_type(llm=OpenAI(temperature=0.9, openai_api_key=openai_api_key), chain_type="stuff", retriever=db.as_retriever(), chain_type_kwargs=chain_type_kwargs)
+    qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=db.as_retriever(), chain_type_kwargs=chain_type_kwargs)
 
     response = qa.run(query)
     return response
