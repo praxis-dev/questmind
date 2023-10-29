@@ -64,7 +64,7 @@ class RequestModel(BaseModel):
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(method="POST")
+@web_endpoint(method="GET")
 def get_response(request: RequestModel) -> str:
 
     from langchain.llms import OpenAI
@@ -74,6 +74,7 @@ def get_response(request: RequestModel) -> str:
     from langchain.prompts import PromptTemplate
     from langchain.vectorstores import FAISS
     from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+    from fastapi.responses import StreamingResponse
 
     query = request.query
 
@@ -98,14 +99,20 @@ def get_response(request: RequestModel) -> str:
 
     chain_type_kwargs = {"prompt": PROMPT}
 
-    llm = OpenAI(temperature=0.9, max_tokens=512,
+    llm = OpenAI(model_name="gpt-4", temperature=0.9, max_tokens=512,
                  callbacks=callbacks, streaming=True)
 
     qa = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=db.as_retriever(), chain_type_kwargs=chain_type_kwargs)
 
-    response = qa.run(query)
-    return response
+    def stream_content():
+        print("streaming")
+        for chunk in qa.run(query):
+            print(F"this is the chunk: {chunk}")
+            if chunk:
+                yield chunk
+
+    return StreamingResponse(stream_content(), media_type="text/event-stream")
 
 
 @stub.local_entrypoint()
