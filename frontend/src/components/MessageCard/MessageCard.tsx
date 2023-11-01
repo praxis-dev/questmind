@@ -1,16 +1,7 @@
-import React, { ReactNode, useState, useEffect } from "react";
-
+import React, { ReactNode } from "react";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
-
-import { useDispatch, useSelector } from "react-redux";
-import { setIsTyping } from "../../store/slices/typingSlice";
-
 import { SocialIcon } from "react-social-icons";
-import { Button } from "antd";
-import { HourglassOutlined } from "@ant-design/icons";
-
-import { RootState } from "../../store";
 
 interface MessageCardProps {
   title: string;
@@ -25,7 +16,6 @@ const MessageCard: React.FC<MessageCardProps> = ({
   title,
   content,
   type,
-  onContentUpdate,
   showShareButton,
   userQuestion,
 }) => {
@@ -40,76 +30,47 @@ const MessageCard: React.FC<MessageCardProps> = ({
   const isStringContent = typeof content === "string";
   const contentStr = isStringContent ? content : "";
 
-  const isTyping = useSelector((state: RootState) => state.typing.isTyping);
+  const preprocessContent = (
+    content: string | ReactNode
+  ): string | ReactNode => {
+    if (typeof content !== "string") return content;
 
-  const [displayedContent, setDisplayedContent] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isCurrentMessageTyping, setIsCurrentMessageTyping] = useState(false);
+    let modifiedContent = content;
 
-  const maxTypingDelay = 100;
+    modifiedContent = modifiedContent.startsWith("\n")
+      ? modifiedContent.slice(1)
+      : modifiedContent;
 
-  const dispatch = useDispatch();
+    return modifiedContent;
+  };
+
+  const processedContent = preprocessContent(content);
 
   const shareToTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
-
     const aiResponse = title === "QuestMind:" ? contentStr : "";
-
     const tweetText = encodeURIComponent(
       `Question: ${userQuestion}\n\nQuestMind: ${aiResponse} \n\n#QuestMind \n\nAsk your own question at https://questmind.ai`
     );
-
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
-
     window.open(twitterUrl, "_blank");
   };
-
-  useEffect(() => {
-    if (!isStringContent) return;
-
-    if (type === "ai") {
-      setIsCurrentMessageTyping(true);
-
-      const typingEffect = setInterval(() => {
-        if (currentIndex < contentStr.length) {
-          setDisplayedContent((prev) => [...prev, contentStr[currentIndex]]);
-          setCurrentIndex((prev) => prev + 1);
-          if (typeof onContentUpdate === "function") {
-            onContentUpdate();
-          }
-        } else {
-          setIsCurrentMessageTyping(false);
-          clearInterval(typingEffect);
-        }
-      }, Math.random() * maxTypingDelay);
-
-      return () => clearInterval(typingEffect);
-    } else {
-      setDisplayedContent(contentStr.split(""));
-    }
-  }, [type, contentStr, currentIndex, isStringContent, onContentUpdate]);
 
   return (
     <div style={styles.cardWrapper}>
       <div style={styles.topRow}>
         <div style={styles.cardTitle}>{title}</div>
-        {type === "ai" &&
-          showShareButton &&
-          (isCurrentMessageTyping ? (
-            <HourglassOutlined style={styles.disabledShareIcon} />
-          ) : (
-            <SocialIcon
-              url="www.x.com"
-              style={styles.shareIcon}
-              fgColor="black"
-              bgColor="transparent"
-              onClick={(event) => shareToTwitter(event)}
-            />
-          ))}
+        {type === "ai" && showShareButton && (
+          <SocialIcon
+            url="www.x.com"
+            style={styles.shareIcon}
+            fgColor="black"
+            bgColor="transparent"
+            onClick={(event) => shareToTwitter(event)}
+          />
+        )}
       </div>
-      <div style={styles.cardContent}>
-        {isStringContent ? displayedContent.join("") : content}
-      </div>
+      <div style={styles.cardContent}>{processedContent}</div>
     </div>
   );
 };

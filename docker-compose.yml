@@ -5,6 +5,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    # ports:
+    #   - "3001:8080"
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules

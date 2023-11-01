@@ -1,12 +1,13 @@
-import React from "react";
-import { Space, Typography, Divider, message } from "antd";
+import React, { useState } from "react";
+import { Space, Typography, Divider, Tooltip } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { LinkedinOutlined, TwitterOutlined } from "@ant-design/icons";
-
 import { BitcoinIcon } from "@bitcoin-design/bitcoin-icons-react/filled";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const About: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
@@ -17,17 +18,20 @@ const About: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const handleClick = () => {
-    const btcAddress = "bc1q20rxus5wmfm2wf2q7lrtut3p5ffrp4vw6yvfm6";
+  const initialTooltipText = "Support QuestMind";
+  const copyText = "BTC address copied!";
 
+  const [tooltipText, setTooltipText] = useState(initialTooltipText);
+
+  const handleCopyClick = () => {
     navigator.clipboard
-      .writeText(btcAddress)
+      .writeText("bc1q20rxus5wmfm2wf2q7lrtut3p5ffrp4vw6yvfm6")
       .then(() => {
-        message.success("BTC address copied");
+        setTooltipText(copyText);
+        setTimeout(() => setTooltipText(initialTooltipText), 3000);
       })
       .catch((err) => {
-        message.error("Failed to copy BTC address");
-        console.error(err);
+        console.error("Could not copy text: ", err);
       });
   };
 
@@ -39,36 +43,57 @@ const About: React.FC = () => {
         </Typography.Title>
         <Divider />
         <Typography.Text style={styles.font}>
-          Dive into ancient philosophy to answer today's questions. Using
-          classic works, QuestMind.ai gives relevant insights for our modern
-          world.
+          "There is no new thing under the sun", - all the timeless principles
+          necessary to navigate the current historical period are already there
+          - in the works of ancient thinkers. 
         </Typography.Text>
-        <Typography.Text style={styles.font}>By Igor Chesnokov</Typography.Text>
+        <Typography.Text style={styles.font}>
+          QuestMind leverages the latest developments in AI to enable you to
+          have the combined corpus of human wisdom as your sage advisor. You can
+          ask it for meditation and guidance on any question you ponder. 
+        </Typography.Text>
+        <Typography.Text style={styles.font}>
+          v 0.1.1 / by Igor Chesnokov
+        </Typography.Text>
         <Divider />
-
-        <Space direction="horizontal" style={styles.iconSpace}>
-          <Space direction="horizontal">
-            <Space>
-              <a
-                href="https://www.linkedin.com/in/igorchesnokov/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <LinkedinOutlined style={{ fontSize: "20px", color: "gray" }} />
-              </a>
-              <a
-                href="https://twitter.com/InferenceOne"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TwitterOutlined style={{ fontSize: "20px", color: "gray" }} />
-              </a>
-              <BitcoinIcon
-                onClick={handleClick}
-                style={{ height: "5px", width: "5px", color: "#F7931A" }}
+        <Space direction="horizontal" style={styles.iconSpaceWrapper}>
+          <div style={styles.iconSpace}>
+            <a
+              href="https://www.linkedin.com/in/igorchesnokov/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon
+                icon={faLinkedin}
+                size="xl"
+                style={{ color: "gray" }}
               />
-            </Space>
-          </Space>
+            </a>
+            <a
+              href="https://twitter.com/hnwpraxis"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon
+                icon={faXTwitter}
+                size="xl"
+                style={{ color: "gray" }}
+              />
+            </a>
+          </div>
+          <div style={styles.iconSpace}>
+            <Tooltip title={tooltipText} placement="left" color="#cc5612">
+              <BitcoinIcon
+                onClick={handleCopyClick}
+                style={{
+                  height: "30px",
+                  width: "30px",
+                  color: "gray",
+                  cursor: "pointer",
+                }}
+              />
+            </Tooltip>
+          </div>
         </Space>
       </Space>
     </div>
@@ -76,6 +101,19 @@ const About: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  iconSpaceWrapper: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+
+  iconSpace: {
+    display: "flex",
+    flexDirection: "row",
+    maxHeight: "24px",
+    gap: "10px",
+  },
+
   section: {
     boxSizing: "border-box",
     maxWidth: 1000,
@@ -92,14 +130,6 @@ const baseStyles: ViewStyles = {
 
   font: {
     fontFamily: "monospace",
-  },
-
-  iconSpace: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
   },
 };
 

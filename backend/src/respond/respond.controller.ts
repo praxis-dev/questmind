@@ -13,24 +13,25 @@ export class RespondController {
   @Post()
   async respond(@Body('question') query: string): Promise<any> {
     try {
-      const apiEndpoint = process.env.API_ENDPOINT; // Access the environment variable
+      const apiEndpoint = process.env.API_ENDPOINT; 
       if (!apiEndpoint) {
         throw new Error('API_ENDPOINT is not defined in the environment');
       }
 
       const response = await this.httpService
-        .get(
-          apiEndpoint,
-          {
-            params: {
-              query,
-            },
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-      )
-      .toPromise();
+      .post(
+        apiEndpoint,
+        {
+          query,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+    )
+    .toPromise();
+    
     
 
       console.log('Response:', response.data);
