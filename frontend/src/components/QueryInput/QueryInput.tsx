@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
@@ -29,9 +29,19 @@ const QueryInput: React.FC<QueryInputProps> = ({
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const [isActive, setIsActive] = useState(false);
+
+  const [isWarningVisible, setWarningVisible] = useState(false);
+
+  let minLengthMessage = "";
+  const charsNeeded = 20 - question.length;
   const MAX_LENGTH = 550;
   const charsLeft = MAX_LENGTH - question.length;
   let counterMessage = "";
+
+  if (charsNeeded > 0) {
+    minLengthMessage = `${charsNeeded} more characters`;
+  }
 
   if (charsLeft >= 0) {
     counterMessage = `${charsLeft} characters left`;
@@ -43,22 +53,37 @@ const QueryInput: React.FC<QueryInputProps> = ({
   const isTyping = useSelector((state: RootState) => state.typing.isTyping);
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
-  const isDisabled = charsLeft < 0 || isTyping || isLoading;
+  const isDisabled = charsLeft < 0 || charsNeeded > 0 || isTyping || isLoading;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit();
+      if (!isDisabled) {
+        onSubmit();
+      }
     }
   };
 
   return (
     <div style={styles.componentWrapper}>
       <div style={styles.charsLeftContainer}>
-        {charsLeft < 50 && <>{counterMessage}</>}
+        {isActive && (
+          <>
+            {charsNeeded > 0 && <>{minLengthMessage}</>}
+            {charsLeft < 50 && <>{counterMessage}</>}
+          </>
+        )}
       </div>
       <div style={styles.queryWrapper}>
         <textarea
+          onFocus={() => {
+            setIsActive(true);
+            setWarningVisible(true);
+          }}
+          onBlur={() => {
+            setIsActive(false);
+            setWarningVisible(false);
+          }}
           autoFocus
           value={question}
           onChange={onQuestionChange}
@@ -67,6 +92,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
           style={styles.textArea}
           onKeyDown={handleKeyDown}
         />
+
         <div style={styles.buttonArea}>
           <Button
             disabled={isDisabled}

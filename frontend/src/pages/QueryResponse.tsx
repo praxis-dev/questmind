@@ -35,7 +35,7 @@ const QueryResponse: React.FC = () => {
   useEffect(() => {
     const introductoryMessage: { type: "ai"; text: string } = {
       type: "ai",
-      text: "Hello, I'm an AI trained in philosophy. Ask me for sage advice.",
+      text: "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together.",
     };
 
     if (chatMessages.length === 0) {
@@ -138,7 +138,7 @@ const QueryResponse: React.FC = () => {
             {chatMessages.map((message, index) => (
               <MessageCard
                 key={index}
-                title={message.type === "user" ? "You" : "QuestMind:"}
+                title={message.type === "user" ? "You:" : "QuestMind:"}
                 content={message.text}
                 type={message.type}
                 onContentUpdate={() => {
@@ -153,7 +153,7 @@ const QueryResponse: React.FC = () => {
                 }}
                 showShareButton={
                   message.text !==
-                    "Hello, I'm an AI trained in philosophy. Ask me for sage advice." &&
+                    "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together." &&
                   message.text !== "This is not my area of expertise."
                 }
                 userQuestion={

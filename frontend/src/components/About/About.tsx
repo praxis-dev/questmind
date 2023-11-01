@@ -49,8 +49,7 @@ const About: React.FC = () => {
         </Typography.Text>
         <Typography.Text style={styles.font}>
           QuestMind leverages the latest developments in AI to enable you to
-          have the combined corpus of human wisdom as your sage advisor. You can
-          ask it for meditation and guidance on any question you ponder. 
+          have the combined corpus of human wisdom as your sage advisor.
         </Typography.Text>
         <Typography.Text style={styles.font}>
           v 0.1.1 / by Igor Chesnokov
@@ -70,7 +69,7 @@ const About: React.FC = () => {
               />
             </a>
             <a
-              href="https://twitter.com/hnwpraxis"
+              href="https://twitter.com/InferenceOne"
               target="_blank"
               rel="noopener noreferrer"
             >
