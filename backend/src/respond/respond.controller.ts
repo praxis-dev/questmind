@@ -19,18 +19,19 @@ export class RespondController {
       }
 
       const response = await this.httpService
-        .post(
-          apiEndpoint, // Use the environment variable here
+        .get(
+          apiEndpoint,
           {
-            query,
-          },
-          {
+            params: {
+              query,
+            },
             headers: {
               'Content-Type': 'application/json',
             },
-          },
-        )
-        .toPromise();
+          }
+      )
+      .toPromise();
+    
 
       console.log('Response:', response.data);
 

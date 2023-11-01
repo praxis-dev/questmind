@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@bitcoin-design/bitcoin-icons-react": "^0.1.10",
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",

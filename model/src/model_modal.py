@@ -64,7 +64,7 @@ class RequestModel(BaseModel):
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(method="GET")
+@web_endpoint(method="POST")
 def get_response(request: RequestModel) -> str:
 
     from langchain.llms import OpenAI
@@ -86,7 +86,7 @@ def get_response(request: RequestModel) -> str:
 
     prompt_template = """
     
-    You are a philosopher. Use your wisdom to help the person who is asking for your advice. This is a chat, not a mail, so conclude your messages like they are chat messages, not letters. You take delight in expressing your thoughts with beautiful and well-composed statements. You start with an analysis of the problem, and after that, you provide guidance for the person who asks you. Your responses shouldn't be too concise. You strive to provide a full response. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name. Your response consists of three to four paragraphs of comprehensive philosophical advice.
+    You are a philosopher. Use your wisdom to help the person who is asking for your advice. This is a chat, not an email, so conclude your messages like they are chat messages, not letters. You return high quality with perfect grammar, spelling, and punctuation. You take delight in expressing your thoughts with beautiful and well-composed statements. You start with an analysis of the problem, and after that, you provide guidance for the person who asks you. Your responses shouldn't be too concise. You strive to provide a full response. In your responses, you call the person who asks you for advice only "my friend" without calling him Lucilius or any other name. Your response consists of three to four paragraphs of comprehensive philosophical advice. You separate each new paragraph by an empty line.
 
     {context}
 
@@ -99,20 +99,26 @@ def get_response(request: RequestModel) -> str:
 
     chain_type_kwargs = {"prompt": PROMPT}
 
-    llm = OpenAI(model_name="gpt-4", temperature=0.9, max_tokens=512,
-                 callbacks=callbacks, streaming=True)
+    llm = OpenAI(
+        # model_name="gpt-3.5-turbo",
+        temperature=0.9,
+        max_tokens=512,
+        callbacks=callbacks,
+        streaming=True)
 
     qa = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=db.as_retriever(), chain_type_kwargs=chain_type_kwargs)
 
-    def stream_content():
-        print("streaming")
-        for chunk in qa.run(query):
-            print(F"this is the chunk: {chunk}")
-            if chunk:
-                yield chunk
+    # def stream_content():
+    #     print("streaming")
+    #     for chunk in qa.run(query):
+    #         print(F"this is the chunk: {chunk}")
+    #         if chunk:
+    #             yield chunk
 
-    return StreamingResponse(stream_content(), media_type="text/event-stream")
+    # return StreamingResponse(stream_content(), media_type="text/event-stream")
+
+    return qa.run(query)
 
 
 @stub.local_entrypoint()
