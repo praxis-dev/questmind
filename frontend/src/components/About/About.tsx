@@ -43,11 +43,6 @@ const About: React.FC = () => {
         </Typography.Title>
         <Divider />
         <Typography.Text style={styles.font}>
-          "There is no new thing under the sun", - all the timeless principles
-          necessary to navigate the current historical period are already there
-          - in the works of ancient thinkers. 
-        </Typography.Text>
-        <Typography.Text style={styles.font}>
           QuestMind leverages the latest developments in AI to enable you to
           have the combined corpus of human wisdom as your sage advisor.
         </Typography.Text>
