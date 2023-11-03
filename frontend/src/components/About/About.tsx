@@ -4,7 +4,6 @@ import { Space, Typography, Divider, Tooltip } from "antd";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { LinkedinOutlined, TwitterOutlined } from "@ant-design/icons";
 import { BitcoinIcon } from "@bitcoin-design/bitcoin-icons-react/filled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
