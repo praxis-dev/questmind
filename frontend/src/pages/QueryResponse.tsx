@@ -18,9 +18,15 @@ import { ScalingSquaresSpinner } from "react-epic-spinners";
 
 import "./QueryResponse.css";
 
+interface ErrorResponse {
+  response?: {
+    status: number;
+    // other properties
+  };
+}
+
 const QueryResponse: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
-  const [response, setResponse] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<
     Array<{ type: "user" | "ai"; text: string }>
   >([]);
@@ -32,16 +38,27 @@ const QueryResponse: React.FC = () => {
 
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
 
+  const messagesConfig = {
+    introductory:
+      "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together.",
+    notExpert: "This is not my area of expertise.",
+    unexpectedError: "An unexpected error occurred. Please try again later.",
+    networkError:
+      "We're having trouble reaching our servers. Please check your connection and try again.",
+    serverError:
+      "Seems like we are experiencing issues on our end, please try with your request a bit later.",
+  };
+
   useEffect(() => {
     const introductoryMessage: { type: "ai"; text: string } = {
       type: "ai",
-      text: "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together.",
+      text: messagesConfig.introductory,
     };
 
     if (chatMessages.length === 0) {
       setChatMessages([introductoryMessage]);
     }
-  }, []);
+  }, [chatMessages.length, messagesConfig.introductory]);
 
   useEffect(() => {
     if (isTyping && chatSpaceRef.current) {
@@ -75,16 +92,34 @@ const QueryResponse: React.FC = () => {
         dispatch(setIsLoading(false));
         setIsTyping(false);
       }, 500);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching response:", error);
       dispatch(setIsLoading(false));
+
+      let errorMessage: string;
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const typedError = error as ErrorResponse;
+        if (typedError.response?.status === 500) {
+          errorMessage = messagesConfig.serverError;
+        } else {
+          errorMessage = messagesConfig.unexpectedError;
+        }
+      } else {
+        errorMessage = messagesConfig.networkError;
+      }
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { type: "ai", text: errorMessage },
+      ]);
     }
   };
 
   useEffect(() => {
+    const element = chatSpaceRef.current;
+
     const handleScroll = () => {
-      if (chatSpaceRef.current) {
-        const element = chatSpaceRef.current;
+      if (element) {
         const isAtBottom =
           element.scrollHeight - element.clientHeight <= element.scrollTop + 5;
 
@@ -92,13 +127,13 @@ const QueryResponse: React.FC = () => {
       }
     };
 
-    if (chatSpaceRef.current) {
-      chatSpaceRef.current.addEventListener("scroll", handleScroll);
+    if (element) {
+      element.addEventListener("scroll", handleScroll);
     }
 
     return () => {
-      if (chatSpaceRef.current) {
-        chatSpaceRef.current.removeEventListener("scroll", handleScroll);
+      if (element) {
+        element.removeEventListener("scroll", handleScroll);
       }
     };
   }, []);
@@ -152,9 +187,13 @@ const QueryResponse: React.FC = () => {
                   }
                 }}
                 showShareButton={
-                  message.text !==
-                    "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together." &&
-                  message.text !== "This is not my area of expertise."
+                  ![
+                    messagesConfig.introductory,
+                    messagesConfig.notExpert,
+                    messagesConfig.unexpectedError,
+                    messagesConfig.networkError,
+                    messagesConfig.serverError,
+                  ].includes(message.text)
                 }
                 userQuestion={
                   message.type === "ai"

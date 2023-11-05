@@ -105,7 +105,7 @@ export const useResponsiveStyles = (
   const resultStyles = useMemo<ViewStyles>(
     () =>
       combineResponsiveStyles(baseStyles, responsiveStyles, currentBreakpoints),
-    [currentBreakpoints]
+    [currentBreakpoints, baseStyles, responsiveStyles]
   );
   return resultStyles;
 };

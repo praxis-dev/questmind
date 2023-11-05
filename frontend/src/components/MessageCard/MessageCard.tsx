@@ -35,7 +35,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
   ): string | ReactNode => {
     if (typeof content !== "string") return content;
 
-    let modifiedContent = content;
+    let modifiedContent = content.replace(/\[Your\s+Name\]/gi, "QuestMind.AI");
 
     modifiedContent = modifiedContent.startsWith("\n")
       ? modifiedContent.slice(1)

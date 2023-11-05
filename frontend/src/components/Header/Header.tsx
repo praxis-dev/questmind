@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Button, Modal } from "antd";
-import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
