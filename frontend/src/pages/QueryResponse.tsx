@@ -21,7 +21,6 @@ import "./QueryResponse.css";
 interface ErrorResponse {
   response?: {
     status: number;
-    // other properties
   };
 }
 
