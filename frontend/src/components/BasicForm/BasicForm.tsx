@@ -11,7 +11,6 @@ import type { FormInstance } from "antd";
 const SubmitButton = ({ form }: { form: FormInstance }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
-  // Watch all values
   const values = Form.useWatch([], form);
 
   React.useEffect(() => {
@@ -23,7 +22,7 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
         setSubmittable(false);
       }
     );
-  }, [values]);
+  }, [values, form]);
 
   return (
     <Button type="primary" htmlType="submit" disabled={!submittable}>
