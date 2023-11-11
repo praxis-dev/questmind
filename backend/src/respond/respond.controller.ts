@@ -6,33 +6,31 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 
-@Controller('api/respond')
+@Controller('respond')
 export class RespondController {
   constructor(private readonly httpService: HttpService) {}
 
   @Post()
   async respond(@Body('question') query: string): Promise<any> {
     try {
-      const apiEndpoint = process.env.API_ENDPOINT; 
+      const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
         throw new Error('API_ENDPOINT is not defined in the environment');
       }
 
       const response = await this.httpService
-      .post(
-        apiEndpoint,
-        {
-          query,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+        .post(
+          apiEndpoint,
+          {
+            query,
           },
-        }
-    )
-    .toPromise();
-    
-    
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .toPromise();
 
       console.log('Response:', response.data);
 

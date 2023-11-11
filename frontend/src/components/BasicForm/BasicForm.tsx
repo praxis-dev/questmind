@@ -1,50 +1,56 @@
-import React, { useState, useEffect } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
-import { Rule } from "rc-field-form/lib/interface";
-import { FieldData } from "rc-field-form/lib/interface";
+import React, { useEffect } from "react";
+import { Button, Form, Input, Checkbox } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+import { createUser } from "../../services/createUser";
 
-const passwordRegex =
-  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+import type { FormInstance } from "antd";
 
-const passwordRule: Rule = {
-  validator: (_, value) => {
-    if (!value || passwordRegex.test(value)) {
-      return Promise.resolve();
-    }
-    return Promise.reject(
-      new Error(
-        "Password must be at least 8 characters long and include digits, letters, and symbols."
-      )
+const SubmitButton = ({ form }: { form: FormInstance }) => {
+  const [submittable, setSubmittable] = React.useState(false);
+
+  // Watch all values
+  const values = Form.useWatch([], form);
+
+  React.useEffect(() => {
+    form.validateFields({ validateOnly: true }).then(
+      () => {
+        setSubmittable(true);
+      },
+      () => {
+        setSubmittable(false);
+      }
     );
-  },
+  }, [values]);
+
+  return (
+    <Button type="primary" htmlType="submit" disabled={!submittable}>
+      Submit
+    </Button>
+  );
 };
 
 const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [isFormValid, setIsFormValid] = useState(false);
-
   const formState = useSelector((state: RootState) => state.form.form);
 
   useEffect(() => {
     console.log("Form State:", formState);
   }, [formState]);
 
-  const handleFormChange = (_: any, allFields: FieldData[]) => {
-    const requiredFields = ["username", "password"]; // List of required field names
-    const areAllFieldsTouched = requiredFields.every((fieldName) =>
-      allFields.some((field) => field.name[0] === fieldName && field.touched)
-    );
-    const areAllFieldsValid = allFields.every(
-      (field) => field.errors?.length === 0
-    );
-
-    setIsFormValid(areAllFieldsTouched && areAllFieldsValid);
-  };
-
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     console.log("Success:", values);
+    if (formState === "signup") {
+      try {
+        const response = await createUser({
+          email: values.email,
+          password: values.password,
+        });
+        console.log("User created successfully:", response);
+      } catch (error) {
+        console.error("Error creating user:", error);
+      }
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -58,14 +64,13 @@ const BasicForm: React.FC = () => {
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       initialValues={{ remember: true }}
-      onFieldsChange={handleFormChange}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
       <Form.Item
         label="Email"
-        name="username"
+        name="email"
         rules={[
           { required: true, message: "Please input your email!" },
           { type: "email", message: "The input is not a valid email!" },
@@ -78,8 +83,24 @@ const BasicForm: React.FC = () => {
         label="Password"
         name="password"
         rules={[
-          { required: true, message: "Please input your password!" },
-          passwordRule,
+          {
+            required: true,
+            message: "Please enter zip code",
+          },
+          () => ({
+            validator(_, value) {
+              const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+              if (!regex.test(value)) {
+                return Promise.reject(
+                  new Error(
+                    "Password must be at least 8 characters long and contain at least one number"
+                  )
+                );
+              }
+              return Promise.resolve();
+            },
+          }),
         ]}
       >
         <Input.Password />
@@ -90,25 +111,11 @@ const BasicForm: React.FC = () => {
         valuePropName="checked"
         wrapperCol={{ offset: 8, span: 16 }}
       >
-        {formState === "signup" ? (
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <a href="/recover-password">Recover password?</a>
-          </Form.Item>
-        ) : (
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{ offset: 8, span: 16 }}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-        )}
+        <Checkbox>Remember me</Checkbox>
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit" disabled={!isFormValid}>
-          Submit
-        </Button>
+        <SubmitButton form={form} />
       </Form.Item>
     </Form>
   );
