@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import { Rule } from "rc-field-form/lib/interface";
 import { FieldData } from "rc-field-form/lib/interface";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 const passwordRegex =
   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -22,6 +24,12 @@ const passwordRule: Rule = {
 const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isFormValid, setIsFormValid] = useState(false);
+
+  const formState = useSelector((state: RootState) => state.form.form);
+
+  useEffect(() => {
+    console.log("Form State:", formState);
+  }, [formState]);
 
   const handleFormChange = (_: any, allFields: FieldData[]) => {
     const requiredFields = ["username", "password"]; // List of required field names
@@ -82,7 +90,19 @@ const BasicForm: React.FC = () => {
         valuePropName="checked"
         wrapperCol={{ offset: 8, span: 16 }}
       >
-        <Checkbox>Remember me</Checkbox>
+        {formState === "signup" ? (
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <a href="/recover-password">Recover password?</a>
+          </Form.Item>
+        ) : (
+          <Form.Item
+            name="remember"
+            valuePropName="checked"
+            wrapperCol={{ offset: 8, span: 16 }}
+          >
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+        )}
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

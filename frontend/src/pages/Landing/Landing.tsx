@@ -5,6 +5,10 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { Row, Col, Space, Button, Modal } from "antd";
 
+import { useDispatch } from "react-redux";
+
+import { setFormState } from "../../store/slices/formSlice";
+
 import BasicForm from "../../components/BasicForm/BasicForm";
 
 const Landing: React.FC = () => {
@@ -19,21 +23,25 @@ const Landing: React.FC = () => {
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
   const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
 
+  const dispatch = useDispatch();
+
   const showLoginModal = () => {
+    dispatch(setFormState("login"));
     setIsLoginModalVisible(true);
   };
 
   const showSignupModal = () => {
+    dispatch(setFormState("signup"));
     setIsSignupModalVisible(true);
   };
 
   const handleLoginOk = () => {
-    // Handle login
+    dispatch(setFormState("noform"));
     setIsLoginModalVisible(false);
   };
 
   const handleSignupOk = () => {
-    // Handle sign up
+    dispatch(setFormState("noform"));
     setIsSignupModalVisible(false);
   };
 
