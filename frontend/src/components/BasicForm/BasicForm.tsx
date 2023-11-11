@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { Button, Form, Input, Checkbox, message } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+
 import { createUser } from "../../services/createUser";
+import { authenticateUser } from "../../services/authenticateUser";
 
 import type { FormInstance } from "antd";
 
@@ -39,26 +41,34 @@ const BasicForm: React.FC = () => {
   }, [formState]);
 
   const onFinish = async (values: any) => {
-    console.log("Success:", values);
-    if (formState === "signup") {
-      try {
-        const response = await createUser({
+    console.log("Form Values:", values);
+
+    try {
+      let response;
+
+      if (formState === "signup") {
+        response = await createUser({
           email: values.email,
           password: values.password,
         });
         console.log("User created successfully:", response);
         message.success("Account created successfully");
-      } catch (error) {
-        console.error("Error creating user:", error);
-        if (typeof error === "string") {
-          message.error(error);
-        } else if (error instanceof Error) {
-          // Display error message if it's an instance of Error
-          message.error(error.message);
-        } else {
-          // Fallback error message
-          message.error("An error occurred while creating the account");
-        }
+      } else if (formState === "login") {
+        response = await authenticateUser({
+          email: values.email,
+          password: values.password,
+        });
+        console.log("Login successful:", response);
+        message.success(response.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (typeof error === "string") {
+        message.error(error);
+      } else if (error instanceof Error) {
+        message.error(error.message);
+      } else {
+        message.error("An error occurred");
       }
     }
   };
