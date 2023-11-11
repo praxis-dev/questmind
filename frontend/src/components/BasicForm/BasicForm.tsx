@@ -51,7 +51,6 @@ const BasicForm: React.FC = () => {
       } catch (error) {
         console.error("Error creating user:", error);
         if (typeof error === "string") {
-          // Directly display the error if it's a string
           message.error(error);
         } else if (error instanceof Error) {
           // Display error message if it's an instance of Error

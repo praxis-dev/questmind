@@ -1,4 +1,9 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -22,7 +27,6 @@ export class UsersService {
 
     const result = await collection.insertOne(user);
 
-    // Return a success message and optionally user info
     return {
       message: 'User created successfully',
       user: { email: user.email, id: result.insertedId },
@@ -34,5 +38,19 @@ export class UsersService {
     const collection = db.collection('users');
     const user = await collection.findOne({ email });
     return !!user;
+  }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.findUserByEmail(email);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return { email: user.email, id: user._id }; // Or any other user details you want to return
+    }
+    throw new UnauthorizedException('Invalid credentials');
+  }
+
+  private async findUserByEmail(email: string): Promise<any> {
+    const db = this.mongoClient.db('QuestMind-1');
+    const collection = db.collection('users');
+    return collection.findOne({ email });
   }
 }
