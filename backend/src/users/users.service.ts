@@ -1,3 +1,5 @@
+// users.service.ts
+
 import {
   Injectable,
   Inject,
@@ -43,7 +45,7 @@ export class UsersService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.findUserByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
-      return { email: user.email, id: user._id }; // Or any other user details you want to return
+      return { email: user.email, id: user._id };
     }
     throw new UnauthorizedException('Invalid credentials');
   }

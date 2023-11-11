@@ -1,4 +1,4 @@
-// authenticateUser.ts
+// authenticateUser.ts (frontend)
 
 import axios from "axios";
 
