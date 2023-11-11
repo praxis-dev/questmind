@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Form, Input, Checkbox } from "antd";
+import { Button, Form, Input, Checkbox, message } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { createUser } from "../../services/createUser";
@@ -47,8 +47,19 @@ const BasicForm: React.FC = () => {
           password: values.password,
         });
         console.log("User created successfully:", response);
+        message.success("Account created successfully");
       } catch (error) {
         console.error("Error creating user:", error);
+        if (typeof error === "string") {
+          // Directly display the error if it's a string
+          message.error(error);
+        } else if (error instanceof Error) {
+          // Display error message if it's an instance of Error
+          message.error(error.message);
+        } else {
+          // Fallback error message
+          message.error("An error occurred while creating the account");
+        }
       }
     }
   };
