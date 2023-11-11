@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 
 import { Space } from "antd";
 
-import { useResponsiveStyles } from "../library/hooks";
-import { Breakpoint, ViewStyles } from "../library/styles";
+import { useResponsiveStyles } from "../../library/hooks";
+import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { useDispatch, useSelector } from "react-redux";
-import { setIsLoading } from "../store/slices/loadingSlice";
-import { RootState } from "../store";
+import { setIsLoading } from "../../store/slices/loadingSlice";
+import { RootState } from "../../store";
 
-import QueryInput from "../components/QueryInput/QueryInput";
-import MessageCard from "../components/MessageCard/MessageCard";
+import QueryInput from "../../components/QueryInput/QueryInput";
+import MessageCard from "../../components/MessageCard/MessageCard";
 
-import { fetchResponse } from "../services/fetchResponse";
+import { fetchResponse } from "../../services/fetchResponse";
 
 import { ScalingSquaresSpinner } from "react-epic-spinners";
 

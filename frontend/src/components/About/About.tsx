@@ -37,17 +37,13 @@ const About: React.FC = () => {
   return (
     <div style={styles.section}>
       <Space direction="vertical" style={styles.contentSpace}>
-        <Typography.Title level={2} style={styles.font}>
-          About
-        </Typography.Title>
+        <Typography.Title level={2}>About</Typography.Title>
         <Divider />
-        <Typography.Text style={styles.font}>
+        <Typography.Text style={styles.aboutText}>
           QuestMind leverages the latest developments in AI to enable you to
           have the combined corpus of human wisdom as your sage advisor.
         </Typography.Text>
-        <Typography.Text style={styles.font}>
-          v 0.1.1 / by Igor Chesnokov
-        </Typography.Text>
+        <Typography.Text>v 0.1.1 / by Igor Chesnokov</Typography.Text>
         <Divider />
         <Space direction="horizontal" style={styles.iconSpaceWrapper}>
           <div style={styles.iconSpace}>
@@ -94,6 +90,10 @@ const About: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  aboutText: {
+    fontSize: "14px",
+  },
+
   iconSpaceWrapper: {
     display: "flex",
     justifyContent: "space-between",
@@ -119,10 +119,6 @@ const baseStyles: ViewStyles = {
     maxWidth: 500,
     width: "100%",
     height: "100%",
-  },
-
-  font: {
-    fontFamily: "monospace",
   },
 };
 

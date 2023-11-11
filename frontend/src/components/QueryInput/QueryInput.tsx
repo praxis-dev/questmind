@@ -132,6 +132,7 @@ const baseStyles: ViewStyles = {
     width: "89%",
     resize: "none",
     lineHeight: "1.5",
+    fontSize: "14px",
   },
 
   buttonArea: {
@@ -155,7 +156,7 @@ const baseStyles: ViewStyles = {
     justifyContent: "flex-start",
     width: "100%",
     lineHeight: "1.5",
-    fontSize: "0.8rem",
+    fontSize: "14px",
     paddingLeft: "1rem",
   },
 };

@@ -82,7 +82,7 @@ const baseStyles: ViewStyles = {
   },
 
   disabledShareIcon: {
-    fontSize: "1rem",
+    fontSize: "14px",
     color: "grey",
   },
 
@@ -104,12 +104,11 @@ const baseStyles: ViewStyles = {
   },
 
   cardTitle: {
-    fontFamily: "monospace",
     textAlign: "left",
     marginRight: "10px",
   },
   cardContent: {
-    fontFamily: "monospace",
+    fontSize: "14px",
     whiteSpace: "pre-line",
     textAlign: "left",
     lineHeight: "1.5",
