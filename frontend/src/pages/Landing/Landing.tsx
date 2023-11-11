@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Button } from "antd";
+import { Row, Col, Space, Button, Modal } from "antd";
+
+import BasicForm from "../../components/BasicForm/BasicForm";
 
 const Landing: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
@@ -13,6 +15,28 @@ const Landing: React.FC = () => {
     [Breakpoint.Small]: smallScreenStyles,
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
+
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
+
+  const showLoginModal = () => {
+    setIsLoginModalVisible(true);
+  };
+
+  const showSignupModal = () => {
+    setIsSignupModalVisible(true);
+  };
+
+  const handleLoginOk = () => {
+    // Handle login
+    setIsLoginModalVisible(false);
+  };
+
+  const handleSignupOk = () => {
+    // Handle sign up
+    setIsSignupModalVisible(false);
+  };
+
   return (
     <div>
       <Row>
@@ -37,12 +61,41 @@ const Landing: React.FC = () => {
               towards a more insightful, balanced you.
             </div>
             <Space direction="horizontal" style={styles.contentSpace}>
-              <Button type="primary" style={styles.buttonStyle}>
+              <Button
+                type="primary"
+                style={styles.buttonStyle}
+                onClick={showLoginModal}
+              >
                 Login
               </Button>
-              <Button type="primary" style={styles.buttonStyle}>
+              <Modal
+                style={{ top: 20 }}
+                title="Login"
+                open={isLoginModalVisible}
+                onOk={handleLoginOk}
+                onCancel={() => setIsLoginModalVisible(false)}
+                footer={[null]}
+              >
+                <BasicForm />
+              </Modal>
+
+              <Button
+                type="primary"
+                style={styles.buttonStyle}
+                onClick={showSignupModal}
+              >
                 Sign Up
               </Button>
+              <Modal
+                style={{ top: 20 }}
+                title="Sign Up"
+                open={isSignupModalVisible}
+                onOk={handleSignupOk}
+                onCancel={() => setIsSignupModalVisible(false)}
+                footer={[null]}
+              >
+                <BasicForm />
+              </Modal>
             </Space>
           </Space>
         </Col>
