@@ -13,16 +13,27 @@ interface ApiResponse {
     email: string;
     id: string;
   };
-  // token?: string; // Uncomment when token implementation is added in the backend
+  token?: string;
 }
 
 const apiUrl = `${process.env.REACT_APP_API_URL}/users/login`;
+
+const isTokenPresent = () => {
+  const token = localStorage.getItem("token");
+  return !!token;
+};
 
 export const authenticateUser = async (
   userData: UserData
 ): Promise<ApiResponse> => {
   try {
     const response = await axios.post<ApiResponse>(apiUrl, userData);
+
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      console.log(isTokenPresent());
+    }
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

@@ -6,16 +6,21 @@ import {
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+
+import { JwtService } from '@nestjs/jwt';
+
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('MONGO_CLIENT') private readonly mongoClient) {}
+  constructor(
+    @Inject('MONGO_CLIENT') private readonly mongoClient,
+    private jwtService: JwtService,
+  ) {}
 
   async createUser(email: string, password: string): Promise<any> {
     const userExists = await this.checkUserExists(email);
     if (userExists) {
-      // Enhanced error handling with custom message
       throw new ConflictException({
         message: 'User already exists',
         status: 409,
@@ -54,5 +59,10 @@ export class UsersService {
     const db = this.mongoClient.db('QuestMind-1');
     const collection = db.collection('users');
     return collection.findOne({ email });
+  }
+
+  async createToken(user: any): Promise<string> {
+    const payload = { email: user.email, sub: user.id };
+    return this.jwtService.sign(payload);
   }
 }

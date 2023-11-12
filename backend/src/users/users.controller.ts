@@ -22,11 +22,12 @@ export class UsersController {
   ) {
     try {
       const user = await this.usersService.validateUser(email, password);
-      // Here you should generate a token (JWT or similar) based on user information
+      const token = await this.usersService.createToken(user);
+      console.log('token', token);
       return {
         message: 'Login successful',
         user,
-        // token: 'generated-token-here', // Implement token generation
+        token,
       };
     } catch (error) {
       throw new BadRequestException(error.message);
