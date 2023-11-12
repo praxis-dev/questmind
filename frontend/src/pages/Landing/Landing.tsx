@@ -5,8 +5,9 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { Row, Col, Space, Button, Modal } from "antd";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import { useDispatch } from "react-redux";
-
 import { setFormState } from "../../store/slices/formSlice";
 
 import BasicForm from "../../components/BasicForm/BasicForm";
@@ -24,6 +25,22 @@ const Landing: React.FC = () => {
   const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
 
   const dispatch = useDispatch();
+
+  const formState = useSelector((state: RootState) => state.form.form);
+
+  const signupModalTitle =
+    formState === "signup"
+      ? "Sign Up"
+      : formState === "recover"
+      ? "Recover Password"
+      : "Login";
+
+  const loginModalTitle =
+    formState === "login"
+      ? "Login"
+      : formState === "recover"
+      ? "Recover Password"
+      : "Login";
 
   const showLoginModal = () => {
     dispatch(setFormState("login"));
@@ -78,7 +95,7 @@ const Landing: React.FC = () => {
               </Button>
               <Modal
                 style={{ top: 20 }}
-                title="Login"
+                title={loginModalTitle}
                 open={isLoginModalVisible}
                 onOk={handleLoginOk}
                 onCancel={() => setIsLoginModalVisible(false)}
@@ -96,7 +113,7 @@ const Landing: React.FC = () => {
               </Button>
               <Modal
                 style={{ top: 20 }}
-                title="Sign Up"
+                title={signupModalTitle}
                 open={isSignupModalVisible}
                 onOk={handleSignupOk}
                 onCancel={() => setIsSignupModalVisible(false)}

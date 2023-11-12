@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Form, Input, Checkbox, message } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 
@@ -7,6 +7,10 @@ import { createUser } from "../../services/createUser";
 import { authenticateUser } from "../../services/authenticateUser";
 
 import type { FormInstance } from "antd";
+
+import { useDispatch } from "react-redux";
+
+import { setFormState } from "../../store/slices/formSlice";
 
 const SubmitButton = ({ form }: { form: FormInstance }) => {
   const [submittable, setSubmittable] = React.useState(false);
@@ -34,6 +38,8 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
 const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
   const formState = useSelector((state: RootState) => state.form.form);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log("Form State:", formState);
@@ -72,6 +78,10 @@ const BasicForm: React.FC = () => {
     }
   };
 
+  const handleRecoverPassword = () => {
+    dispatch(setFormState("recover"));
+  };
+
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -97,40 +107,26 @@ const BasicForm: React.FC = () => {
         <Input />
       </Form.Item>
 
-      <Form.Item
-        label="Password"
-        name="password"
-        rules={[
-          {
-            required: true,
-            message: "Please enter zip code",
-          },
-          () => ({
-            validator(_, value) {
-              const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      {formState !== "recover" && (
+        <>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please enter zip code",
+              },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-              if (!regex.test(value)) {
-                return Promise.reject(
-                  new Error(
-                    "Password must be at least 8 characters long and contain at least one number"
-                  )
-                );
-              }
-              return Promise.resolve();
-            },
-          }),
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item
-        name="remember"
-        valuePropName="checked"
-        wrapperCol={{ offset: 8, span: 16 }}
-      >
-        <Checkbox>Remember me</Checkbox>
-      </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <a onClick={handleRecoverPassword}>Recover password</a>
+          </Form.Item>
+        </>
+      )}
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <SubmitButton form={form} />
