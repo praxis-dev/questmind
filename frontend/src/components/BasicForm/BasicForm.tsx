@@ -168,7 +168,13 @@ const BasicForm: React.FC = () => {
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <a onClick={handleRecoverPassword}>Recover password</a>
+            <Button
+              type="link"
+              onClick={handleRecoverPassword}
+              style={{ padding: 0, height: "auto", lineHeight: "inherit" }}
+            >
+              Recover password
+            </Button>
           </Form.Item>
         </>
       )}

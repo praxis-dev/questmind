@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
-
 import * as bcrypt from 'bcrypt';
-
 import { v4 as uuidv4 } from 'uuid';
+
+import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +70,9 @@ export class UsersService {
   }
 
   async generatePasswordResetToken(email: string): Promise<void> {
+    console.log(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
     const user = await this.findUserByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -86,7 +89,23 @@ export class UsersService {
       { $set: { resetToken, resetTokenExpiration: expiration } },
     );
 
-    // Email sending logic will be here
+    const resetUrl = `http://yourfrontend.com/reset-password?token=${resetToken}`;
+    const msg = {
+      to: email,
+      from: 'support@questmind.ai', // Use your verified SendGrid sender
+      subject: 'QuestMind Password Reset',
+      text: `To reset your password, please click on the following link: ${resetUrl}`,
+      html: `<strong>To reset your password, please click on the following link:</strong> <a href="${resetUrl}">${resetUrl}</a>`,
+    };
+
+    // Send the email
+    try {
+      await sgMail.send(msg);
+      console.log('Password reset email sent');
+    } catch (error) {
+      console.error('Error sending password reset email', error);
+      // Handle the error appropriately
+    }
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
