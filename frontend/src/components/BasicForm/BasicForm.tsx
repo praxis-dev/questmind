@@ -68,6 +68,10 @@ const BasicForm: React.FC = () => {
         });
         console.log("Login successful:", response);
         message.success(response.message);
+      } else if (formState === "recover") {
+        response = await resetPasswordRequest({ email: values.email });
+        console.log("Password reset request successful:", response);
+        message.success("Password reset email sent. Please check your inbox.");
       }
     } catch (error) {
       console.error("Error:", error);
