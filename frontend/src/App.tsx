@@ -12,6 +12,7 @@ import { store } from "./store";
 import Header from "./components/Header/Header";
 import QueryResponse from "./pages/QueryResponse/QueryResponse";
 import Landing from "./pages/Landing/Landing";
+import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 
 import "./App.css";
 
@@ -45,6 +46,7 @@ function RouteRender() {
       <Routes>
         <Route path="/" element={<QueryResponse />} />
         <Route path="/landing" element={<Landing />} />
+        <Route path="/password-recovery" element={<PasswordRecovery />} />
       </Routes>
     </>
   );

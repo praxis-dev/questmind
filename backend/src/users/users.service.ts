@@ -89,22 +89,20 @@ export class UsersService {
       { $set: { resetToken, resetTokenExpiration: expiration } },
     );
 
-    const resetUrl = `http://yourfrontend.com/reset-password?token=${resetToken}`;
+    const resetUrl = `https://questmind.ai/reset-password?token=${resetToken}`;
     const msg = {
       to: email,
-      from: 'support@questmind.ai', // Use your verified SendGrid sender
+      from: 'support@questmind.ai',
       subject: 'QuestMind Password Reset',
       text: `To reset your password, please click on the following link: ${resetUrl}`,
       html: `<strong>To reset your password, please click on the following link:</strong> <a href="${resetUrl}">${resetUrl}</a>`,
     };
 
-    // Send the email
     try {
       await sgMail.send(msg);
       console.log('Password reset email sent');
     } catch (error) {
       console.error('Error sending password reset email', error);
-      // Handle the error appropriately
     }
   }
 

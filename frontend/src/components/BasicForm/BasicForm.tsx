@@ -13,6 +13,8 @@ import { useDispatch } from "react-redux";
 
 import { setFormState } from "../../store/slices/formSlice";
 
+import { PASSWORD_REGEX } from "../../utils/constants";
+
 const SubmitButton = ({ form }: { form: FormInstance }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
@@ -57,8 +59,6 @@ const BasicForm: React.FC = () => {
   const formState = useSelector((state: RootState) => state.form.form);
 
   const dispatch = useDispatch();
-
-  const passwordRegex = /^(?=.*\d)[A-Za-z\d]{8,}$/;
 
   useEffect(() => {
     console.log("Form State:", formState);
@@ -153,7 +153,7 @@ const BasicForm: React.FC = () => {
               {
                 message: "8 characters long including at least one number.",
                 validator: (_, value) => {
-                  if (passwordRegex.test(value)) {
+                  if (PASSWORD_REGEX.test(value)) {
                     return Promise.resolve();
                   } else {
                     return Promise.reject(
