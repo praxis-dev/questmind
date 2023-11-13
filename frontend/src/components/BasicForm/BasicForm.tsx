@@ -5,6 +5,7 @@ import { RootState } from "../../store";
 
 import { createUser } from "../../services/createUser";
 import { authenticateUser } from "../../services/authenticateUser";
+import { resetPasswordRequest } from "../../services/resetPasswordRequest";
 
 import type { FormInstance } from "antd";
 
@@ -40,6 +41,8 @@ const BasicForm: React.FC = () => {
   const formState = useSelector((state: RootState) => state.form.form);
 
   const dispatch = useDispatch();
+
+  const passwordRegex = /^(?=.*\d)[A-Za-z\d]{8,}$/;
 
   useEffect(() => {
     console.log("Form State:", formState);
@@ -115,7 +118,19 @@ const BasicForm: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: "Please enter zip code",
+                message: "Please enter password.",
+              },
+              {
+                message: "8 characters long including at least one number.",
+                validator: (_, value) => {
+                  if (passwordRegex.test(value)) {
+                    return Promise.resolve();
+                  } else {
+                    return Promise.reject(
+                      "Password must be at least 8 characters long and include at least one number."
+                    );
+                  }
+                },
               },
             ]}
           >

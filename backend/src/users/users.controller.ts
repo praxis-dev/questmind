@@ -33,4 +33,27 @@ export class UsersController {
       throw new BadRequestException(error.message);
     }
   }
+
+  @Post('reset-password-request')
+  async resetPasswordRequest(@Body('email') email: string) {
+    try {
+      await this.usersService.generatePasswordResetToken(email);
+      return { message: 'Password reset email sent' };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    try {
+      await this.usersService.resetPassword(token, newPassword);
+      return { message: 'Password reset successful' };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type FormState = "noform" | "signup" | "login" | "recover";
+export type FormState = "noform" | "signup" | "login" | "recover";
 
 interface IFormSliceState {
   form: FormState;
