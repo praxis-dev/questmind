@@ -36,6 +36,22 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
   );
 };
 
+type SignupValues = {
+  email: string;
+  password: string;
+};
+
+type LoginValues = {
+  email: string;
+  password: string;
+};
+
+type RecoverValues = {
+  email: string;
+};
+
+type FormValues = SignupValues | LoginValues | RecoverValues;
+
 const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
   const formState = useSelector((state: RootState) => state.form.form);
@@ -48,31 +64,41 @@ const BasicForm: React.FC = () => {
     console.log("Form State:", formState);
   }, [formState]);
 
-  const onFinish = async (values: any) => {
+  const handleSignup = async (values: SignupValues) => {
+    const response = await createUser({
+      email: values.email,
+      password: values.password,
+    });
+    console.log("User created successfully:", response);
+    message.success("Account created successfully");
+  };
+
+  const handleLogin = async (values: LoginValues) => {
+    const response = await authenticateUser({
+      email: values.email,
+      password: values.password,
+    });
+    console.log("Login successful:", response);
+    message.success(response.message);
+  };
+
+  const handleRecover = async (values: RecoverValues) => {
+    const response = await resetPasswordRequest({ email: values.email });
+    console.log("Password reset request successful:", response);
+    message.success("Password reset email sent. Please check your inbox.");
+  };
+
+  const formActions = {
+    noform: async (_values: FormValues) => {},
+    signup: (values: FormValues) => handleSignup(values as SignupValues),
+    login: (values: FormValues) => handleLogin(values as LoginValues),
+    recover: (values: FormValues) => handleRecover(values as RecoverValues),
+  };
+
+  const onFinish = async (values: FormValues) => {
     console.log("Form Values:", values);
-
     try {
-      let response;
-
-      if (formState === "signup") {
-        response = await createUser({
-          email: values.email,
-          password: values.password,
-        });
-        console.log("User created successfully:", response);
-        message.success("Account created successfully");
-      } else if (formState === "login") {
-        response = await authenticateUser({
-          email: values.email,
-          password: values.password,
-        });
-        console.log("Login successful:", response);
-        message.success(response.message);
-      } else if (formState === "recover") {
-        response = await resetPasswordRequest({ email: values.email });
-        console.log("Password reset request successful:", response);
-        message.success("Password reset email sent. Please check your inbox.");
-      }
+      await formActions[formState](values);
     } catch (error) {
       console.error("Error:", error);
       if (typeof error === "string") {
