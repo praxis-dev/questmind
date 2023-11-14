@@ -3,6 +3,8 @@ import React from "react";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
+import { Row, Col, Space } from "antd";
+
 import NewPasswordForm from "../../components/NewPasswordForm/NewPasswordForm";
 
 const SuperPage: React.FC = () => {
@@ -14,9 +16,11 @@ const SuperPage: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
   return (
-    <div>
-      <NewPasswordForm />
-    </div>
+    <Row>
+      <Col span={24}>
+        <NewPasswordForm />
+      </Col>
+    </Row>
   );
 };
 
