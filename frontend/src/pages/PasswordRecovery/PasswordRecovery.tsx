@@ -18,7 +18,7 @@ const PasswordRecovery: React.FC = () => {
   return (
     <Row>
       <Col span={24}>
-        <Space>
+        <Space style={styles.space}>
           <NewPasswordForm />
         </Space>
       </Col>
@@ -26,7 +26,18 @@ const PasswordRecovery: React.FC = () => {
   );
 };
 
-const baseStyles: ViewStyles = {};
+const baseStyles: ViewStyles = {
+  space: {
+    width: "90%",
+    height: "90vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "1px solid yellow",
+    margin: "0 auto",
+  },
+};
 
 const extraLargeScreenStyles: ViewStyles = {};
 

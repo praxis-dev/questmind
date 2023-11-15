@@ -42,7 +42,9 @@ function RouteRender() {
 
   return (
     <>
-      {location.pathname !== "/landing" && <Header />}
+      {location.pathname !== "/landing" &&
+        location.pathname !== "/password-recovery" && <Header />}
+
       <Routes>
         <Route path="/" element={<QueryResponse />} />
         <Route path="/landing" element={<Landing />} />

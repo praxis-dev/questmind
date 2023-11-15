@@ -131,7 +131,6 @@ const Landing: React.FC = () => {
 
 const baseStyles: ViewStyles = {
   test: {
-    border: "1px solid red",
     height: "100vh",
   },
 
@@ -143,7 +142,6 @@ const baseStyles: ViewStyles = {
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid black",
   },
 
   textArea: {

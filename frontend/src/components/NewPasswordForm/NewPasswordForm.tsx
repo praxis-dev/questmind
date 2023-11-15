@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Form, Input, message, Button } from "antd";
 
@@ -22,7 +22,8 @@ function useQuery() {
 const NewPasswordForm: React.FC = () => {
   const query = useQuery();
   const token = query.get("token");
-  console.log("Token:", token);
+  const navigate = useNavigate();
+
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -38,10 +39,9 @@ const NewPasswordForm: React.FC = () => {
   const onFinish = async (values: FormValues) => {
     if (token) {
       try {
-        // Call resetPassword service with token and new password
         await resetPassword({ token, newPassword: values.password });
         message.success("Password reset successfully");
-        // Redirect user or update UI accordingly
+        navigate("/landing");
       } catch (error) {
         console.error("Error:", error);
         if (typeof error === "string") {
@@ -79,15 +79,14 @@ const NewPasswordForm: React.FC = () => {
     <Form
       style={styles.wrapper}
       form={form}
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
+      labelCol={{ span: 24 }}
+      wrapperCol={{ span: 24 }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
       <Form.Item
-        wrapperCol={{ offset: 8, span: 16 }}
         name="password"
         style={styles.item}
         rules={[
@@ -109,11 +108,10 @@ const NewPasswordForm: React.FC = () => {
           },
         ]}
       >
-        <Input style={styles.item} placeholder="Password" />
+        <Input style={styles.input} placeholder="New Password" />
       </Form.Item>
 
       <Form.Item
-        wrapperCol={{ offset: 8, span: 16 }}
         name="confirm"
         dependencies={["password"]}
         hasFeedback
@@ -129,14 +127,19 @@ const NewPasswordForm: React.FC = () => {
         ]}
       >
         <Input
-          style={styles.item}
+          style={styles.input}
           onBlur={handleConfirmBlur}
           placeholder="Confirm Password"
         />
       </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit" disabled={!isPasswordMatch}>
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          disabled={!isPasswordMatch}
+          style={styles.submitButton}
+        >
           Submit
         </Button>
       </Form.Item>
@@ -147,17 +150,26 @@ const NewPasswordForm: React.FC = () => {
 const baseStyles: ViewStyles = {
   wrapper: {
     margin: "auto",
-    border: "1px solid #ccc",
-    maxWidth: 600,
+    maxWidth: 250,
+    width: "100%",
   },
 
   item: {
-    marginBottom: 0,
-    border: "1px solid #ccc",
+    marginBottom: 5,
+    width: 250,
   },
 
   input: {
-    border: "1px solid red",
+    width: 250,
+  },
+
+  submitButton: {
+    marginTop: 10,
+    width: "100px",
+    backgroundColor: "white",
+    color: "black",
+    borderColor: "black",
+    boxShadow: "0 0 0 1px black",
   },
 };
 

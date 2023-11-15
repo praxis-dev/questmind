@@ -32,7 +32,19 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
   }, [values, form]);
 
   return (
-    <Button type="primary" htmlType="submit" disabled={!submittable}>
+    <Button
+      type="primary"
+      htmlType="submit"
+      disabled={!submittable}
+      style={{
+        marginTop: 10,
+        width: "100px",
+        backgroundColor: "white",
+        color: "black",
+        borderColor: "black",
+        boxShadow: "0 0 0 1px black",
+      }}
+    >
       Submit
     </Button>
   );
@@ -86,6 +98,8 @@ const BasicForm: React.FC = () => {
     const response = await resetPasswordRequest({ email: values.email });
     console.log("Password reset request successful:", response);
     message.success("Password reset email sent. Please check your inbox.");
+    form.resetFields();
+    dispatch(setFormState("noform"));
   };
 
   const formActions = {
