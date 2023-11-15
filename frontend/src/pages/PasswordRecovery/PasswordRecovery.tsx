@@ -7,7 +7,7 @@ import { Row, Col, Space } from "antd";
 
 import NewPasswordForm from "../../components/NewPasswordForm/NewPasswordForm";
 
-const SuperPage: React.FC = () => {
+const PasswordRecovery: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -18,7 +18,9 @@ const SuperPage: React.FC = () => {
   return (
     <Row>
       <Col span={24}>
-        <NewPasswordForm />
+        <Space>
+          <NewPasswordForm />
+        </Space>
       </Col>
     </Row>
   );
@@ -36,4 +38,4 @@ const smallScreenStyles: ViewStyles = {};
 
 const extraSmallScreenStyles: ViewStyles = {};
 
-export default SuperPage;
+export default PasswordRecovery;

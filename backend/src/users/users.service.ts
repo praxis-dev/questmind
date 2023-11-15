@@ -89,7 +89,9 @@ export class UsersService {
       { $set: { resetToken, resetTokenExpiration: expiration } },
     );
 
-    const resetUrl = `https://questmind.ai/reset-password?token=${resetToken}`;
+    // const resetUrl = `https://questmind.ai/password-recovery?token=${resetToken}`;
+    const resetUrl = `http://localhost:3000/password-recovery?token=${resetToken}`;
+
     const msg = {
       to: email,
       from: 'support@questmind.ai',

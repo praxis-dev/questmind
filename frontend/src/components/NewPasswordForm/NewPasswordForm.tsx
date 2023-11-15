@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { useLocation } from "react-router-dom";
+
 import { Form, Input, message, Button } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -7,11 +9,20 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { PASSWORD_REGEX } from "../../utils/constants";
 
+import { resetPassword } from "../../services/resetPassword";
+
 type FormValues = {
   password: string;
 };
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 const NewPasswordForm: React.FC = () => {
+  const query = useQuery();
+  const token = query.get("token");
+  console.log("Token:", token);
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -25,8 +36,25 @@ const NewPasswordForm: React.FC = () => {
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
 
   const onFinish = async (values: FormValues) => {
-    console.log("Form Values:", values);
-    // Handle form submission
+    if (token) {
+      try {
+        // Call resetPassword service with token and new password
+        await resetPassword({ token, newPassword: values.password });
+        message.success("Password reset successfully");
+        // Redirect user or update UI accordingly
+      } catch (error) {
+        console.error("Error:", error);
+        if (typeof error === "string") {
+          message.error(error);
+        } else if (error instanceof Error) {
+          message.error(error.message);
+        } else {
+          message.error("An error occurred");
+        }
+      }
+    } else {
+      message.error("Invalid or expired token");
+    }
   };
 
   const handleConfirmBlur = (e: React.FocusEvent<HTMLInputElement>) => {
