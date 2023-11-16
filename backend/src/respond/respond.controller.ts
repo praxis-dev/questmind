@@ -1,3 +1,5 @@
+//respond.controller.ts
+
 import {
   Controller,
   Post,
@@ -5,10 +7,20 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { firstValueFrom } from 'rxjs';
+
+import { Dialogue } from './entities/dialogue.entity';
+import { User } from '../users/entities/user.entity';
 
 @Controller('respond')
 export class RespondController {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel('Dialogue') private dialogueModel: Model<Dialogue>,
+    @InjectModel('User') private userModel: Model<User>,
+  ) {}
 
   @Post()
   async respond(@Body('question') query: string): Promise<any> {
@@ -18,19 +30,17 @@ export class RespondController {
         throw new Error('API_ENDPOINT is not defined in the environment');
       }
 
-      const response = await this.httpService
-        .post(
+      const response = await firstValueFrom(
+        this.httpService.post(
           apiEndpoint,
-          {
-            query,
-          },
+          { query },
           {
             headers: {
               'Content-Type': 'application/json',
             },
           },
-        )
-        .toPromise();
+        ),
+      );
 
       console.log('Response:', response.data);
 
