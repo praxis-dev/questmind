@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
@@ -39,6 +40,7 @@ export class RespondController {
   ): Promise<any> {
     try {
       const user = req.user;
+      console.log('User:', user);
       const fixedDialogueId = 'fixed-dialogue-id'; // Fixed ID for the dialogue
 
       const apiEndpoint = process.env.API_ENDPOINT;
@@ -64,8 +66,18 @@ export class RespondController {
         {
           $push: {
             messages: [
-              { sender: 'user', message: body.question, timestamp: new Date() },
-              { sender: 'ai', message: response.data, timestamp: new Date() },
+              {
+                sender: 'user',
+                message: body.question,
+                timestamp: new Date(),
+                important: false,
+              },
+              {
+                sender: 'ai',
+                message: response.data,
+                timestamp: new Date(),
+                important: false,
+              },
             ],
           },
           $setOnInsert: {
@@ -78,7 +90,6 @@ export class RespondController {
         },
         { new: true, upsert: true },
       );
-      console.log('Updated Dialogue:', dialogue);
 
       return { data: response.data, dialogueId: fixedDialogueId };
     } catch (error) {
