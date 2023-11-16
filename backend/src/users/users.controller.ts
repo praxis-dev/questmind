@@ -23,7 +23,6 @@ export class UsersController {
     try {
       const user = await this.usersService.validateUser(email, password);
       const token = await this.usersService.createToken(user);
-      console.log('token', token);
       return {
         message: 'Login successful',
         user,

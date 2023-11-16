@@ -4,15 +4,24 @@ import {
   Controller,
   Post,
   Body,
+  UseGuards,
+  Req,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
+
+interface RequestWithUser extends Request {
+  user: User;
+}
 
 @Controller('respond')
 export class RespondController {
@@ -20,11 +29,19 @@ export class RespondController {
     private readonly httpService: HttpService,
     @InjectModel('Dialogue') private dialogueModel: Model<Dialogue>,
     @InjectModel('User') private userModel: Model<User>,
+    private jwtService: JwtService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt')) // Apply the JWT Auth Guard
   @Post()
-  async respond(@Body('question') query: string): Promise<any> {
+  async respond(
+    @Body('question') query: string,
+    @Req() req: RequestWithUser,
+  ): Promise<any> {
     try {
+      const user = req.user;
+      console.log('User:', user);
+
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
         throw new Error('API_ENDPOINT is not defined in the environment');
