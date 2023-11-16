@@ -1,10 +1,10 @@
 import * as mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
-  sender: { type: String, required: true }, // 'user' or 'ai'
+  sender: { type: String, required: true },
   message: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }, // Timestamp for each message
-  important: { type: Boolean, default: false }, // Indicates if the message is marked as important
+  timestamp: { type: Date, default: Date.now },
+  important: { type: Boolean, default: false },
 });
 
 export const dialogueSchema = new mongoose.Schema({
@@ -31,7 +31,7 @@ export interface Message extends mongoose.Document {
 
 export interface Dialogue extends mongoose.Document {
   dialogueId: string;
-  userId: mongoose.Schema.Types.ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
   messages: Message[];
   isBranch: boolean;
   parentDialogueId: mongoose.Schema.Types.ObjectId | null;
