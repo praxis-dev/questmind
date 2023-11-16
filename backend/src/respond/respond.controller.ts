@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
@@ -32,15 +33,18 @@ export class RespondController {
     private jwtService: JwtService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt')) // Apply the JWT Auth Guard
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async respond(
-    @Body('question') query: string,
+    @Body() body: { question: string; dialogueId?: string },
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
       console.log('User:', user);
+
+      // Generate a new dialogue ID if it doesn't exist
+      const dialogueId = body.dialogueId || uuidv4();
 
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
@@ -50,7 +54,7 @@ export class RespondController {
       const response = await firstValueFrom(
         this.httpService.post(
           apiEndpoint,
-          { query },
+          { query: body.question },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -61,7 +65,15 @@ export class RespondController {
 
       console.log('Response:', response.data);
 
-      return response.data;
+      await this.dialogueModel.create({
+        dialogueId,
+        userId: user._id,
+        text: `Q: ${body.question}\nA: ${response.data}`,
+      });
+      console.log('data', response.data);
+      console.log('dialogueId', dialogueId);
+
+      return { data: response.data, dialogueId }; // Return the response along with the dialogue ID
     } catch (error) {
       console.error(
         'Detailed Error:',

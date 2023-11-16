@@ -18,6 +18,19 @@ import { ScalingSquaresSpinner } from "react-epic-spinners";
 
 import "./QueryResponse.css";
 
+type ChatMessageType = {
+  type: "user" | "ai";
+  text: string;
+};
+
+// If you need a separate type for AI responses
+type AIResponseType = {
+  data: string;
+  dialogueId: string;
+};
+
+// Adjust your state or props accordingly
+
 interface ErrorResponse {
   response?: {
     status: number;
@@ -86,7 +99,7 @@ const QueryResponse: React.FC = () => {
       setTimeout(() => {
         setChatMessages((prevMessages) => [
           ...prevMessages,
-          { type: "ai", text: responseText },
+          { type: "ai", text: responseText.data }, // Use only the data part
         ]);
         dispatch(setIsLoading(false));
         setIsTyping(false);
