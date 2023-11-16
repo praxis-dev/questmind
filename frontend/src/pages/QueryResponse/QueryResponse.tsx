@@ -96,7 +96,7 @@ const QueryResponse: React.FC = () => {
       setTimeout(() => {
         setChatMessages((prevMessages) => [
           ...prevMessages,
-          { type: "ai", text: responseText.data }, // Use only the data part
+          { type: "ai", text: responseText.data },
         ]);
         dispatch(setIsLoading(false));
         setIsTyping(false);

@@ -3,7 +3,6 @@ import axios from "axios";
 const endpoint = "/respond";
 const apiUrl = `${process.env.REACT_APP_API_URL}${endpoint}`;
 
-// Define a type for the request body
 type RequestBody = {
   question: string;
   dialogueId?: string;
@@ -24,7 +23,6 @@ export const fetchResponse = async (
   }
 
   try {
-    // Construct the request body using the defined type
     const requestBody: RequestBody = { question };
     if (dialogueId) {
       requestBody.dialogueId = dialogueId;

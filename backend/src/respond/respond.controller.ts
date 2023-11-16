@@ -15,7 +15,6 @@ import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
