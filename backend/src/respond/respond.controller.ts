@@ -15,7 +15,6 @@ import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
@@ -29,22 +28,18 @@ export class RespondController {
   constructor(
     private readonly httpService: HttpService,
     @InjectModel('Dialogue') private dialogueModel: Model<Dialogue>,
-    @InjectModel('User') private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async respond(
-    @Body() body: { question: string; dialogueId?: string },
+    @Body() body: { question: string },
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
-      console.log('User:', user);
-
-      // Generate a new dialogue ID if it doesn't exist
-      const dialogueId = body.dialogueId || uuidv4();
+      const fixedDialogueId = 'fixed-dialogue-id'; // Fixed ID for the dialogue
 
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
@@ -63,17 +58,29 @@ export class RespondController {
         ),
       );
 
-      console.log('Response:', response.data);
+      // Find or create a dialogue
+      const dialogue = await this.dialogueModel.findOneAndUpdate(
+        { dialogueId: fixedDialogueId },
+        {
+          $push: {
+            messages: [
+              { sender: 'user', message: body.question, timestamp: new Date() },
+              { sender: 'ai', message: response.data, timestamp: new Date() },
+            ],
+          },
+          $setOnInsert: {
+            userId: user._id,
+            dialogueId: fixedDialogueId,
+            isBranch: false,
+            parentDialogueId: null,
+          },
+          $set: { updatedAt: new Date() },
+        },
+        { new: true, upsert: true },
+      );
+      console.log('Updated Dialogue:', dialogue);
 
-      await this.dialogueModel.create({
-        dialogueId,
-        userId: user._id,
-        text: `Q: ${body.question}\nA: ${response.data}`,
-      });
-      console.log('data', response.data);
-      console.log('dialogueId', dialogueId);
-
-      return { data: response.data, dialogueId }; // Return the response along with the dialogue ID
+      return { data: response.data, dialogueId: fixedDialogueId };
     } catch (error) {
       console.error(
         'Detailed Error:',
