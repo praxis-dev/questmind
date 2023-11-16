@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { Button, Modal, Card } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
+
+import Menu from "../../components/Menu/Menu";
 
 import About from "../About/About";
 
@@ -24,6 +26,7 @@ const Header: React.FC = () => {
 
   return (
     <div style={styles.headerContainer}>
+      <Menu />
       <div style={styles.iconsContainer}>
         <Button
           icon={<InfoCircleOutlined style={styles.aboutIcon} />}
@@ -52,7 +55,7 @@ const baseStyles: ViewStyles = {
     minHeight: "3%",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     boxSizing: "border-box",
     padding: "0 10px",
@@ -63,6 +66,7 @@ const baseStyles: ViewStyles = {
     fontSize: 20,
     color: "grey",
   },
+
   aboutButton: {
     display: "flex",
     justifyContent: "center",

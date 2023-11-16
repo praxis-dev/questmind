@@ -23,13 +23,10 @@ type ChatMessageType = {
   text: string;
 };
 
-// If you need a separate type for AI responses
 type AIResponseType = {
   data: string;
   dialogueId: string;
 };
-
-// Adjust your state or props accordingly
 
 interface ErrorResponse {
   response?: {
