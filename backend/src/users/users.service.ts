@@ -29,9 +29,15 @@ export class UsersService {
     const newUser = new this.userModel({ email, password: hashedPassword });
     const result = await newUser.save();
 
+    const token = await this.createToken({
+      email: result.email,
+      id: result._id,
+    });
+
     return {
       message: 'User created successfully',
       user: { email: result.email, id: result._id },
+      token,
     };
   }
 

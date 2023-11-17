@@ -5,15 +5,27 @@ interface UserData {
   password: string;
 }
 
-interface ApiResponse {
+interface CreateUserResponse {
   message: string;
+  user?: {
+    email: string;
+    id: string;
+  };
+  token?: string; // Include token in the response type
 }
 
 const apiUrl = `${process.env.REACT_APP_API_URL}/users`;
 
-export const createUser = async (userData: UserData): Promise<ApiResponse> => {
+export const createUser = async (
+  userData: UserData
+): Promise<CreateUserResponse> => {
   try {
-    const response = await axios.post<ApiResponse>(apiUrl, userData);
+    const response = await axios.post<CreateUserResponse>(apiUrl, userData);
+
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+    }
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

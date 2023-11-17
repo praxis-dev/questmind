@@ -87,6 +87,7 @@ const BasicForm: React.FC = () => {
     console.log("User created successfully:", response);
     message.success("Account created successfully");
     dispatch(setFormState("noform"));
+    navigate("/");
   };
 
   const handleLogin = async (values: LoginValues) => {
