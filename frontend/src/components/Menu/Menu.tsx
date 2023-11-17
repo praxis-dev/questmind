@@ -1,9 +1,14 @@
-import React, { useState } from "react";
-import type { DrawerProps, RadioChangeEvent } from "antd";
-import { Button, Drawer, Radio, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { Button, Drawer, Space, Card } from "antd";
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
+
+import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
+
+import { RootState, AppDispatch } from "../../store/store";
 
 const Menu: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -24,6 +29,30 @@ const Menu: React.FC = () => {
     setOpen(false);
   };
 
+  const dispatch = useDispatch<AppDispatch>();
+  const dialogues = useSelector(
+    (state: RootState) => state.dialogueIndex.dialogues
+  );
+  const status = useSelector((state: RootState) => state.dialogueIndex.status);
+
+  useEffect(() => {
+    dispatch(fetchDialogues());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "succeeded") {
+      console.log("Fetched Dialogues:", dialogues);
+    }
+  }, [status, dialogues]);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (status === "failed") {
+    return <p>Failed to fetch dialogues.</p>;
+  }
+
   return (
     <>
       <Space>
@@ -42,9 +71,14 @@ const Menu: React.FC = () => {
         open={open}
         key={"left"}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        {dialogues.map((dialogue) => (
+          <Card
+            key={dialogue.dialogueId}
+            title={new Date(dialogue.createdAt).toLocaleDateString()}
+          >
+            <p>{dialogue.firstMessage}</p>
+          </Card>
+        ))}
       </Drawer>
     </>
   );

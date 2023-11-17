@@ -34,7 +34,7 @@ export const fetchResponse = async (
       },
     });
 
-    console.log("Dialogue ID:", result.data.dialogueId); // Log the dialogue ID
+    console.log("Dialogue ID:", result.data.dialogueId);
     return result.data;
   } catch (error) {
     console.error("Error fetching response:", error);

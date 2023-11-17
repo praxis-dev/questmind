@@ -1,8 +1,11 @@
+// fetchUserDialogues service frontend
+
 import axios from "axios";
 
-interface DialogueSummary {
+export interface DialogueSummary {
   dialogueId: string;
   firstMessage: string;
+  createdAt: string;
 }
 
 const dialoguesApiUrl = `${process.env.REACT_APP_API_URL}/respond/dialogues`;
