@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { Button, Modal, Space } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import Menu from "../../components/Menu/Menu";
-
 import About from "../About/About";
+
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 
 const Header: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
@@ -26,7 +27,15 @@ const Header: React.FC = () => {
 
   return (
     <div style={styles.headerContainer}>
-      <Menu />
+      <Space>
+        <Menu />
+        <Button
+          icon={<PlusOutlined style={styles.aboutIcon} />}
+          type="link"
+          style={styles.aboutButton}
+          onClick={showAboutModal}
+        />
+      </Space>
       <div style={styles.iconsContainer}>
         <Button
           icon={<InfoCircleOutlined style={styles.aboutIcon} />}

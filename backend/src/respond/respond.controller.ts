@@ -3,6 +3,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   Req,
@@ -97,6 +98,28 @@ export class RespondController {
         error.response ? error.response.data : error.message,
       );
       throw new InternalServerErrorException('Model communication failed.');
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/dialogues')
+  async getUserDialogues(@Req() req: RequestWithUser): Promise<any> {
+    try {
+      const userId = req.user._id;
+
+      const dialogues = await this.dialogueModel.find({ userId: userId });
+      const dialogueSummaries = dialogues.map((dialogue) => {
+        return {
+          dialogueId: dialogue.dialogueId,
+          firstMessage: dialogue.messages[0]?.message || 'No messages',
+          createdAt: dialogue.createdAt,
+        };
+      });
+
+      return dialogueSummaries;
+    } catch (error) {
+      console.error('Error fetching dialogues:', error.message);
+      throw new InternalServerErrorException('Failed to fetch dialogues.');
     }
   }
 }

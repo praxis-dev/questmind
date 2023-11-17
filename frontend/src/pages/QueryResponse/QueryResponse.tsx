@@ -13,6 +13,7 @@ import QueryInput from "../../components/QueryInput/QueryInput";
 import MessageCard from "../../components/MessageCard/MessageCard";
 
 import { fetchResponse } from "../../services/fetchResponse";
+import { fetchUserDialogues } from "../../services/fetchUserDialogues";
 
 import { ScalingSquaresSpinner } from "react-epic-spinners";
 
@@ -35,6 +36,19 @@ interface ErrorResponse {
 }
 
 const QueryResponse: React.FC = () => {
+  useEffect(() => {
+    const fetchDialogues = async () => {
+      try {
+        const dialogues = await fetchUserDialogues();
+        console.log("Dialogues:", dialogues);
+      } catch (error) {
+        console.error("Error fetching dialogues:", error);
+      }
+    };
+
+    fetchDialogues();
+  }, []);
+
   const [question, setQuestion] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<
     Array<{ type: "user" | "ai"; text: string }>

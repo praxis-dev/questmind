@@ -27,6 +27,7 @@ export const authenticateUser = async (
   userData: UserData
 ): Promise<ApiResponse> => {
   try {
+    console.log(userData);
     const response = await axios.post<ApiResponse>(apiUrl, userData);
 
     if (response.data.token) {
