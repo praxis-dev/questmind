@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -27,6 +27,13 @@ const Landing: React.FC = () => {
   const dispatch = useDispatch();
 
   const formState = useSelector((state: RootState) => state.form.form);
+
+  useEffect(() => {
+    if (formState === "noform") {
+      setIsLoginModalVisible(false);
+      setIsSignupModalVisible(false);
+    }
+  }, [formState]);
 
   const signupModalTitle =
     formState === "signup"
