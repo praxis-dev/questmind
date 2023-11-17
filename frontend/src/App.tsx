@@ -1,20 +1,12 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
-import Header from "./components/Header/Header";
-import QueryResponse from "./pages/QueryResponse/QueryResponse";
-import Landing from "./pages/Landing/Landing";
-import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
-
 import "./App.css";
+
+import { RouteRender } from "./routes/routeRender";
 
 function App() {
   return (
@@ -34,23 +26,6 @@ function App() {
         </Provider>
       </Router>
     </ConfigProvider>
-  );
-}
-
-function RouteRender() {
-  let location = useLocation();
-
-  return (
-    <>
-      {location.pathname !== "/landing" &&
-        location.pathname !== "/password-recovery" && <Header />}
-
-      <Routes>
-        <Route path="/" element={<QueryResponse />} />
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/password-recovery" element={<PasswordRecovery />} />
-      </Routes>
-    </>
   );
 }
 

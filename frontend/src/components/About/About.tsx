@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Space, Typography, Divider, Tooltip } from "antd";
+import { Space, Button } from "antd";
+import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { BitcoinIcon } from "@bitcoin-design/bitcoin-icons-react/filled";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { logoutUser } from "../../services/logoutUser";
 
 const About: React.FC = () => {
+  const navigate = useNavigate();
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -17,73 +17,23 @@ const About: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const initialTooltipText = "Support QuestMind";
-  const copyText = "BTC address copied!";
-
-  const [tooltipText, setTooltipText] = useState(initialTooltipText);
-
-  const handleCopyClick = () => {
-    navigator.clipboard
-      .writeText("bc1q20rxus5wmfm2wf2q7lrtut3p5ffrp4vw6yvfm6")
-      .then(() => {
-        setTooltipText(copyText);
-        setTimeout(() => setTooltipText(initialTooltipText), 3000);
-      })
-      .catch((err) => {
-        console.error("Could not copy text: ", err);
-      });
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/landing");
   };
 
   return (
     <div style={styles.section}>
       <Space direction="vertical" style={styles.contentSpace}>
-        <Typography.Title level={2}>About</Typography.Title>
-        <Divider />
-        <Typography.Text style={styles.aboutText}>
-          QuestMind leverages the latest developments in AI to enable you to
-          have the combined corpus of human wisdom as your sage advisor.
-        </Typography.Text>
-        <Typography.Text>v 0.1.1 / by Igor Chesnokov</Typography.Text>
-        <Divider />
-        <Space direction="horizontal" style={styles.iconSpaceWrapper}>
-          <div style={styles.iconSpace}>
-            <a
-              href="https://www.linkedin.com/in/igorchesnokov/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FontAwesomeIcon
-                icon={faLinkedin}
-                size="xl"
-                style={{ color: "gray" }}
-              />
-            </a>
-            <a
-              href="https://twitter.com/InferenceOne"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FontAwesomeIcon
-                icon={faXTwitter}
-                size="xl"
-                style={{ color: "gray" }}
-              />
-            </a>
-          </div>
-          <div style={styles.iconSpace}>
-            <Tooltip title={tooltipText} placement="left" color="#cc5612">
-              <BitcoinIcon
-                onClick={handleCopyClick}
-                style={{
-                  height: "30px",
-                  width: "30px",
-                  color: "gray",
-                  cursor: "pointer",
-                }}
-              />
-            </Tooltip>
-          </div>
-        </Space>
+        <Button
+          type="primary"
+          danger
+          onClick={() => {
+            handleLogout();
+          }}
+        >
+          Log out of QuestMind
+        </Button>
       </Space>
     </div>
   );

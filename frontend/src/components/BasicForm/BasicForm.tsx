@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import { RootState } from "../../store";
 
 import { createUser } from "../../services/createUser";
@@ -71,6 +73,7 @@ const BasicForm: React.FC = () => {
   const formState = useSelector((state: RootState) => state.form.form);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Form State:", formState);
@@ -92,6 +95,8 @@ const BasicForm: React.FC = () => {
     });
     console.log("Login successful:", response);
     message.success(response.message);
+    form.resetFields();
+    navigate("/");
   };
 
   const handleRecover = async (values: RecoverValues) => {
