@@ -19,16 +19,6 @@ import { ScalingSquaresSpinner } from "react-epic-spinners";
 
 import "./QueryResponse.css";
 
-type ChatMessageType = {
-  type: "user" | "ai";
-  text: string;
-};
-
-type AIResponseType = {
-  data: string;
-  dialogueId: string;
-};
-
 interface ErrorResponse {
   response?: {
     status: number;

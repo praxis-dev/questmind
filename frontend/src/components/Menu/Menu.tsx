@@ -30,10 +30,15 @@ const Menu: React.FC = () => {
   };
 
   const dispatch = useDispatch<AppDispatch>();
+
   const dialogues = useSelector(
     (state: RootState) => state.dialogueIndex.dialogues
   );
   const status = useSelector((state: RootState) => state.dialogueIndex.status);
+
+  const handleCardClick = (dialogueId: string) => {
+    console.log(`Dialogue clicked: ${dialogueId}`);
+  };
 
   useEffect(() => {
     dispatch(fetchDialogues());
@@ -75,6 +80,7 @@ const Menu: React.FC = () => {
           <Card
             key={dialogue.dialogueId}
             title={new Date(dialogue.createdAt).toLocaleDateString()}
+            onClick={() => handleCardClick(dialogue.dialogueId)}
           >
             <p>{dialogue.firstMessage}</p>
           </Card>
