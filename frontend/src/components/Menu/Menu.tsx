@@ -7,6 +7,9 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
+import { fetchDialogueById } from "../../services/fetchDialogueById";
+import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+import { setSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
 
 import { RootState, AppDispatch } from "../../store/store";
 
@@ -38,6 +41,18 @@ const Menu: React.FC = () => {
 
   const handleCardClick = (dialogueId: string) => {
     console.log(`Dialogue clicked: ${dialogueId}`);
+
+    dispatch(setSelectedDialogueId(dialogueId));
+
+    fetchDialogueById(dialogueId)
+      .then((dialogue) => {
+        console.log(dialogue);
+
+        dispatch(setSelectedDialogue(dialogue));
+      })
+      .catch((error) => {
+        console.error("Error fetching dialogue:", error);
+      });
   };
 
   useEffect(() => {

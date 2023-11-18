@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { Space } from "antd";
-
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
@@ -13,9 +11,10 @@ import QueryInput from "../../components/QueryInput/QueryInput";
 import MessageCard from "../../components/MessageCard/MessageCard";
 
 import { fetchResponse } from "../../services/fetchResponse";
-import { fetchUserDialogues } from "../../services/fetchUserDialogues";
 
 import { ScalingSquaresSpinner } from "react-epic-spinners";
+
+import { Space } from "antd";
 
 import "./QueryResponse.css";
 
@@ -26,19 +25,6 @@ interface ErrorResponse {
 }
 
 const QueryResponse: React.FC = () => {
-  useEffect(() => {
-    const fetchDialogues = async () => {
-      try {
-        const dialogues = await fetchUserDialogues();
-        console.log("Dialogues:", dialogues);
-      } catch (error) {
-        console.error("Error fetching dialogues:", error);
-      }
-    };
-
-    fetchDialogues();
-  }, []);
-
   const [question, setQuestion] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<
     Array<{ type: "user" | "ai"; text: string }>
@@ -61,17 +47,29 @@ const QueryResponse: React.FC = () => {
     serverError:
       "Seems like we are experiencing issues on our end, please try with your request a bit later.",
   };
+  const selectDialogue = (state: RootState) =>
+    state.dialogueDetails.selectedDialogue;
+
+  const dialogue = useSelector(selectDialogue);
+
+  useEffect(() => {
+    if (dialogue) {
+      console.log("Dialogue updated:", dialogue);
+    }
+  }, [dialogue]);
 
   useEffect(() => {
     const introductoryMessage: { type: "ai"; text: string } = {
       type: "ai",
       text: messagesConfig.introductory,
     };
-
-    if (chatMessages.length === 0) {
+    if (
+      chatMessages.length === 0 &&
+      (!dialogue || dialogue.messages.length === 0)
+    ) {
       setChatMessages([introductoryMessage]);
     }
-  }, [chatMessages.length, messagesConfig.introductory]);
+  }, [chatMessages.length, messagesConfig.introductory, dialogue]);
 
   useEffect(() => {
     if (isTyping && chatSpaceRef.current) {
@@ -82,6 +80,22 @@ const QueryResponse: React.FC = () => {
       });
     }
   }, [isTyping]);
+
+  useEffect(() => {
+    if (dialogue && dialogue.messages) {
+      const formattedMessages = dialogue.messages.map((msg) => {
+        // Ensure that type is either 'user' or 'ai'
+        const messageType: "user" | "ai" =
+          msg.sender === "user" || msg.sender === "ai" ? msg.sender : "ai"; // Defaulting to 'ai' in case of mismatch
+
+        return {
+          type: messageType,
+          text: msg.message,
+        };
+      });
+      setChatMessages(formattedMessages);
+    }
+  }, [dialogue]);
 
   const handleSubmit = async () => {
     try {

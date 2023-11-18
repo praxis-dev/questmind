@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   InternalServerErrorException,
+  NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
@@ -120,6 +122,22 @@ export class RespondController {
     } catch (error) {
       console.error('Error fetching dialogues:', error.message);
       throw new InternalServerErrorException('Failed to fetch dialogues.');
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/dialogue/:dialogueId')
+  async getDialogueById(@Param('dialogueId') dialogueId: string): Promise<any> {
+    try {
+      const dialogue = await this.dialogueModel.findOne({ dialogueId });
+      if (!dialogue) {
+        throw new NotFoundException('Dialogue not found');
+      }
+
+      return dialogue;
+    } catch (error) {
+      console.error('Error fetching dialogue:', error.message);
+      throw new InternalServerErrorException('Failed to fetch dialogue.');
     }
   }
 }
