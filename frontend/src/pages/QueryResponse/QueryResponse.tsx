@@ -4,7 +4,11 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { useDispatch, useSelector } from "react-redux";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { AnyAction } from "redux";
+
 import { setIsLoading } from "../../store/slices/loadingSlice";
+import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
 import { RootState } from "../../store";
 
 import QueryInput from "../../components/QueryInput/QueryInput";
@@ -33,7 +37,7 @@ const QueryResponse: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
 
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<RootState, unknown, AnyAction> = useDispatch();
 
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
   const selectedDialogueId = useSelector(
@@ -133,6 +137,9 @@ const QueryResponse: React.FC = () => {
         dispatch(setIsLoading(false));
         setIsTyping(false);
       }, 500);
+      if (!selectedDialogueId) {
+        dispatch(fetchDialogues());
+      }
     } catch (error: unknown) {
       console.error("Error fetching response:", error);
       dispatch(setIsLoading(false));

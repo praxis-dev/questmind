@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { Button, Modal, Space } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -23,6 +25,12 @@ const Header: React.FC = () => {
     setIsAboutVisible(true);
   };
 
+  const navigate = useNavigate();
+
+  const navigateToHome = () => {
+    navigate("/");
+  };
+
   const [isAboutVisible, setIsAboutVisible] = useState(false);
 
   return (
@@ -33,7 +41,7 @@ const Header: React.FC = () => {
           icon={<PlusOutlined style={styles.aboutIcon} />}
           type="link"
           style={styles.aboutButton}
-          onClick={showAboutModal}
+          onClick={navigateToHome}
         />
       </Space>
       <div style={styles.iconsContainer}>
