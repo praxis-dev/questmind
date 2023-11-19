@@ -18,6 +18,7 @@ import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
@@ -37,13 +38,12 @@ export class RespondController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async respond(
-    @Body() body: { question: string; dialogueId: string | null },
+    @Body() body: { question: string; dialogueId: string },
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
       console.log('User:', user);
-      const dialogueId = body.dialogueId || 'default';
 
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
@@ -62,38 +62,55 @@ export class RespondController {
         ),
       );
 
-      // Find or create a dialogue
-      const dialogue = await this.dialogueModel.findOneAndUpdate(
-        { dialogueId: dialogueId },
-        {
-          $push: {
-            messages: [
-              {
-                sender: 'user',
-                message: body.question,
-                timestamp: new Date(),
-                important: false,
-              },
-              {
-                sender: 'ai',
-                message: response.data,
-                timestamp: new Date(),
-                important: false,
-              },
-            ],
-          },
-          $setOnInsert: {
-            userId: user._id,
-            dialogueId: dialogueId,
-            isBranch: false,
-            parentDialogueId: null,
-          },
-          $set: { updatedAt: new Date() },
-        },
-        { new: true, upsert: true },
-      );
+      let dialogue;
+      if (body.dialogueId) {
+        const objectId = new Types.ObjectId(body.dialogueId);
+        dialogue = await this.dialogueModel.findById(objectId);
+        if (!dialogue) {
+          throw new NotFoundException('Dialogue not found');
+        }
 
-      return { data: response.data, dialogueId: dialogueId };
+        dialogue.messages.push(
+          {
+            sender: 'user',
+            message: body.question,
+            timestamp: new Date(),
+            important: false,
+          },
+          {
+            sender: 'ai',
+            message: response.data,
+            timestamp: new Date(),
+            important: false,
+          },
+        );
+        dialogue.updatedAt = new Date();
+        await dialogue.save();
+      } else {
+        // Create new dialogue
+        dialogue = await this.dialogueModel.create({
+          userId: user._id,
+          messages: [
+            {
+              sender: 'user',
+              message: body.question,
+              timestamp: new Date(),
+              important: false,
+            },
+            {
+              sender: 'ai',
+              message: response.data,
+              timestamp: new Date(),
+              important: false,
+            },
+          ],
+          isBranch: false,
+          parentDialogueId: null,
+          updatedAt: new Date(),
+        });
+      }
+
+      return { data: response.data, dialogueId: dialogue._id.toString() };
     } catch (error) {
       console.error(
         'Detailed Error:',
@@ -112,7 +129,7 @@ export class RespondController {
       const dialogues = await this.dialogueModel.find({ userId: userId });
       const dialogueSummaries = dialogues.map((dialogue) => {
         return {
-          dialogueId: dialogue.dialogueId,
+          dialogueId: dialogue._id.toString(), // Use the native _id property
           firstMessage: dialogue.messages[0]?.message || 'No messages',
           createdAt: dialogue.createdAt,
         };
@@ -129,7 +146,8 @@ export class RespondController {
   @Get('/dialogue/:dialogueId')
   async getDialogueById(@Param('dialogueId') dialogueId: string): Promise<any> {
     try {
-      const dialogue = await this.dialogueModel.findOne({ dialogueId });
+      const objectId = new Types.ObjectId(dialogueId);
+      const dialogue = await this.dialogueModel.findOne({ _id: objectId });
       if (!dialogue) {
         throw new NotFoundException('Dialogue not found');
       }

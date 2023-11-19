@@ -108,9 +108,9 @@ const QueryResponse: React.FC = () => {
   }, [dialogue]);
 
   const handleSubmit = async () => {
-    if (!selectedDialogueId) {
-      return;
-    }
+    // if (!selectedDialogueId) {
+    //   return;
+    // }
 
     try {
       setChatMessages((prevMessages) => [

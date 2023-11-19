@@ -8,7 +8,6 @@ const messageSchema = new mongoose.Schema({
 });
 
 export const dialogueSchema = new mongoose.Schema({
-  dialogueId: { type: String, required: true, unique: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   messages: [messageSchema],
   isBranch: { type: Boolean, default: false },
@@ -30,7 +29,6 @@ export interface Message extends mongoose.Document {
 }
 
 export interface Dialogue extends mongoose.Document {
-  dialogueId: string;
   _id: mongoose.Schema.Types.ObjectId;
   messages: Message[];
   isBranch: boolean;
