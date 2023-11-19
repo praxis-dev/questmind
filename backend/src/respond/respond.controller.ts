@@ -10,6 +10,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
@@ -156,6 +157,34 @@ export class RespondController {
     } catch (error) {
       console.error('Error fetching dialogue:', error.message);
       throw new InternalServerErrorException('Failed to fetch dialogue.');
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/dialogue/:dialogueId')
+  async deleteDialogue(
+    @Param('dialogueId') dialogueId: string,
+    @Req() req: RequestWithUser,
+  ): Promise<any> {
+    try {
+      const userId = req.user._id;
+      const objectId = new Types.ObjectId(dialogueId);
+
+      const result = await this.dialogueModel.deleteOne({
+        _id: objectId,
+        userId: userId,
+      });
+      if (result.deletedCount === 0) {
+        throw new NotFoundException(
+          'Dialogue not found or user not authorized to delete this dialogue',
+        );
+      }
+
+      return { message: 'Dialogue deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting dialogue:', error.message);
+      throw new InternalServerErrorException('Failed to delete dialogue.');
     }
   }
 }

@@ -26,10 +26,16 @@ export const fetchDialogues = createAsyncThunk(
   }
 );
 
-const dialogueIndexSlice = createSlice({
+export const dialogueIndexSlice = createSlice({
   name: "dialogueIndex",
   initialState,
-  reducers: {},
+  reducers: {
+    deleteDialogue: (state, action: PayloadAction<string>) => {
+      state.dialogues = state.dialogues.filter(
+        (dialogue) => dialogue.dialogueId !== action.payload
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchDialogues.pending, (state) => {

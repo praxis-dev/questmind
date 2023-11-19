@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Button, Drawer, Space, Card } from "antd";
-import { UnorderedListOutlined } from "@ant-design/icons";
+import { UnorderedListOutlined, CloseOutlined } from "@ant-design/icons";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
 import { fetchDialogueById } from "../../services/fetchDialogueById";
+import { deleteDialogue } from "../../services/deleteDialogue";
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 import { setSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
+import { clearMessages } from "../../store/slices/chatSlice";
+import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
+import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
 
 import { RootState, AppDispatch } from "../../store/store";
 
 const Menu: React.FC = () => {
   const [open, setOpen] = useState(false);
+
+  const selectedDialogueId = useSelector(
+    (state: RootState) => state.dialogue.selectedDialogueId
+  );
 
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -24,19 +32,22 @@ const Menu: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const dispatch = useDispatch<AppDispatch>();
-
   const dialogues = useSelector(
     (state: RootState) => state.dialogueIndex.dialogues
   );
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const isOpen = useSelector((state: RootState) => state.drawer.isOpen);
+
+  const showDrawer = () => {
+    dispatch(openDrawer());
+  };
+
+  const onClose = () => {
+    dispatch(closeDrawer());
+  };
+
   const status = useSelector((state: RootState) => state.dialogueIndex.status);
 
   const handleCardClick = (dialogueId: string) => {
@@ -57,6 +68,21 @@ const Menu: React.FC = () => {
       });
   };
 
+  const handleDialogueDelete = (dialogueId: string) => {
+    console.log(`Deleting dialogue: ${dialogueId}`);
+
+    deleteDialogue(dialogueId)
+      .then(() => {
+        console.log("Dialogue deleted.");
+        dispatch(clearMessages());
+        dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
+        // Do not dispatch fetchDialogues here
+      })
+      .catch((error) => {
+        console.error("Error deleting dialogue:", error);
+      });
+  };
+
   useEffect(() => {
     dispatch(fetchDialogues());
   }, [dispatch]);
@@ -67,9 +93,9 @@ const Menu: React.FC = () => {
     }
   }, [status, dialogues]);
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
+  // if (status === "loading") {
+  //   return <p>Loading...</p>;
+  // }
 
   if (status === "failed") {
     return <p>Failed to fetch dialogues.</p>;
@@ -90,18 +116,29 @@ const Menu: React.FC = () => {
         placement="left"
         closable={true}
         onClose={onClose}
-        open={open}
+        open={isOpen}
         key={"left"}
       >
-        {dialogues.map((dialogue) => (
-          <Card
-            key={dialogue.dialogueId}
-            title={new Date(dialogue.createdAt).toLocaleDateString()}
-            onClick={() => handleCardClick(dialogue.dialogueId)}
-          >
-            <p>{dialogue.firstMessage}</p>
-          </Card>
-        ))}
+        <Space direction="vertical">
+          {dialogues.map((dialogue) => (
+            <Card
+              size="small"
+              key={dialogue.dialogueId}
+              title={new Date(dialogue.createdAt).toLocaleDateString()}
+              onClick={() => handleCardClick(dialogue.dialogueId)}
+              extra={
+                <CloseOutlined
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDialogueDelete(dialogue.dialogueId);
+                  }}
+                />
+              }
+            >
+              <p>{dialogue.firstMessage}</p>
+            </Card>
+          ))}
+        </Space>
       </Drawer>
     </>
   );
