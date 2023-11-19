@@ -5,13 +5,15 @@ import loadingReducer from "./slices/loadingSlice";
 import formReducer from "./slices/formSlice";
 import dialogueIndexReducer from "./slices/dialogueIndexSlice";
 import dialogueDetailsReducer from "./slices/dialogueDetailsSlice";
+import dialogueReducer from "./slices/dialogueIdSlice";
 
 const rootReducer = combineReducers({
   dialogueIndex: dialogueIndexReducer,
   typing: typingReducer,
   loading: loadingReducer,
   form: formReducer,
-  dialogueDetails: dialogueDetailsReducer, // Add the dialogue details reducer here
+  dialogueDetails: dialogueDetailsReducer,
+  dialogue: dialogueReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

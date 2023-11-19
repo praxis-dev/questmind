@@ -44,6 +44,8 @@ const Menu: React.FC = () => {
 
     dispatch(setSelectedDialogueId(dialogueId));
 
+    console.log(`Fetching dialogue: ${dialogueId}`);
+
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
         console.log(dialogue);

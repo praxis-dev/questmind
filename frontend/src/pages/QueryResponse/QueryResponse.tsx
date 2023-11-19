@@ -36,6 +36,15 @@ const QueryResponse: React.FC = () => {
   const dispatch = useDispatch();
 
   const chatSpaceRef = React.useRef<HTMLDivElement>(null);
+  const selectedDialogueId = useSelector(
+    (state: RootState) => state.dialogue.selectedDialogueId
+  );
+
+  useEffect(() => {
+    if (selectedDialogueId) {
+      console.log(`SelectedDialogueId: ${selectedDialogueId}`);
+    }
+  }, [selectedDialogueId]);
 
   const messagesConfig = {
     introductory:
@@ -47,6 +56,7 @@ const QueryResponse: React.FC = () => {
     serverError:
       "Seems like we are experiencing issues on our end, please try with your request a bit later.",
   };
+
   const selectDialogue = (state: RootState) =>
     state.dialogueDetails.selectedDialogue;
 
@@ -98,6 +108,10 @@ const QueryResponse: React.FC = () => {
   }, [dialogue]);
 
   const handleSubmit = async () => {
+    if (!selectedDialogueId) {
+      return;
+    }
+
     try {
       setChatMessages((prevMessages) => [
         ...prevMessages,
@@ -107,7 +121,7 @@ const QueryResponse: React.FC = () => {
       setQuestion("");
       dispatch(setIsLoading(true));
 
-      const responseText = await fetchResponse(question);
+      const responseText = await fetchResponse(question, selectedDialogueId);
 
       setIsTyping(true);
 

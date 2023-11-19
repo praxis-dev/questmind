@@ -37,13 +37,13 @@ export class RespondController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async respond(
-    @Body() body: { question: string },
+    @Body() body: { question: string; dialogueId: string | null },
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
       console.log('User:', user);
-      const fixedDialogueId = 'fixed-dialogue-id'; // Fixed ID for the dialogue
+      const dialogueId = body.dialogueId || 'default';
 
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
@@ -64,7 +64,7 @@ export class RespondController {
 
       // Find or create a dialogue
       const dialogue = await this.dialogueModel.findOneAndUpdate(
-        { dialogueId: fixedDialogueId },
+        { dialogueId: dialogueId },
         {
           $push: {
             messages: [
@@ -84,7 +84,7 @@ export class RespondController {
           },
           $setOnInsert: {
             userId: user._id,
-            dialogueId: fixedDialogueId,
+            dialogueId: dialogueId,
             isBranch: false,
             parentDialogueId: null,
           },
@@ -93,7 +93,7 @@ export class RespondController {
         { new: true, upsert: true },
       );
 
-      return { data: response.data, dialogueId: fixedDialogueId };
+      return { data: response.data, dialogueId: dialogueId };
     } catch (error) {
       console.error(
         'Detailed Error:',
