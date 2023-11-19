@@ -15,10 +15,14 @@ import { clearMessages } from "../../store/slices/chatSlice";
 import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
 import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
 
+import { DialogueSummary } from "../../services/fetchUserDialogues";
+
 import { RootState, AppDispatch } from "../../store/store";
 
 const Menu: React.FC = () => {
   const [open, setOpen] = useState(false);
+
+  const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
 
   const selectedDialogueId = useSelector(
     (state: RootState) => state.dialogue.selectedDialogueId
@@ -83,14 +87,16 @@ const Menu: React.FC = () => {
       });
   };
 
-  const sortedDialogues = [...dialogues].sort((a, b) => {
-    console.log(a.updatedAt);
-    console.log(b.updatedAt);
-    const dateA = new Date(a.updatedAt).getTime();
-    const dateB = new Date(b.updatedAt).getTime();
+  useEffect(() => {
+    const sorted = [...dialogues].sort((a, b) => {
+      const dateA = new Date(a.updatedAt).getTime();
+      const dateB = new Date(b.updatedAt).getTime();
 
-    return dateB - dateA;
-  });
+      return dateB - dateA;
+    });
+
+    setSortedDialogues(sorted);
+  }, [dialogues]);
 
   useEffect(() => {
     dispatch(fetchDialogues());
