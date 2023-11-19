@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Modal, Space } from "antd";
 
@@ -12,6 +12,9 @@ import About from "../About/About";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 
+import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+import { clearMessages } from "../../store/slices/chatSlice";
+
 const Header: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -21,14 +24,15 @@ const Header: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const dispatch = useDispatch();
+
   const showAboutModal = () => {
     setIsAboutVisible(true);
   };
 
-  const navigate = useNavigate();
-
-  const navigateToHome = () => {
-    navigate("/");
+  const handlePlusClick = () => {
+    dispatch(setSelectedDialogueId(""));
+    dispatch(clearMessages());
   };
 
   const [isAboutVisible, setIsAboutVisible] = useState(false);
@@ -41,7 +45,7 @@ const Header: React.FC = () => {
           icon={<PlusOutlined style={styles.aboutIcon} />}
           type="link"
           style={styles.aboutButton}
-          onClick={navigateToHome}
+          onClick={handlePlusClick}
         />
       </Space>
       <div style={styles.iconsContainer}>

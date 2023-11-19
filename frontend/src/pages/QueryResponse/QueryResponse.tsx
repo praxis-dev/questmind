@@ -9,6 +9,11 @@ import { AnyAction } from "redux";
 
 import { setIsLoading } from "../../store/slices/loadingSlice";
 import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
+import {
+  addMessage,
+  selectChatMessages,
+  setMessages,
+} from "../../store/slices/chatSlice";
 import { RootState } from "../../store";
 
 import QueryInput from "../../components/QueryInput/QueryInput";
@@ -30,9 +35,7 @@ interface ErrorResponse {
 
 const QueryResponse: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
-  const [chatMessages, setChatMessages] = useState<
-    Array<{ type: "user" | "ai"; text: string }>
-  >([]);
+
   const [hasUserScrolled, setHasUserScrolled] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
@@ -43,6 +46,8 @@ const QueryResponse: React.FC = () => {
   const selectedDialogueId = useSelector(
     (state: RootState) => state.dialogue.selectedDialogueId
   );
+
+  const chatMessages = useSelector(selectChatMessages);
 
   useEffect(() => {
     if (selectedDialogueId) {
@@ -73,17 +78,13 @@ const QueryResponse: React.FC = () => {
   }, [dialogue]);
 
   useEffect(() => {
-    const introductoryMessage: { type: "ai"; text: string } = {
-      type: "ai",
-      text: messagesConfig.introductory,
-    };
     if (
       chatMessages.length === 0 &&
       (!dialogue || dialogue.messages.length === 0)
     ) {
-      setChatMessages([introductoryMessage]);
+      dispatch(addMessage({ type: "ai", text: messagesConfig.introductory }));
     }
-  }, [chatMessages.length, messagesConfig.introductory, dialogue]);
+  }, [chatMessages.length, messagesConfig.introductory, dialogue, dispatch]);
 
   useEffect(() => {
     if (isTyping && chatSpaceRef.current) {
@@ -107,7 +108,7 @@ const QueryResponse: React.FC = () => {
           text: msg.message,
         };
       });
-      setChatMessages(formattedMessages);
+      dispatch(setMessages(formattedMessages));
     }
   }, [dialogue]);
 
@@ -117,10 +118,7 @@ const QueryResponse: React.FC = () => {
     // }
 
     try {
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { type: "user", text: question },
-      ]);
+      dispatch(addMessage({ type: "user", text: question }));
 
       setQuestion("");
       dispatch(setIsLoading(true));
@@ -130,10 +128,8 @@ const QueryResponse: React.FC = () => {
       setIsTyping(true);
 
       setTimeout(() => {
-        setChatMessages((prevMessages) => [
-          ...prevMessages,
-          { type: "ai", text: responseText.data },
-        ]);
+        dispatch(addMessage({ type: "ai", text: responseText.data }));
+
         dispatch(setIsLoading(false));
         setIsTyping(false);
       }, 500);
@@ -156,10 +152,7 @@ const QueryResponse: React.FC = () => {
         errorMessage = messagesConfig.networkError;
       }
 
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { type: "ai", text: errorMessage },
-      ]);
+      dispatch(addMessage({ type: "ai", text: errorMessage }));
     }
   };
 

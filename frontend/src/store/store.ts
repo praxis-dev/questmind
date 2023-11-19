@@ -6,6 +6,7 @@ import formReducer from "./slices/formSlice";
 import dialogueIndexReducer from "./slices/dialogueIndexSlice";
 import dialogueDetailsReducer from "./slices/dialogueDetailsSlice";
 import dialogueReducer from "./slices/dialogueIdSlice";
+import chatReducer from "./slices/chatSlice";
 
 const rootReducer = combineReducers({
   dialogueIndex: dialogueIndexReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   form: formReducer,
   dialogueDetails: dialogueDetailsReducer,
   dialogue: dialogueReducer,
+  chat: chatReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
