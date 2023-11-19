@@ -6,6 +6,7 @@ export interface DialogueSummary {
   dialogueId: string;
   firstMessage: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 const dialoguesApiUrl = `${process.env.REACT_APP_API_URL}/respond/dialogues`;

@@ -83,6 +83,15 @@ const Menu: React.FC = () => {
       });
   };
 
+  const sortedDialogues = [...dialogues].sort((a, b) => {
+    console.log(a.updatedAt);
+    console.log(b.updatedAt);
+    const dateA = new Date(a.updatedAt).getTime();
+    const dateB = new Date(b.updatedAt).getTime();
+
+    return dateB - dateA;
+  });
+
   useEffect(() => {
     dispatch(fetchDialogues());
   }, [dispatch]);
@@ -120,7 +129,7 @@ const Menu: React.FC = () => {
         key={"left"}
       >
         <Space direction="vertical">
-          {dialogues.map((dialogue) => (
+          {sortedDialogues.map((dialogue) => (
             <Card
               size="small"
               key={dialogue.dialogueId}

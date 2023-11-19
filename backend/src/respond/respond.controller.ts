@@ -130,9 +130,10 @@ export class RespondController {
       const dialogues = await this.dialogueModel.find({ userId: userId });
       const dialogueSummaries = dialogues.map((dialogue) => {
         return {
-          dialogueId: dialogue._id.toString(), // Use the native _id property
+          dialogueId: dialogue._id.toString(),
           firstMessage: dialogue.messages[0]?.message || 'No messages',
           createdAt: dialogue.createdAt,
+          updatedAt: dialogue.updatedAt,
         };
       });
 
