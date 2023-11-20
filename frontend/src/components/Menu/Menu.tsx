@@ -21,9 +21,25 @@ import { RootState, AppDispatch } from "../../store/store";
 
 import io from "socket.io-client";
 
+import styled, { keyframes } from "styled-components";
+
+const pulsate = keyframes`
+  0% { border-color: black; }
+  50% { border-color: #cd7f32; }
+  100% { border-color: black; }
+`;
+
+const StyledCard = styled(Card)`
+  &.selected {
+    animation: ${pulsate} 4s infinite;
+    border: 1px solid black;
+  }
+`;
+
 const Menu: React.FC = () => {
   const socket = io("http://localhost:3001");
   const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const selectedDialogueId = useSelector(
     (state: RootState) => state.dialogue.selectedDialogueId
@@ -59,6 +75,7 @@ const Menu: React.FC = () => {
     console.log(`Dialogue clicked: ${dialogueId}`);
 
     dispatch(setSelectedDialogueId(dialogueId));
+    setSelectedCardId(dialogueId); // Update the selected card ID
 
     console.log(`Fetching dialogue: ${dialogueId}`);
 
@@ -123,14 +140,30 @@ const Menu: React.FC = () => {
 
   useEffect(() => {
     socket.on("dialogueUpdated", (data) => {
-      console.log("Dialogue updated:", data);
-      // Update your state or Redux store here
+      console.log("Dialogue updated via websocket:", data);
+
+      // Find and update the dialogue in the array
+      const updatedDialogues = sortedDialogues.map((dialogue) => {
+        if (dialogue.dialogueId === data.dialogueId) {
+          return { ...dialogue, updatedAt: data.updatedData.updatedAt };
+        }
+        return dialogue;
+      });
+
+      // Re-sort the dialogues based on updatedAt
+      updatedDialogues.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
+      // Update state with the new sorted array
+      setSortedDialogues(updatedDialogues);
     });
 
     return () => {
       socket.off("dialogueUpdated");
     };
-  }, []);
+  }, [sortedDialogues]);
 
   if (status === "failed") {
     return <p>Failed to fetch dialogues.</p>;
@@ -156,7 +189,7 @@ const Menu: React.FC = () => {
       >
         <Space direction="vertical">
           {sortedDialogues.map((dialogue) => (
-            <Card
+            <StyledCard
               size="small"
               key={dialogue.dialogueId}
               title={new Date(dialogue.createdAt).toLocaleDateString()}
@@ -169,9 +202,12 @@ const Menu: React.FC = () => {
                   }}
                 />
               }
+              className={
+                selectedCardId === dialogue.dialogueId ? "selected" : ""
+              }
             >
               <p>{dialogue.firstMessage}</p>
-            </Card>
+            </StyledCard>
           ))}
         </Space>
       </Drawer>
@@ -208,6 +244,12 @@ const baseStyles: ViewStyles = {
   listIcon: {
     fontSize: 20,
     color: "grey",
+  },
+
+  selectedCardStyle: {
+    borderColor: "blue",
+    borderWidth: "2px",
+    borderStyle: "solid",
   },
 };
 
