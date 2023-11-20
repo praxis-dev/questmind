@@ -78,9 +78,10 @@ const Menu: React.FC = () => {
     deleteDialogue(dialogueId)
       .then(() => {
         console.log("Dialogue deleted.");
-        dispatch(clearMessages());
+        if (selectedDialogueId === dialogueId) {
+          dispatch(clearMessages());
+        }
         dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
-        // Do not dispatch fetchDialogues here
       })
       .catch((error) => {
         console.error("Error deleting dialogue:", error);
@@ -91,6 +92,7 @@ const Menu: React.FC = () => {
     const sorted = [...dialogues].sort((a, b) => {
       const dateA = new Date(a.updatedAt).getTime();
       const dateB = new Date(b.updatedAt).getTime();
+      console.log(dateA, dateB);
 
       return dateB - dateA;
     });
@@ -111,6 +113,12 @@ const Menu: React.FC = () => {
   // if (status === "loading") {
   //   return <p>Loading...</p>;
   // }
+
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(fetchDialogues());
+    }
+  }, [isOpen, dispatch]);
 
   if (status === "failed") {
     return <p>Failed to fetch dialogues.</p>;
