@@ -26,7 +26,7 @@ const About: React.FC = () => {
     <div style={styles.section}>
       <Space direction="vertical" style={styles.contentSpace}>
         <Button
-          type="primary"
+          type="link"
           danger
           onClick={() => {
             handleLogout();

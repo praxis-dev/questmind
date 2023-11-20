@@ -12,6 +12,8 @@ import { setFormState } from "../../store/slices/formSlice";
 
 import BasicForm from "../../components/BasicForm/BasicForm";
 
+import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/PulsatingButtonWithText";
+
 const Landing: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -93,13 +95,12 @@ const Landing: React.FC = () => {
               towards a more insightful, balanced you.
             </div>
             <Space direction="horizontal" style={styles.contentSpace}>
-              <Button
-                type="primary"
-                style={styles.buttonStyle}
+              <PulsatingButtonWithText
+                disabled={false}
                 onClick={showLoginModal}
               >
                 Login
-              </Button>
+              </PulsatingButtonWithText>
               <Modal
                 style={{ top: 20 }}
                 title={loginModalTitle}
@@ -111,13 +112,12 @@ const Landing: React.FC = () => {
                 <BasicForm />
               </Modal>
 
-              <Button
-                type="primary"
-                style={styles.buttonStyle}
+              <PulsatingButtonWithText
+                disabled={false}
                 onClick={showSignupModal}
               >
                 Sign Up
-              </Button>
+              </PulsatingButtonWithText>
               <Modal
                 style={{ top: 20 }}
                 title={signupModalTitle}
@@ -153,14 +153,6 @@ const baseStyles: ViewStyles = {
 
   textArea: {
     textAlign: "left",
-  },
-
-  buttonStyle: {
-    width: "100px",
-    backgroundColor: "white",
-    color: "black",
-    borderColor: "black",
-    boxShadow: "0 0 0 1px black",
   },
 };
 

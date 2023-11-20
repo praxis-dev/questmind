@@ -25,15 +25,15 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 
 import styled, { keyframes } from "styled-components";
 
+const LargeUnorderedListOutlined = styled(UnorderedListOutlined)`
+  font-size: 25px;
+  color: grey;
+`;
+
 const pulsate = keyframes`
   0% { border-color: transparent; }
   50% { border-color: #cd7f32; }
   100% { border-color: transparent; }
-`;
-
-const StyledIcon = styled.span`
-  font-size: 25px;
-  color: grey; // Default icon color
 `;
 
 const PulsatingButton = styled(Button)`
@@ -49,7 +49,7 @@ const PulsatingButton = styled(Button)`
     animation: ${pulsate} 4s infinite;
     border: 1px solid black;
 
-    ${StyledIcon} {
+    svg {
       color: #cd7f32; // Change icon color on hover
     }
   }
@@ -208,9 +208,10 @@ const Menu: React.FC = () => {
         <PulsatingButton
           type="link"
           onClick={showDrawer}
-          icon={<StyledIcon as={UnorderedListOutlined} />}
           style={styles.buttonStyle}
-        ></PulsatingButton>
+        >
+          <LargeUnorderedListOutlined />
+        </PulsatingButton>
       </Space>
       <Drawer
         title="My Dialogues "

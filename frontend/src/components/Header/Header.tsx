@@ -22,10 +22,14 @@ const pulsate = keyframes`
   50% { border-color: #cd7f32; }
   100% { border-color: transparent; }
 `;
-
-const StyledIcon = styled.span`
+const LargePlusOutlined = styled(PlusOutlined)`
   font-size: 25px;
-  color: grey; // Default icon color
+  color: grey;
+`;
+
+const LargeInfoCircleOutlined = styled(InfoCircleOutlined)`
+  font-size: 25px;
+  color: grey;
 `;
 
 const PulsatingButton = styled(Button)`
@@ -41,7 +45,7 @@ const PulsatingButton = styled(Button)`
     animation: ${pulsate} 4s infinite;
     border: 1px solid black;
 
-    ${StyledIcon} {
+    svg {
       color: #cd7f32; // Change icon color on hover
     }
   }
@@ -74,19 +78,21 @@ const Header: React.FC = () => {
       <Space>
         <Menu />
         <PulsatingButton
-          icon={<StyledIcon as={PlusOutlined} />}
           type="link"
           style={styles.aboutButton}
           onClick={handlePlusClick}
-        />
+        >
+          <LargePlusOutlined />
+        </PulsatingButton>
       </Space>
       <div style={styles.iconsContainer}>
         <PulsatingButton
-          icon={<StyledIcon as={InfoCircleOutlined} />}
           type="link"
           style={styles.aboutButton}
           onClick={showAboutModal}
-        />
+        >
+          <LargeInfoCircleOutlined />
+        </PulsatingButton>
       </div>
 
       <Modal

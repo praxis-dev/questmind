@@ -17,6 +17,8 @@ import { setFormState } from "../../store/slices/formSlice";
 
 import { PASSWORD_REGEX } from "../../utils/constants";
 
+import PulsatingButtonWithText from "../PulsatingButtonWithText/PulsatingButtonWithText";
+
 const SubmitButton = ({ form }: { form: FormInstance }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
@@ -34,21 +36,9 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
   }, [values, form]);
 
   return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      style={{
-        marginTop: 10,
-        width: "100px",
-        backgroundColor: "white",
-        color: "black",
-        borderColor: "black",
-        boxShadow: "0 0 0 1px black",
-      }}
-    >
+    <PulsatingButtonWithText disabled={!submittable}>
       Submit
-    </Button>
+    </PulsatingButtonWithText>
   );
 };
 
