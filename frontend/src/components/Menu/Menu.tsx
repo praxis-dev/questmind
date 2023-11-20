@@ -19,9 +19,10 @@ import { DialogueSummary } from "../../services/fetchUserDialogues";
 
 import { RootState, AppDispatch } from "../../store/store";
 
-const Menu: React.FC = () => {
-  const [open, setOpen] = useState(false);
+import io from "socket.io-client";
 
+const Menu: React.FC = () => {
+  const socket = io("http://localhost:3001");
   const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
 
   const selectedDialogueId = useSelector(
@@ -119,6 +120,17 @@ const Menu: React.FC = () => {
       dispatch(fetchDialogues());
     }
   }, [isOpen, dispatch]);
+
+  useEffect(() => {
+    socket.on("dialogueUpdated", (data) => {
+      console.log("Dialogue updated:", data);
+      // Update your state or Redux store here
+    });
+
+    return () => {
+      socket.off("dialogueUpdated");
+    };
+  }, []);
 
   if (status === "failed") {
     return <p>Failed to fetch dialogues.</p>;

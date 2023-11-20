@@ -24,6 +24,8 @@ import { Types } from 'mongoose';
 import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
 
+import { WsGateway } from '../websockets/ws.gateway';
+
 interface RequestWithUser extends Request {
   user: User;
 }
@@ -34,6 +36,7 @@ export class RespondController {
     private readonly httpService: HttpService,
     @InjectModel('Dialogue') private dialogueModel: Model<Dialogue>,
     private jwtService: JwtService,
+    private wsGateway: WsGateway,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
@@ -87,6 +90,9 @@ export class RespondController {
         );
         dialogue.updatedAt = new Date();
         await dialogue.save();
+        this.wsGateway.notifyClient(dialogue._id.toString(), {
+          updatedAt: dialogue.updatedAt,
+        });
       } else {
         // Create new dialogue
         dialogue = await this.dialogueModel.create({
