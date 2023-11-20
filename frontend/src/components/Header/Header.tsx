@@ -15,6 +15,38 @@ import { PlusOutlined } from "@ant-design/icons";
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 
+import styled, { keyframes } from "styled-components";
+
+const pulsate = keyframes`
+  0% { border-color: transparent; }
+  50% { border-color: #cd7f32; }
+  100% { border-color: transparent; }
+`;
+
+const StyledIcon = styled.span`
+  font-size: 25px;
+  color: grey; // Default icon color
+`;
+
+const PulsatingButton = styled(Button)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 2px 0;
+  border: 1px solid transparent;
+  transition: border 0.5s ease-in-out;
+
+  &:hover {
+    animation: ${pulsate} 4s infinite;
+    border: 1px solid black;
+
+    ${StyledIcon} {
+      color: #cd7f32; // Change icon color on hover
+    }
+  }
+`;
+
 const Header: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -41,16 +73,16 @@ const Header: React.FC = () => {
     <div style={styles.headerContainer}>
       <Space>
         <Menu />
-        <Button
-          icon={<PlusOutlined style={styles.aboutIcon} />}
+        <PulsatingButton
+          icon={<StyledIcon as={PlusOutlined} />}
           type="link"
           style={styles.aboutButton}
           onClick={handlePlusClick}
         />
       </Space>
       <div style={styles.iconsContainer}>
-        <Button
-          icon={<InfoCircleOutlined style={styles.aboutIcon} />}
+        <PulsatingButton
+          icon={<StyledIcon as={InfoCircleOutlined} />}
           type="link"
           style={styles.aboutButton}
           onClick={showAboutModal}

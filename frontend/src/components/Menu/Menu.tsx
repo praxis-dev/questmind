@@ -26,6 +26,36 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 import styled, { keyframes } from "styled-components";
 
 const pulsate = keyframes`
+  0% { border-color: transparent; }
+  50% { border-color: #cd7f32; }
+  100% { border-color: transparent; }
+`;
+
+const StyledIcon = styled.span`
+  font-size: 25px;
+  color: grey; // Default icon color
+`;
+
+const PulsatingButton = styled(Button)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 2px 0;
+  border: 1px solid transparent;
+  transition: border 0.5s ease-in-out;
+
+  &:hover {
+    animation: ${pulsate} 4s infinite;
+    border: 1px solid black;
+
+    ${StyledIcon} {
+      color: #cd7f32; // Change icon color on hover
+    }
+  }
+`;
+
+const pulsateCard = keyframes`
   0% { border-color: black; }
   50% { border-color: #cd7f32; }
   100% { border-color: black; }
@@ -33,7 +63,7 @@ const pulsate = keyframes`
 
 const StyledCard = styled(Card)`
   &.selected {
-    animation: ${pulsate} 4s infinite;
+    animation: ${pulsateCard} 4s infinite;
     border: 1px solid black;
   }
   margin-bottom: 10px;
@@ -175,12 +205,12 @@ const Menu: React.FC = () => {
   return (
     <>
       <Space>
-        <Button
+        <PulsatingButton
           type="link"
           onClick={showDrawer}
-          icon={<UnorderedListOutlined style={styles.listIcon} />}
+          icon={<StyledIcon as={UnorderedListOutlined} />}
           style={styles.buttonStyle}
-        ></Button>
+        ></PulsatingButton>
       </Space>
       <Drawer
         title="My Dialogues "

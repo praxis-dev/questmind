@@ -8,7 +8,18 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 
+import styled, { keyframes } from "styled-components";
+
 import "./QueryInput.css";
+
+interface StyledIconProps {
+  disabled: boolean;
+}
+
+const StyledIcon = styled.span<StyledIconProps>`
+  font-size: 25px;
+  color: ${(props) => (props.disabled ? "grey" : "#cd7f32")};
+`;
 
 interface QueryInputProps {
   question: string;
@@ -98,7 +109,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
             disabled={isDisabled}
             style={styles.floatButton}
             onClick={onSubmit}
-            icon={<SendOutlined />}
+            icon={<StyledIcon as={SendOutlined} disabled={isDisabled} />}
           />
         </div>
       </div>

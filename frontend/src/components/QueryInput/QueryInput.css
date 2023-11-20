@@ -17,6 +17,6 @@
 }
 
 .textAreaStyle:focus {
-  border-color: black;
+  border-color: #cd7f32;
   outline: none;
 }
