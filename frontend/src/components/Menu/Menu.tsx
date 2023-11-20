@@ -21,6 +21,8 @@ import { RootState, AppDispatch } from "../../store/store";
 
 import io from "socket.io-client";
 
+import { Flipper, Flipped } from "react-flip-toolkit";
+
 import styled, { keyframes } from "styled-components";
 
 const pulsate = keyframes`
@@ -34,6 +36,7 @@ const StyledCard = styled(Card)`
     animation: ${pulsate} 4s infinite;
     border: 1px solid black;
   }
+  margin-bottom: 10px;
 `;
 
 const Menu: React.FC = () => {
@@ -188,27 +191,31 @@ const Menu: React.FC = () => {
         key={"left"}
       >
         <Space direction="vertical">
-          {sortedDialogues.map((dialogue) => (
-            <StyledCard
-              size="small"
-              key={dialogue.dialogueId}
-              title={new Date(dialogue.createdAt).toLocaleDateString()}
-              onClick={() => handleCardClick(dialogue.dialogueId)}
-              extra={
-                <CloseOutlined
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDialogueDelete(dialogue.dialogueId);
-                  }}
-                />
-              }
-              className={
-                selectedCardId === dialogue.dialogueId ? "selected" : ""
-              }
-            >
-              <p>{dialogue.firstMessage}</p>
-            </StyledCard>
-          ))}
+          <Flipper flipKey={sortedDialogues}>
+            {sortedDialogues.map((dialogue) => (
+              <Flipped key={dialogue.dialogueId} flipId={dialogue.dialogueId}>
+                <StyledCard
+                  size="small"
+                  key={dialogue.dialogueId}
+                  title={new Date(dialogue.createdAt).toLocaleDateString()}
+                  onClick={() => handleCardClick(dialogue.dialogueId)}
+                  extra={
+                    <CloseOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDialogueDelete(dialogue.dialogueId);
+                      }}
+                    />
+                  }
+                  className={
+                    selectedCardId === dialogue.dialogueId ? "selected" : ""
+                  }
+                >
+                  <p>{dialogue.firstMessage}</p>
+                </StyledCard>
+              </Flipped>
+            ))}
+          </Flipper>
         </Space>
       </Drawer>
     </>

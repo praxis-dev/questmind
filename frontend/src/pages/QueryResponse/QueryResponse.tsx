@@ -27,6 +27,8 @@ import { Space } from "antd";
 
 import "./QueryResponse.css";
 
+import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+
 interface ErrorResponse {
   response?: {
     status: number;
@@ -124,6 +126,7 @@ const QueryResponse: React.FC = () => {
       dispatch(setIsLoading(true));
 
       const responseText = await fetchResponse(question, selectedDialogueId);
+      dispatch(setSelectedDialogueId(responseText.dialogueId));
 
       setIsTyping(true);
 
