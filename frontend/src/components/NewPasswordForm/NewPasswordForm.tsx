@@ -11,6 +11,8 @@ import { PASSWORD_REGEX } from "../../utils/constants";
 
 import { resetPassword } from "../../services/resetPassword";
 
+import PulsatingButtonWithText from "../PulsatingButtonWithText/PulsatingButtonWithText";
+
 type FormValues = {
   password: string;
 };
@@ -134,14 +136,9 @@ const NewPasswordForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          disabled={!isPasswordMatch}
-          style={styles.submitButton}
-        >
+        <PulsatingButtonWithText disabled={!isPasswordMatch}>
           Submit
-        </Button>
+        </PulsatingButtonWithText>
       </Form.Item>
     </Form>
   );

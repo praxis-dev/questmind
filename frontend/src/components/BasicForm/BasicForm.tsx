@@ -108,6 +108,9 @@ const BasicForm: React.FC = () => {
 
   const onFinish = async (values: FormValues) => {
     console.log("Form Values:", values);
+    if (values.email) {
+      values.email = values.email.toLowerCase();
+    }
     try {
       await formActions[formState](values);
     } catch (error) {
