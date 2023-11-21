@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -30,6 +30,8 @@ import "./QueryResponse.css";
 
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 
+import messagesConfig from "../../utils/messagesConfig";
+
 interface ErrorResponse {
   response?: {
     status: number;
@@ -52,74 +54,7 @@ const QueryResponse: React.FC = () => {
 
   const chatMessages = useSelector(selectChatMessages);
 
-  useEffect(() => {
-    if (selectedDialogueId) {
-      console.log(`SelectedDialogueId: ${selectedDialogueId}`);
-    }
-  }, [selectedDialogueId]);
-
-  const messagesConfig = {
-    introductory:
-      "Hi, I am your personal AI mentor specialized in psychology and philosophy. In need of swift, insightful advice? Wrestling with a situation or pondering a thought? Feel free to ask me anything. Let's delve deep and find clarity together.",
-    notExpert: "This is not my area of expertise.",
-    unexpectedError: "An unexpected error occurred. Please try again later.",
-    networkError:
-      "We're having trouble reaching our servers. Please check your connection and try again.",
-    serverError:
-      "Seems like we are experiencing issues on our end, please try with your request a bit later.",
-  };
-
-  const selectDialogue = (state: RootState) =>
-    state.dialogueDetails.selectedDialogue;
-
-  const dialogue = useSelector(selectDialogue);
-
-  useEffect(() => {
-    if (dialogue) {
-      console.log("Dialogue updated:", dialogue);
-    }
-  }, [dialogue]);
-
-  useEffect(() => {
-    if (
-      chatMessages.length === 0 &&
-      (!dialogue || dialogue.messages.length === 0)
-    ) {
-      dispatch(addMessage({ type: "ai", text: messagesConfig.introductory }));
-    }
-  }, [chatMessages.length, messagesConfig.introductory, dialogue, dispatch]);
-
-  useEffect(() => {
-    if (isTyping && chatSpaceRef.current) {
-      const element = chatSpaceRef.current;
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [isTyping]);
-
-  useEffect(() => {
-    if (dialogue && dialogue.messages) {
-      const formattedMessages = dialogue.messages.map((msg) => {
-        // Ensure that type is either 'user' or 'ai'
-        const messageType: "user" | "ai" =
-          msg.sender === "user" || msg.sender === "ai" ? msg.sender : "ai"; // Defaulting to 'ai' in case of mismatch
-
-        return {
-          type: messageType,
-          text: msg.message,
-        };
-      });
-      dispatch(setMessages(formattedMessages));
-    }
-  }, [dialogue]);
-
   const handleSubmit = async () => {
-    // if (!selectedDialogueId) {
-    //   return;
-    // }
-
     try {
       dispatch(addMessage({ type: "user", text: question }));
 
@@ -159,6 +94,68 @@ const QueryResponse: React.FC = () => {
       dispatch(addMessage({ type: "ai", text: errorMessage }));
     }
   };
+
+  useEffect(() => {
+    if (selectedDialogueId) {
+      console.log(`SelectedDialogueId: ${selectedDialogueId}`);
+    }
+  }, [selectedDialogueId]);
+
+  const selectDialogue = (state: RootState) =>
+    state.dialogueDetails.selectedDialogue;
+
+  const dialogue = useSelector(selectDialogue);
+
+  useEffect(() => {
+    if (dialogue) {
+      console.log("Dialogue updated:", dialogue);
+    }
+  }, [dialogue]);
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (
+      isFirstRender.current &&
+      chatMessages.length === 0 &&
+      (!dialogue || dialogue.messages.length === 0)
+    ) {
+      // Generate a random index to select a message
+      const randomIndex = Math.floor(
+        Math.random() * messagesConfig.introductory.length
+      );
+      const randomIntroductoryMessage =
+        messagesConfig.introductory[randomIndex];
+
+      dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
+      isFirstRender.current = false; // Set to false after the first render
+    }
+  }, [chatMessages.length, dialogue, dispatch]);
+
+  useEffect(() => {
+    if (isTyping && chatSpaceRef.current) {
+      const element = chatSpaceRef.current;
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [isTyping]);
+
+  useEffect(() => {
+    if (dialogue && dialogue.messages) {
+      const formattedMessages = dialogue.messages.map((msg) => {
+        // Ensure that type is either 'user' or 'ai'
+        const messageType: "user" | "ai" =
+          msg.sender === "user" || msg.sender === "ai" ? msg.sender : "ai";
+
+        return {
+          type: messageType,
+          text: msg.message,
+        };
+      });
+      dispatch(setMessages(formattedMessages));
+    }
+  }, [dialogue]);
 
   useEffect(() => {
     const element = chatSpaceRef.current;
@@ -232,13 +229,13 @@ const QueryResponse: React.FC = () => {
                   }
                 }}
                 showShareButton={
-                  ![
-                    messagesConfig.introductory,
-                    messagesConfig.notExpert,
-                    messagesConfig.unexpectedError,
-                    messagesConfig.networkError,
-                    messagesConfig.serverError,
-                  ].includes(message.text)
+                  !(
+                    messagesConfig.introductory.includes(message.text) ||
+                    messagesConfig.notExpert === message.text ||
+                    messagesConfig.unexpectedError === message.text ||
+                    messagesConfig.networkError === message.text ||
+                    messagesConfig.serverError === message.text
+                  )
                 }
                 userQuestion={
                   message.type === "ai"
