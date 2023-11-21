@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Button, Menu, Space, Dropdown } from "antd";
+import { Button, Space } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import DialogueMenu from "../../components/DialogueMenu/DialogueMenu";
-import About from "../About/About";
+import SettingsMenu from "../About/SettingsMenu";
 
-import { SettingOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
@@ -17,19 +16,13 @@ import { clearMessages } from "../../store/slices/chatSlice";
 
 import styled, { keyframes } from "styled-components";
 
-import type { MenuProps } from "antd";
-
 const pulsate = keyframes`
   0% { border-color: transparent; }
   50% { border-color: #cd7f32; }
   100% { border-color: transparent; }
 `;
-const LargePlusOutlined = styled(PlusOutlined)`
-  font-size: 25px;
-  color: grey;
-`;
 
-const LargeSettingOutlined = styled(SettingOutlined)`
+const LargePlusOutlined = styled(PlusOutlined)`
   font-size: 25px;
   color: grey;
 `;
@@ -54,13 +47,6 @@ const PulsatingButton = styled(Button)`
 `;
 
 const Header: React.FC = () => {
-  const [current, setCurrent] = useState("mail");
-
-  const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
-    setCurrent(e.key);
-  };
-
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -76,8 +62,6 @@ const Header: React.FC = () => {
     dispatch(clearMessages());
   };
 
-  const items = [{ label: <About />, key: "item-1" }];
-
   return (
     <div style={styles.headerContainer}>
       <Space>
@@ -91,11 +75,7 @@ const Header: React.FC = () => {
         </PulsatingButton>
       </Space>
       <div style={styles.iconsContainer}>
-        <Dropdown menu={{ items }}>
-          <PulsatingButton type="link" style={styles.aboutButton}>
-            <LargeSettingOutlined />
-          </PulsatingButton>
-        </Dropdown>
+        <SettingsMenu />
       </div>
     </div>
   );

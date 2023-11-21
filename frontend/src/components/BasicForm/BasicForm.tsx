@@ -65,10 +65,6 @@ const BasicForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("Form State:", formState);
-  }, [formState]);
-
   const handleSignup = async (values: SignupValues) => {
     const response = await createUser({
       email: values.email,
