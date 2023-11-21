@@ -239,7 +239,7 @@ const QueryResponse: React.FC = () => {
             ))}
             {isLoading && (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <ScalingSquaresSpinner color="grey" size={27} />
+                <ScalingSquaresSpinner color="#cd7f32" size={27} />
               </div>
             )}
           </Space>
