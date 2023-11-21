@@ -226,16 +226,14 @@ const DialogueMenu: React.FC = () => {
                     selectedCardId === dialogue.dialogueId ? "selected" : ""
                   }
                 >
-                  <p>
-                    <Paragraph
-                      ellipsis={{
-                        rows: 4,
-                        expandable: false,
-                      }}
-                    >
-                      {dialogue.firstMessage}
-                    </Paragraph>
-                  </p>
+                  <Paragraph
+                    ellipsis={{
+                      rows: 4,
+                      expandable: false,
+                    }}
+                  >
+                    {dialogue.firstMessage}
+                  </Paragraph>
                 </StyledCard>
               </Flipped>
             ))}
