@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Button, Drawer, Space, Card } from "antd";
+import { Button, Drawer, Space, Card, Typography } from "antd";
 import { UnorderedListOutlined, CloseOutlined } from "@ant-design/icons";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -69,7 +69,7 @@ const StyledCard = styled(Card)`
   margin-bottom: 10px;
 `;
 
-const Menu: React.FC = () => {
+const DialogueMenu: React.FC = () => {
   const socket = io("http://localhost:3001");
   const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
@@ -89,6 +89,8 @@ const Menu: React.FC = () => {
   const dialogues = useSelector(
     (state: RootState) => state.dialogueIndex.dialogues
   );
+
+  const { Paragraph } = Typography;
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -161,10 +163,6 @@ const Menu: React.FC = () => {
     }
   }, [status, dialogues]);
 
-  // if (status === "loading") {
-  //   return <p>Loading...</p>;
-  // }
-
   useEffect(() => {
     if (isOpen) {
       dispatch(fetchDialogues());
@@ -175,7 +173,6 @@ const Menu: React.FC = () => {
     socket.on("dialogueUpdated", (data) => {
       console.log("Dialogue updated via websocket:", data);
 
-      // Find and update the dialogue in the array
       const updatedDialogues = sortedDialogues.map((dialogue) => {
         if (dialogue.dialogueId === data.dialogueId) {
           return { ...dialogue, updatedAt: data.updatedData.updatedAt };
@@ -242,7 +239,16 @@ const Menu: React.FC = () => {
                     selectedCardId === dialogue.dialogueId ? "selected" : ""
                   }
                 >
-                  <p>{dialogue.firstMessage}</p>
+                  <p>
+                    <Paragraph
+                      ellipsis={{
+                        rows: 4,
+                        expandable: false,
+                      }}
+                    >
+                      {dialogue.firstMessage}
+                    </Paragraph>
+                  </p>
                 </StyledCard>
               </Flipped>
             ))}
@@ -301,4 +307,4 @@ const smallScreenStyles: ViewStyles = {};
 
 const extraSmallScreenStyles: ViewStyles = {};
 
-export default Menu;
+export default DialogueMenu;

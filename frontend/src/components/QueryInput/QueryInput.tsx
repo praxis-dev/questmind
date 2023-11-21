@@ -45,7 +45,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
 
   let minLengthMessage = "";
   const charsNeeded = 20 - question.length;
-  const MAX_LENGTH = 550;
+  const MAX_LENGTH = 1000;
   const charsLeft = MAX_LENGTH - question.length;
   let counterMessage = "";
 

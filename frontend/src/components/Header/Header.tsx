@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Button, Modal, Space } from "antd";
+import { Button, Menu, Space, Dropdown } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import Menu from "../../components/Menu/Menu";
+import DialogueMenu from "../../components/DialogueMenu/DialogueMenu";
 import About from "../About/About";
 
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 
 import styled, { keyframes } from "styled-components";
+
+import type { MenuProps } from "antd";
 
 const pulsate = keyframes`
   0% { border-color: transparent; }
@@ -27,7 +29,7 @@ const LargePlusOutlined = styled(PlusOutlined)`
   color: grey;
 `;
 
-const LargeInfoCircleOutlined = styled(InfoCircleOutlined)`
+const LargeSettingOutlined = styled(SettingOutlined)`
   font-size: 25px;
   color: grey;
 `;
@@ -52,6 +54,13 @@ const PulsatingButton = styled(Button)`
 `;
 
 const Header: React.FC = () => {
+  const [current, setCurrent] = useState("mail");
+
+  const onClick: MenuProps["onClick"] = (e) => {
+    console.log("click ", e);
+    setCurrent(e.key);
+  };
+
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -62,21 +71,17 @@ const Header: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const showAboutModal = () => {
-    setIsAboutVisible(true);
-  };
-
   const handlePlusClick = () => {
     dispatch(setSelectedDialogueId(""));
     dispatch(clearMessages());
   };
 
-  const [isAboutVisible, setIsAboutVisible] = useState(false);
+  const items = [{ label: <About />, key: "item-1" }];
 
   return (
     <div style={styles.headerContainer}>
       <Space>
-        <Menu />
+        <DialogueMenu />
         <PulsatingButton
           type="link"
           style={styles.aboutButton}
@@ -86,24 +91,12 @@ const Header: React.FC = () => {
         </PulsatingButton>
       </Space>
       <div style={styles.iconsContainer}>
-        <PulsatingButton
-          type="link"
-          style={styles.aboutButton}
-          onClick={showAboutModal}
-        >
-          <LargeInfoCircleOutlined />
-        </PulsatingButton>
+        <Dropdown menu={{ items }}>
+          <PulsatingButton type="link" style={styles.aboutButton}>
+            <LargeSettingOutlined />
+          </PulsatingButton>
+        </Dropdown>
       </div>
-
-      <Modal
-        open={isAboutVisible}
-        onCancel={() => setIsAboutVisible(false)}
-        centered
-        footer={null}
-        width="600px"
-      >
-        <About />
-      </Modal>
     </div>
   );
 };
