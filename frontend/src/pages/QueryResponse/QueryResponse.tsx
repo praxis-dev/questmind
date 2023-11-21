@@ -97,7 +97,6 @@ const QueryResponse: React.FC = () => {
 
   useEffect(() => {
     if (selectedDialogueId) {
-      console.log(`SelectedDialogueId: ${selectedDialogueId}`);
     }
   }, [selectedDialogueId]);
 
@@ -105,12 +104,6 @@ const QueryResponse: React.FC = () => {
     state.dialogueDetails.selectedDialogue;
 
   const dialogue = useSelector(selectDialogue);
-
-  useEffect(() => {
-    if (dialogue) {
-      console.log("Dialogue updated:", dialogue);
-    }
-  }, [dialogue]);
 
   const isFirstRender = useRef(true);
   useEffect(() => {

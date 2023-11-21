@@ -10,7 +10,6 @@ export const resetPasswordRequest = async (
   data: ResetPasswordRequestData
 ): Promise<string> => {
   try {
-    console.log("resetPasswordRequestData", data);
     const response = await axios.post(apiUrl, data);
     return response.data.message;
   } catch (error) {

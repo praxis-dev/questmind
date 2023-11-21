@@ -107,17 +107,11 @@ const DialogueMenu: React.FC = () => {
   const status = useSelector((state: RootState) => state.dialogueIndex.status);
 
   const handleCardClick = (dialogueId: string) => {
-    console.log(`Dialogue clicked: ${dialogueId}`);
-
     dispatch(setSelectedDialogueId(dialogueId));
     setSelectedCardId(dialogueId); // Update the selected card ID
 
-    console.log(`Fetching dialogue: ${dialogueId}`);
-
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
-        console.log(dialogue);
-
         dispatch(setSelectedDialogue(dialogue));
       })
       .catch((error) => {
@@ -126,11 +120,8 @@ const DialogueMenu: React.FC = () => {
   };
 
   const handleDialogueDelete = (dialogueId: string) => {
-    console.log(`Deleting dialogue: ${dialogueId}`);
-
     deleteDialogue(dialogueId)
       .then(() => {
-        console.log("Dialogue deleted.");
         if (selectedDialogueId === dialogueId) {
           dispatch(clearMessages());
         }
@@ -145,7 +136,6 @@ const DialogueMenu: React.FC = () => {
     const sorted = [...dialogues].sort((a, b) => {
       const dateA = new Date(a.updatedAt).getTime();
       const dateB = new Date(b.updatedAt).getTime();
-      console.log(dateA, dateB);
 
       return dateB - dateA;
     });
@@ -159,7 +149,6 @@ const DialogueMenu: React.FC = () => {
 
   useEffect(() => {
     if (status === "succeeded") {
-      console.log("Fetched Dialogues:", dialogues);
     }
   }, [status, dialogues]);
 
@@ -171,8 +160,6 @@ const DialogueMenu: React.FC = () => {
 
   useEffect(() => {
     socket.on("dialogueUpdated", (data) => {
-      console.log("Dialogue updated via websocket:", data);
-
       const updatedDialogues = sortedDialogues.map((dialogue) => {
         if (dialogue.dialogueId === data.dialogueId) {
           return { ...dialogue, updatedAt: data.updatedData.updatedAt };

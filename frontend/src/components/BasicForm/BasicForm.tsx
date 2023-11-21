@@ -70,7 +70,6 @@ const BasicForm: React.FC = () => {
       email: values.email,
       password: values.password,
     });
-    console.log("User created successfully:", response);
     message.success("Account created successfully");
     dispatch(setFormState("noform"));
     navigate("/");
@@ -81,7 +80,6 @@ const BasicForm: React.FC = () => {
       email: values.email,
       password: values.password,
     });
-    console.log("Login successful:", response);
     message.success(response.message);
     form.resetFields();
     navigate("/");
@@ -89,7 +87,6 @@ const BasicForm: React.FC = () => {
 
   const handleRecover = async (values: RecoverValues) => {
     const response = await resetPasswordRequest({ email: values.email });
-    console.log("Password reset request successful:", response);
     message.success("Password reset email sent. Please check your inbox.");
     form.resetFields();
     dispatch(setFormState("noform"));
@@ -103,7 +100,6 @@ const BasicForm: React.FC = () => {
   };
 
   const onFinish = async (values: FormValues) => {
-    console.log("Form Values:", values);
     if (values.email) {
       values.email = values.email.toLowerCase();
     }
@@ -125,10 +121,6 @@ const BasicForm: React.FC = () => {
     dispatch(setFormState("recover"));
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <Form
       form={form}
@@ -136,7 +128,6 @@ const BasicForm: React.FC = () => {
       wrapperCol={{ span: 16 }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
       <Form.Item

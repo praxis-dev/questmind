@@ -19,7 +19,6 @@ export const deleteDialogue = async (
   }
 
   try {
-    console.log("Deleting dialogue:", dialogueId);
     const deleteUrl = `${apiUrl}/${dialogueId}`;
     const result = await axios.delete(deleteUrl, {
       headers: {
@@ -27,7 +26,6 @@ export const deleteDialogue = async (
       },
     });
 
-    console.log("Delete response:", result.data.message);
     return result.data;
   } catch (error) {
     console.error("Error deleting dialogue:", error);

@@ -47,7 +47,6 @@ export class RespondController {
   ): Promise<any> {
     try {
       const user = req.user;
-      console.log('User:', user);
 
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {

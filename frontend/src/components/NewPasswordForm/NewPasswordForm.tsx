@@ -73,10 +73,6 @@ const NewPasswordForm: React.FC = () => {
     return Promise.resolve();
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <Form
       style={styles.wrapper}
@@ -85,7 +81,6 @@ const NewPasswordForm: React.FC = () => {
       wrapperCol={{ span: 24 }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
       <Form.Item
