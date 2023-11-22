@@ -25,6 +25,10 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 
 import styled, { keyframes } from "styled-components";
 
+import messagesConfig from "../../utils/messagesConfig";
+
+import { addMessage } from "../../store/slices/chatSlice";
+
 const LargeUnorderedListOutlined = styled(UnorderedListOutlined)`
   font-size: 25px;
   color: grey;
@@ -62,6 +66,8 @@ const pulsateCard = keyframes`
 `;
 
 const StyledCard = styled(Card)`
+  width: 100%;
+
   &.selected {
     animation: ${pulsateCard} 4s infinite;
     border: 1px solid black;
@@ -120,12 +126,17 @@ const DialogueMenu: React.FC = () => {
   };
 
   const handleDialogueDelete = (dialogueId: string) => {
+    const randomIndex = Math.floor(
+      Math.random() * messagesConfig.introductory.length
+    );
+    const randomIntroductoryMessage = messagesConfig.introductory[randomIndex];
     deleteDialogue(dialogueId)
       .then(() => {
         if (selectedDialogueId === dialogueId) {
           dispatch(clearMessages());
         }
         dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
+        dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
       })
       .catch((error) => {
         console.error("Error deleting dialogue:", error);
@@ -205,7 +216,7 @@ const DialogueMenu: React.FC = () => {
         open={isOpen}
         key={"left"}
       >
-        <Space direction="vertical">
+        <Space direction="vertical" style={{ width: "100%" }}>
           <Flipper flipKey={sortedDialogues}>
             {sortedDialogues.map((dialogue) => (
               <Flipped key={dialogue.dialogueId} flipId={dialogue.dialogueId}>

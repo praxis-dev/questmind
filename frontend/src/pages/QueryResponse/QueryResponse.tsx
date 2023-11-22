@@ -112,7 +112,6 @@ const QueryResponse: React.FC = () => {
       chatMessages.length === 0 &&
       (!dialogue || dialogue.messages.length === 0)
     ) {
-      // Generate a random index to select a message
       const randomIndex = Math.floor(
         Math.random() * messagesConfig.introductory.length
       );
@@ -120,7 +119,7 @@ const QueryResponse: React.FC = () => {
         messagesConfig.introductory[randomIndex];
 
       dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
-      isFirstRender.current = false; // Set to false after the first render
+      isFirstRender.current = false;
     }
   }, [chatMessages.length, dialogue, dispatch]);
 

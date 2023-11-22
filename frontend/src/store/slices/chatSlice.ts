@@ -25,7 +25,6 @@ export const chatSlice = createSlice({
     setMessages: (state, action: PayloadAction<ChatMessage[]>) => {
       state.messages = action.payload;
     },
-    // Optional: Clear messages
     clearMessages: (state) => {
       state.messages = [];
     },

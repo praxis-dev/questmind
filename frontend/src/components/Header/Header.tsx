@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { Button, Space } from "antd";
 
@@ -15,6 +15,10 @@ import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 
 import styled, { keyframes } from "styled-components";
+
+import messagesConfig from "../../utils/messagesConfig";
+
+import { addMessage } from "../../store/slices/chatSlice";
 
 const pulsate = keyframes`
   0% { border-color: transparent; }
@@ -55,11 +59,18 @@ const Header: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const randomIndex = Math.floor(
+    Math.random() * messagesConfig.introductory.length
+  );
+
+  const randomIntroductoryMessage = messagesConfig.introductory[randomIndex];
+
   const dispatch = useDispatch();
 
   const handlePlusClick = () => {
     dispatch(setSelectedDialogueId(""));
     dispatch(clearMessages());
+    dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
   };
 
   return (
