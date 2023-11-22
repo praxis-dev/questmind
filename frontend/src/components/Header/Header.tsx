@@ -59,15 +59,14 @@ const Header: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const randomIndex = Math.floor(
-    Math.random() * messagesConfig.introductory.length
-  );
-
-  const randomIntroductoryMessage = messagesConfig.introductory[randomIndex];
-
   const dispatch = useDispatch();
 
   const handlePlusClick = () => {
+    const randomIndex = Math.floor(
+      Math.random() * messagesConfig.introductory.length
+    );
+    const randomIntroductoryMessage = messagesConfig.introductory[randomIndex];
+
     dispatch(setSelectedDialogueId(""));
     dispatch(clearMessages());
     dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));

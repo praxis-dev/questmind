@@ -28,16 +28,10 @@ export const chatSlice = createSlice({
     clearMessages: (state) => {
       state.messages = [];
     },
-    setInitialMessage: (state, action: PayloadAction<ChatMessage>) => {
-      if (state.messages.length === 0) {
-        state.messages.push(action.payload);
-      }
-    },
   },
 });
 
-export const { addMessage, setMessages, clearMessages, setInitialMessage } =
-  chatSlice.actions;
+export const { addMessage, setMessages, clearMessages } = chatSlice.actions;
 
 export const selectChatMessages = (state: RootState) => state.chat.messages;
 
