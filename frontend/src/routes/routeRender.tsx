@@ -14,7 +14,6 @@ const PrivateRoute = ({
   return isAuthenticated() ? <Component /> : <Navigate to="/landing" />;
 };
 
-// Public Route Wrapper
 const PublicRoute = ({
   component: Component,
 }: {
@@ -27,7 +26,6 @@ export function RouteRender() {
   let navigate = useNavigate();
 
   React.useEffect(() => {
-    // Redirect authenticated users away from landing and password recovery pages
     if (isAuthenticated()) {
       if (
         window.location.pathname === "/landing" ||

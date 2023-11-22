@@ -131,13 +131,10 @@ const DialogueMenu: React.FC = () => {
   const handleDialogueDelete = (dialogueId: string) => {
     deleteDialogue(dialogueId)
       .then(() => {
-        // Check if the deleted dialogue is the currently selected one
         if (selectedDialogueId === dialogueId) {
-          // Clear messages and reset the introductory message flag
           dispatch(clearMessages());
           dispatch(setIntroMessageAdded(false));
 
-          // Add a new introductory message
           const randomIndex = Math.floor(
             Math.random() * messagesConfig.introductory.length
           );
@@ -145,11 +142,9 @@ const DialogueMenu: React.FC = () => {
             messagesConfig.introductory[randomIndex];
           dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
 
-          // Set the flag to true to prevent multiple introductory messages
           dispatch(setIntroMessageAdded(true));
         }
 
-        // Delete the dialogue from the state
         dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
       })
       .catch((error) => {

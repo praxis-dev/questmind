@@ -136,7 +136,6 @@ const QueryResponse: React.FC = () => {
   useEffect(() => {
     if (dialogue && dialogue.messages) {
       const formattedMessages = dialogue.messages.map((msg) => {
-        // Ensure that type is either 'user' or 'ai'
         const messageType: "user" | "ai" =
           msg.sender === "user" || msg.sender === "ai" ? msg.sender : "ai";
 
