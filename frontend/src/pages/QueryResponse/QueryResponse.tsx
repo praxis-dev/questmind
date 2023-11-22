@@ -22,7 +22,7 @@ import MessageCard from "../../components/MessageCard/MessageCard";
 
 import { fetchResponse } from "../../services/fetchResponse";
 
-import { Triangle } from "react-loader-spinner";
+import { ScalingSquaresSpinner } from "react-epic-spinners";
 
 import { Space } from "antd";
 
@@ -238,16 +238,7 @@ const QueryResponse: React.FC = () => {
             ))}
             {isLoading && (
               <Space style={{ display: "flex", justifyContent: "center" }}>
-                {/* <ScalingSquaresSpinner color="#cd7f32" size={27} /> */}
-                <Triangle
-                  height="40"
-                  width="40"
-                  color="#cd7f32"
-                  ariaLabel="triangle-loading"
-                  wrapperStyle={{}}
-                  wrapperClass=""
-                  visible={true}
-                />
+                <ScalingSquaresSpinner color="#cd7f32" size={27} />
               </Space>
             )}
           </Space>
