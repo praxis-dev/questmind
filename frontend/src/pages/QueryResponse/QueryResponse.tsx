@@ -267,7 +267,7 @@ const baseStyles: ViewStyles = {
     maxWidth: 1000,
     margin: "0 auto",
     padding: 20,
-    height: "96%",
+    height: "95vh",
   },
 
   contentSpace: {
@@ -298,12 +298,24 @@ const baseStyles: ViewStyles = {
 
 const extraLargeScreenStyles: ViewStyles = {};
 
-const largeScreenStyles: ViewStyles = {};
+const largeScreenStyles: ViewStyles = {
+  section: {
+    height: "93.2vh",
+  },
+};
 
 const mediumScreenStyles: ViewStyles = {};
 
-const smallScreenStyles: ViewStyles = {};
+const smallScreenStyles: ViewStyles = {
+  section: {
+    height: "93.5vh",
+  },
+};
 
-const extraSmallScreenStyles: ViewStyles = {};
+const extraSmallScreenStyles: ViewStyles = {
+  section: {
+    height: "93.5vh",
+  },
+};
 
 export default QueryResponse;

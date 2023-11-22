@@ -84,7 +84,7 @@ const Header: React.FC = () => {
 const baseStyles: ViewStyles = {
   headerContainer: {
     width: "100%",
-    minHeight: "3%",
+    minHeight: "5vh",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -115,6 +115,10 @@ const mediumScreenStyles: ViewStyles = {};
 
 const smallScreenStyles: ViewStyles = {};
 
-const extraSmallScreenStyles: ViewStyles = {};
+const extraSmallScreenStyles: ViewStyles = {
+  headerContainer: {
+    minHeight: "6vh",
+  },
+};
 
 export default Header;
