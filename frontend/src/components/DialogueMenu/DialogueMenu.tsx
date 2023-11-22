@@ -11,7 +11,12 @@ import { fetchDialogueById } from "../../services/fetchDialogueById";
 import { deleteDialogue } from "../../services/deleteDialogue";
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 import { setSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
-import { clearMessages } from "../../store/slices/chatSlice";
+import {
+  clearMessages,
+  addMessage,
+  selectIntroMessageAdded,
+  setIntroMessageAdded,
+} from "../../store/slices/chatSlice";
 import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
 import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
 
@@ -26,8 +31,6 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 import styled, { keyframes } from "styled-components";
 
 import messagesConfig from "../../utils/messagesConfig";
-
-import { addMessage } from "../../store/slices/chatSlice";
 
 const LargeUnorderedListOutlined = styled(UnorderedListOutlined)`
   font-size: 25px;
@@ -114,7 +117,7 @@ const DialogueMenu: React.FC = () => {
 
   const handleCardClick = (dialogueId: string) => {
     dispatch(setSelectedDialogueId(dialogueId));
-    setSelectedCardId(dialogueId); // Update the selected card ID
+    setSelectedCardId(dialogueId);
 
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
@@ -126,17 +129,28 @@ const DialogueMenu: React.FC = () => {
   };
 
   const handleDialogueDelete = (dialogueId: string) => {
-    const randomIndex = Math.floor(
-      Math.random() * messagesConfig.introductory.length
-    );
-    const randomIntroductoryMessage = messagesConfig.introductory[randomIndex];
     deleteDialogue(dialogueId)
       .then(() => {
+        // Check if the deleted dialogue is the currently selected one
         if (selectedDialogueId === dialogueId) {
+          // Clear messages and reset the introductory message flag
           dispatch(clearMessages());
+          dispatch(setIntroMessageAdded(false));
+
+          // Add a new introductory message
+          const randomIndex = Math.floor(
+            Math.random() * messagesConfig.introductory.length
+          );
+          const randomIntroductoryMessage =
+            messagesConfig.introductory[randomIndex];
+          dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
+
+          // Set the flag to true to prevent multiple introductory messages
+          dispatch(setIntroMessageAdded(true));
         }
+
+        // Delete the dialogue from the state
         dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
-        dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
       })
       .catch((error) => {
         console.error("Error deleting dialogue:", error);
@@ -178,13 +192,11 @@ const DialogueMenu: React.FC = () => {
         return dialogue;
       });
 
-      // Re-sort the dialogues based on updatedAt
       updatedDialogues.sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
 
-      // Update state with the new sorted array
       setSortedDialogues(updatedDialogues);
     });
 

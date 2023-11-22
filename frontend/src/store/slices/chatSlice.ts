@@ -9,10 +9,12 @@ interface ChatMessage {
 
 interface ChatState {
   messages: ChatMessage[];
+  introMessageAdded: boolean;
 }
 
 const initialState: ChatState = {
   messages: [],
+  introMessageAdded: false,
 };
 
 export const chatSlice = createSlice({
@@ -28,11 +30,18 @@ export const chatSlice = createSlice({
     clearMessages: (state) => {
       state.messages = [];
     },
+    setIntroMessageAdded: (state, action: PayloadAction<boolean>) => {
+      state.introMessageAdded = action.payload;
+    },
   },
 });
 
-export const { addMessage, setMessages, clearMessages } = chatSlice.actions;
+export const { addMessage, setMessages, clearMessages, setIntroMessageAdded } =
+  chatSlice.actions;
 
 export const selectChatMessages = (state: RootState) => state.chat.messages;
+
+export const selectIntroMessageAdded = (state: RootState) =>
+  state.chat.introMessageAdded;
 
 export default chatSlice.reducer;
