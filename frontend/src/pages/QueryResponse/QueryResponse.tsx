@@ -22,7 +22,7 @@ import MessageCard from "../../components/MessageCard/MessageCard";
 
 import { fetchResponse } from "../../services/fetchResponse";
 
-import { ScalingSquaresSpinner } from "react-epic-spinners";
+import { Triangle } from "react-loader-spinner";
 
 import { Space } from "antd";
 
@@ -147,7 +147,7 @@ const QueryResponse: React.FC = () => {
       });
       dispatch(setMessages(formattedMessages));
     }
-  }, [dialogue]);
+  }, [dialogue, dispatch]);
 
   useEffect(() => {
     const element = chatSpaceRef.current;
@@ -237,9 +237,18 @@ const QueryResponse: React.FC = () => {
               />
             ))}
             {isLoading && (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <ScalingSquaresSpinner color="#cd7f32" size={27} />
-              </div>
+              <Space style={{ display: "flex", justifyContent: "center" }}>
+                {/* <ScalingSquaresSpinner color="#cd7f32" size={27} /> */}
+                <Triangle
+                  height="40"
+                  width="40"
+                  color="#cd7f32"
+                  ariaLabel="triangle-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                />
+              </Space>
             )}
           </Space>
           <div style={styles.querySpace}>

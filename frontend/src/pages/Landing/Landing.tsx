@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Button, Modal } from "antd";
+import { Row, Col, Space, Modal } from "antd";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";

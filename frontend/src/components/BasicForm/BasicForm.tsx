@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, Form, Input, message } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { RootState } from "../../store";
 
-import { createUser } from "../../services/createUser";
 import { authenticateUser } from "../../services/authenticateUser";
-import { resetPasswordRequest } from "../../services/resetPasswordRequest";
 
 import type { FormInstance } from "antd";
 
@@ -66,10 +64,6 @@ const BasicForm: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignup = async (values: SignupValues) => {
-    const response = await createUser({
-      email: values.email,
-      password: values.password,
-    });
     message.success("Account created successfully");
     dispatch(setFormState("noform"));
     navigate("/");
@@ -86,7 +80,6 @@ const BasicForm: React.FC = () => {
   };
 
   const handleRecover = async (values: RecoverValues) => {
-    const response = await resetPasswordRequest({ email: values.email });
     message.success("Password reset email sent. Please check your inbox.");
     form.resetFields();
     dispatch(setFormState("noform"));

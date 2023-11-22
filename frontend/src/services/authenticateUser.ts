@@ -18,11 +18,6 @@ interface ApiResponse {
 
 const apiUrl = `${process.env.REACT_APP_API_URL}/users/login`;
 
-const isTokenPresent = () => {
-  const token = localStorage.getItem("token");
-  return !!token;
-};
-
 export const authenticateUser = async (
   userData: UserData
 ): Promise<ApiResponse> => {

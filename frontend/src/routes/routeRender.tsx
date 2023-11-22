@@ -1,14 +1,10 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import QueryResponse from "../pages/QueryResponse/QueryResponse";
 import Landing from "../pages/Landing/Landing";
 import PasswordRecovery from "../pages/PasswordRecovery/PasswordRecovery";
 import { isAuthenticated } from "../utils/isAuthenticated";
-
-interface ReactElement {
-  children: ReactNode;
-}
 
 const PrivateRoute = ({
   component: Component,

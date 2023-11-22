@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Button, Drawer, Space, Card, Typography } from "antd";
@@ -54,7 +54,7 @@ const PulsatingButton = styled(Button)`
     border: 1px solid black;
 
     svg {
-      color: #cd7f32; // Change icon color on hover
+      color: #cd7f32;
     }
   }
 `;
@@ -191,7 +191,7 @@ const DialogueMenu: React.FC = () => {
     return () => {
       socket.off("dialogueUpdated");
     };
-  }, [sortedDialogues]);
+  }, [sortedDialogues, socket]);
 
   if (status === "failed") {
     return <p>Failed to fetch dialogues.</p>;
