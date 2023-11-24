@@ -7,6 +7,8 @@ WORKDIR /usr/src/app
 # Install the app dependencies
 COPY package*.json ./
 RUN yarn install
+RUN yarn global add @nestjs/cli
+
 
 # Bundle the app source code
 COPY . .

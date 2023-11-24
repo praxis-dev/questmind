@@ -79,7 +79,7 @@ const StyledCard = styled(Card)`
 `;
 
 const DialogueMenu: React.FC = () => {
-  const socket = io("http://localhost:3001");
+  const socket = io("https://www.questmind.ai");
   const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 

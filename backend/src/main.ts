@@ -1,3 +1,5 @@
+// main.ts (backend)
+
 import { config } from 'dotenv';
 config();
 
@@ -9,8 +11,13 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  app.enableCors();
-  await app.listen(8080, '0.0.0.0');
+  app.enableCors({
+    origin: 'https://www.questmind.ai',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+  });
+
+    await app.listen(8080, '0.0.0.0');
 
   // await app.listen(3000);
 }
