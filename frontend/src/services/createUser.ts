@@ -1,3 +1,5 @@
+//createUser.ts (frontend)
+
 import axios from "axios";
 
 interface UserData {

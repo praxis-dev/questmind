@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store";
 
 import { authenticateUser } from "../../services/authenticateUser";
+import { createUser } from "../../services/createUser";
+import { resetPasswordRequest } from "../../services/resetPasswordRequest";
 
 import type { FormInstance } from "antd";
 
@@ -64,25 +66,46 @@ const BasicForm: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignup = async (values: SignupValues) => {
-    message.success("Account created successfully");
-    dispatch(setFormState("noform"));
-    navigate("/");
+    try {
+      await createUser({
+        email: values.email,
+        password: values.password,
+      });
+      message.success("Account created successfully");
+      dispatch(setFormState("noform"));
+      navigate("/");
+    } catch (error) {
+      message.error(
+        "No new accounts are allowed at this time, please check later"
+      );
+    }
   };
 
   const handleLogin = async (values: LoginValues) => {
-    const response = await authenticateUser({
-      email: values.email,
-      password: values.password,
-    });
-    message.success(response.message);
-    form.resetFields();
-    navigate("/");
+    try {
+      const response = await authenticateUser({
+        email: values.email,
+        password: values.password,
+      });
+      message.success(response.message);
+      form.resetFields();
+      navigate("/");
+    } catch (error) {
+      message.error("Login failed: Incorrect email or password");
+    }
   };
 
   const handleRecover = async (values: RecoverValues) => {
-    message.success("Password reset email sent. Please check your inbox.");
-    form.resetFields();
-    dispatch(setFormState("noform"));
+    try {
+      await resetPasswordRequest({
+        email: values.email,
+      });
+      message.success("Password reset email sent. Please check your inbox.");
+      form.resetFields();
+      dispatch(setFormState("noform"));
+    } catch (error) {
+      message.error("Error sending password reset email");
+    }
   };
 
   const formActions = {

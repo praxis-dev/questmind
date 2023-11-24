@@ -1,3 +1,5 @@
+// users.service.ts
+
 import {
   Injectable,
   ConflictException,
@@ -72,7 +74,7 @@ export class UsersService {
       )
       .exec();
 
-    const resetUrl = `http://localhost:3000/password-recovery?token=${resetToken}`;
+    const resetUrl = `https://www.questmind.ai/password-recovery?token=${resetToken}`;
 
     const msg = {
       to: email,

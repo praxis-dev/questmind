@@ -12,7 +12,17 @@ export class UsersController {
     @Body('email') email: string,
     @Body('password') password: string,
   ) {
-    return this.usersService.createUser(email, password);
+    try {
+      const newUser = await this.usersService.createUser(email, password);
+      const token = await this.usersService.createToken(newUser);
+      return {
+        message: 'User created successfully',
+        user: newUser,
+        token,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Post('login')
