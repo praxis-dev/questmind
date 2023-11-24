@@ -76,7 +76,11 @@ const BasicForm: React.FC = () => {
       navigate("/");
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "An unknown error occurred.";
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+          ? error.message
+          : "An unknown error occurred.";
       message.error(errorMessage);
     }
   };

@@ -1,6 +1,6 @@
 // users.controller.ts
 
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, ConflictException } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -21,9 +21,13 @@ export class UsersController {
         token,
       };
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error instanceof ConflictException) {
+        throw error; // Propagates the specific error
+      }
+      throw new BadRequestException('Error creating user');
     }
   }
+  
 
   @Post('login')
   async loginUser(

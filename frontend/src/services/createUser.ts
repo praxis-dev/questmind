@@ -33,7 +33,6 @@ export const createUser = async (
     if (axios.isAxiosError(error) && error.response) {
       return Promise.reject(error.response.data.message);
     } else {
-      // console.error("Error creating user:", error);
       return Promise.reject("An unknown error occurred.");
     }
   }
