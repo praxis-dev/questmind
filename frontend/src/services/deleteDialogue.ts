@@ -28,7 +28,7 @@ export const deleteDialogue = async (
 
     return result.data;
   } catch (error) {
-    console.error("Error deleting dialogue:", error);
+    // console.error("Error deleting dialogue:", error);
     throw new Error("Error deleting dialogue.");
   }
 };

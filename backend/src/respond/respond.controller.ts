@@ -118,10 +118,7 @@ export class RespondController {
 
       return { data: response.data, dialogueId: dialogue._id.toString() };
     } catch (error) {
-      console.error(
-        'Detailed Error:',
-        error.response ? error.response.data : error.message,
-      );
+
       throw new InternalServerErrorException('Model communication failed.');
     }
   }
@@ -144,7 +141,6 @@ export class RespondController {
 
       return dialogueSummaries;
     } catch (error) {
-      console.error('Error fetching dialogues:', error.message);
       throw new InternalServerErrorException('Failed to fetch dialogues.');
     }
   }
@@ -161,7 +157,6 @@ export class RespondController {
 
       return dialogue;
     } catch (error) {
-      console.error('Error fetching dialogue:', error.message);
       throw new InternalServerErrorException('Failed to fetch dialogue.');
     }
   }
@@ -189,7 +184,6 @@ export class RespondController {
 
       return { message: 'Dialogue deleted successfully' };
     } catch (error) {
-      console.error('Error deleting dialogue:', error.message);
       throw new InternalServerErrorException('Failed to delete dialogue.');
     }
   }

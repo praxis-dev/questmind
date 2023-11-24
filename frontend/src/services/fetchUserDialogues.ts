@@ -30,7 +30,7 @@ export const fetchUserDialogues = async (): Promise<DialogueSummary[]> => {
     if (axios.isAxiosError(error) && error.response) {
       return Promise.reject(error.response.data.message);
     } else {
-      console.error("Error fetching dialogues:", error);
+      // console.error("Error fetching dialogues:", error);
       return Promise.reject(
         "An unknown error occurred while fetching dialogues."
       );

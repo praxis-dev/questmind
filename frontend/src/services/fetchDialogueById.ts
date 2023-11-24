@@ -41,7 +41,7 @@ export const fetchDialogueById = async (
     if (axios.isAxiosError(error) && error.response) {
       return Promise.reject(error.response.data.message);
     } else {
-      console.error("Error fetching dialogue:", error);
+      // console.error("Error fetching dialogue:", error);
       return Promise.reject(
         "An unknown error occurred while fetching the dialogue."
       );

@@ -75,9 +75,9 @@ const BasicForm: React.FC = () => {
       dispatch(setFormState("noform"));
       navigate("/");
     } catch (error) {
-      message.error(
-        "No new accounts are allowed at this time, please check later"
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred.";
+      message.error(errorMessage);
     }
   };
 
@@ -91,7 +91,11 @@ const BasicForm: React.FC = () => {
       form.resetFields();
       navigate("/");
     } catch (error) {
-      message.error("Login failed: Incorrect email or password");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Login failed: Incorrect email or password";
+      message.error(errorMessage);
     }
   };
 
@@ -104,7 +108,15 @@ const BasicForm: React.FC = () => {
       form.resetFields();
       dispatch(setFormState("noform"));
     } catch (error) {
-      message.error("Error sending password reset email");
+      let errorMessage: string;
+      if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = "Error sending password reset email";
+      }
+      message.error(errorMessage);
     }
   };
 
@@ -122,7 +134,6 @@ const BasicForm: React.FC = () => {
     try {
       await formActions[formState](values);
     } catch (error) {
-      console.error("Error:", error);
       if (typeof error === "string") {
         message.error(error);
       } else if (error instanceof Error) {

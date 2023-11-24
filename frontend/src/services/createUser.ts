@@ -13,7 +13,7 @@ interface CreateUserResponse {
     email: string;
     id: string;
   };
-  token?: string; // Include token in the response type
+  token?: string;
 }
 
 const apiUrl = `${process.env.REACT_APP_API_URL}/users`;
@@ -33,7 +33,7 @@ export const createUser = async (
     if (axios.isAxiosError(error) && error.response) {
       return Promise.reject(error.response.data.message);
     } else {
-      console.error("Error creating user:", error);
+      // console.error("Error creating user:", error);
       return Promise.reject("An unknown error occurred.");
     }
   }

@@ -13,10 +13,20 @@ export const resetPasswordRequest = async (
     const response = await axios.post(apiUrl, data);
     return response.data.message;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return Promise.reject(error.response.data.message);
+    console.log("Caught error in resetPasswordRequest:", error);
+
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        console.log("Axios error with response:", error.response);
+        return Promise.reject(error.response.data.message);
+      }
+      // console.error("Axios error without response:", error);
+      return Promise.reject(error.message);
+    } else if (error instanceof Error) {
+      console.log("Non-Axios Error:", error);
+      return Promise.reject(error.message);
     } else {
-      console.error("Error requesting password reset:", error);
+      console.log("Unknown error type:", error);
       return Promise.reject("An unknown error occurred.");
     }
   }

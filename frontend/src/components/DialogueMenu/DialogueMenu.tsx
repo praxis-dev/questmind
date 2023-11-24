@@ -124,7 +124,7 @@ const DialogueMenu: React.FC = () => {
         dispatch(setSelectedDialogue(dialogue));
       })
       .catch((error) => {
-        console.error("Error fetching dialogue:", error);
+        // console.error("Error fetching dialogue:", error);
       });
   };
 

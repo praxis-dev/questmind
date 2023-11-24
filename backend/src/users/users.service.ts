@@ -87,7 +87,6 @@ export class UsersService {
     try {
       await sgMail.send(msg);
     } catch (error) {
-      console.error('Error sending password reset email', error);
     }
   }
 
