@@ -17,7 +17,8 @@ image = Image.debian_slim().pip_install(
     "tiktoken",
     "faiss-gpu",
 ).copy_local_file(
-    local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt")
+    local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt").copy_local_file(
+    local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
 
 
 stub = modal.Stub("model_modal")
