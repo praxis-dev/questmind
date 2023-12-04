@@ -11,9 +11,7 @@ import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: ['https://www.questmind.ai', 'https://questmind.ai'],
-    // origin: 'http://localhost:3000',
-    // !!!deployCheck can be removed?
+    origin: ['https://www.questmind.ai', 'https://questmind.ai', "http://localhost:3000"],
     credentials: true,
   },
 })

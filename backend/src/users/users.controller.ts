@@ -1,4 +1,4 @@
-// users.controller.ts
+// users.controller.ts (backend)
 
 import { Controller, Post, Body, BadRequestException, ConflictException } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -13,16 +13,12 @@ export class UsersController {
     @Body('password') password: string,
   ) {
     try {
-      const newUser = await this.usersService.createUser(email, password);
-      const token = await this.usersService.createToken(newUser);
-      return {
-        message: 'User created successfully',
-        user: newUser,
-        token,
-      };
+      await this.usersService.createUser(email, password);
+      console.log('updated createUser');
+      return this.loginUser( email, password );
     } catch (error) {
       if (error instanceof ConflictException) {
-        throw error; // Propagates the specific error
+        throw error; 
       }
       throw new BadRequestException('Error creating user');
     }

@@ -40,40 +40,63 @@ export class RespondController {
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Post()
-  async respond(
-    @Body() body: { question: string; dialogueId: string },
-    @Req() req: RequestWithUser,
-  ): Promise<any> {
-    try {
-      const user = req.user;
+  
+@Post()
+async respond(
+  @Body() body: { question: string; dialogueId: string },
+  @Req() req: RequestWithUser,
+): Promise<any> {
+  try {
+    const user = req.user;
 
-      const apiEndpoint = process.env.API_ENDPOINT;
-      if (!apiEndpoint) {
-        throw new Error('API_ENDPOINT is not defined in the environment');
+    const apiEndpoint = process.env.API_ENDPOINT;
+    if (!apiEndpoint) {
+      throw new Error('API_ENDPOINT is not defined in the environment');
+    }
+
+    const response = await firstValueFrom(
+      this.httpService.post(
+        apiEndpoint,
+        { query: body.question },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      ),
+    );
+
+    let dialogue;
+    if (body.dialogueId) {
+      const objectId = new Types.ObjectId(body.dialogueId);
+      dialogue = await this.dialogueModel.findById(objectId);
+      if (!dialogue) {
+        throw new NotFoundException('Dialogue not found');
       }
 
-      const response = await firstValueFrom(
-        this.httpService.post(
-          apiEndpoint,
-          { query: body.question },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        ),
+      dialogue.messages.push(
+        {
+          sender: 'user',
+          message: body.question,
+          timestamp: new Date(),
+          important: false,
+        },
+        {
+          sender: 'ai',
+          message: response.data,
+          timestamp: new Date(),
+          important: false,
+        },
       );
-
-      let dialogue;
-      if (body.dialogueId) {
-        const objectId = new Types.ObjectId(body.dialogueId);
-        dialogue = await this.dialogueModel.findById(objectId);
-        if (!dialogue) {
-          throw new NotFoundException('Dialogue not found');
-        }
-
-        dialogue.messages.push(
+      dialogue.updatedAt = new Date();
+      await dialogue.save();
+      this.wsGateway.notifyClient(dialogue._id.toString(), {
+        updatedAt: dialogue.updatedAt,
+      });
+    } else {
+      dialogue = await this.dialogueModel.create({
+        userId: user._id,
+        messages: [
           {
             sender: 'user',
             message: body.question,
@@ -86,42 +109,21 @@ export class RespondController {
             timestamp: new Date(),
             important: false,
           },
-        );
-        dialogue.updatedAt = new Date();
-        await dialogue.save();
-        this.wsGateway.notifyClient(dialogue._id.toString(), {
-          updatedAt: dialogue.updatedAt,
-        });
-      } else {
-        // Create new dialogue
-        dialogue = await this.dialogueModel.create({
-          userId: user._id,
-          messages: [
-            {
-              sender: 'user',
-              message: body.question,
-              timestamp: new Date(),
-              important: false,
-            },
-            {
-              sender: 'ai',
-              message: response.data,
-              timestamp: new Date(),
-              important: false,
-            },
-          ],
-          isBranch: false,
-          parentDialogueId: null,
-          updatedAt: new Date(),
-        });
-      }
-
-      return { data: response.data, dialogueId: dialogue._id.toString() };
-    } catch (error) {
-
-      throw new InternalServerErrorException('Model communication failed.');
+        ],
+        isBranch: false,
+        parentDialogueId: null,
+        updatedAt: new Date(),
+      });
     }
+
+    const updatedDialogue = await this.dialogueModel.findById(dialogue._id);
+    console.log(updatedDialogue.messages);
+
+    return { data: response.data, dialogueId: dialogue._id.toString() };
+  } catch (error) {
+    throw new InternalServerErrorException('Model communication failed.');
   }
+}
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/dialogues')

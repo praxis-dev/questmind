@@ -12,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: ['https://www.questmind.ai', 'https://questmind.ai'],
+    origin: ['https://www.questmind.ai', 'https://questmind.ai', "http://localhost:3000"],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
