@@ -36,7 +36,6 @@ export const fetchResponse = async (
 
     return result.data;
   } catch (error) {
-    // console.error("Error fetching response:", error);
     throw new Error("Error fetching response.");
   }
 };

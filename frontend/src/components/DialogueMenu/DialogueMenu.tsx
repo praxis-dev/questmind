@@ -14,11 +14,14 @@ import { setSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
 import {
   clearMessages,
   addMessage,
-  selectIntroMessageAdded,
   setIntroMessageAdded,
 } from "../../store/slices/chatSlice";
 import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
 import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
+import {
+  setSelectedCardId,
+  clearSelectedCardId,
+} from "../../store/slices/selectedCardSlice";
 
 import { DialogueSummary } from "../../services/fetchUserDialogues";
 
@@ -79,11 +82,14 @@ const StyledCard = styled(Card)`
 `;
 
 const DialogueMenu: React.FC = () => {
-  const socket = io("https://www.questmind.ai");
-  // const socket = io("http://localhost:3001");
+  const socketUrl = process.env.REACT_APP_SOCKET_URL || "http://localhost:3001";
+  const socket = io(socketUrl);
 
   const [sortedDialogues, setSortedDialogues] = useState<DialogueSummary[]>([]);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  const selectedCardId = useSelector(
+    (state: RootState) => state.selectedCard.selectedCardId
+  );
 
   const selectedDialogueId = useSelector(
     (state: RootState) => state.dialogue.selectedDialogueId
@@ -119,7 +125,7 @@ const DialogueMenu: React.FC = () => {
 
   const handleCardClick = (dialogueId: string) => {
     dispatch(setSelectedDialogueId(dialogueId));
-    setSelectedCardId(dialogueId);
+    dispatch(setSelectedCardId(dialogueId));
 
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
@@ -136,6 +142,7 @@ const DialogueMenu: React.FC = () => {
       .then(() => {
         if (selectedDialogueId === dialogueId) {
           dispatch(clearMessages());
+          dispatch(clearSelectedCardId());
           dispatch(setIntroMessageAdded(false));
 
           const randomIndex = Math.floor(

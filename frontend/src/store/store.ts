@@ -8,6 +8,7 @@ import dialogueDetailsReducer from "./slices/dialogueDetailsSlice";
 import dialogueReducer from "./slices/dialogueIdSlice";
 import chatReducer from "./slices/chatSlice";
 import drawerReducer from "./slices/drawerSlice";
+import selectedCardReducer from "./slices/selectedCardSlice";
 
 const rootReducer = combineReducers({
   dialogueIndex: dialogueIndexReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   dialogue: dialogueReducer,
   chat: chatReducer,
   drawer: drawerReducer,
+  selectedCard: selectedCardReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
