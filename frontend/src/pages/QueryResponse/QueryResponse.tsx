@@ -105,8 +105,6 @@ const QueryResponse: React.FC = () => {
 
   const dialogue = useSelector(selectDialogue);
 
-  console.log("dialogue:", dialogue);
-
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (

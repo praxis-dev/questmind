@@ -14,7 +14,6 @@ export class UsersController {
   ) {
     try {
       await this.usersService.createUser(email, password);
-      console.log('updated createUser');
       return this.loginUser( email, password );
     } catch (error) {
       if (error instanceof ConflictException) {

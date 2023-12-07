@@ -120,7 +120,6 @@ const DialogueMenu: React.FC = () => {
   const handleCardClick = (dialogueId: string) => {
     dispatch(setSelectedDialogueId(dialogueId));
     setSelectedCardId(dialogueId);
-    console.log("dialogueId:", dialogueId);
 
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
