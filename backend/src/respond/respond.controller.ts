@@ -71,9 +71,7 @@ export class RespondController {
         });
       }
   
-      // Combine history and query into a single string
       const combinedInput = dialogue.messages.map(msg => `${msg.sender}: ${msg.message}`).join('\n') + `\nuser: ${body.question}`;
-      console.log(combinedInput);
       const response = await firstValueFrom(
         this.httpService.post(
           apiEndpoint,

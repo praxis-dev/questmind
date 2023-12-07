@@ -120,12 +120,14 @@ const DialogueMenu: React.FC = () => {
   const handleCardClick = (dialogueId: string) => {
     dispatch(setSelectedDialogueId(dialogueId));
     setSelectedCardId(dialogueId);
+    console.log("dialogueId:", dialogueId);
 
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
         dispatch(setSelectedDialogue(dialogue));
       })
       .catch((error) => {
+        console.log("Error fetching dialogue:", error);
         // console.error("Error fetching dialogue:", error);
       });
   };
@@ -145,6 +147,7 @@ const DialogueMenu: React.FC = () => {
           dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
 
           dispatch(setIntroMessageAdded(true));
+          dispatch(setSelectedDialogueId(""));
         }
 
         dispatch(dialogueIndexSlice.actions.deleteDialogue(dialogueId));
