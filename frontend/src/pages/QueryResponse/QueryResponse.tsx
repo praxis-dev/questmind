@@ -15,7 +15,6 @@ import {
   setMessages,
 } from "../../store/slices/chatSlice";
 import { setSelectedCardId } from "../../store/slices/selectedCardSlice";
-import { clearMessages } from "../../store/slices/chatSlice";
 
 import { RootState } from "../../store";
 
