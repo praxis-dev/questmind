@@ -1,4 +1,6 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+
 import { Space, Button, Dropdown } from "antd";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +12,11 @@ import { logoutUser } from "../../services/logoutUser";
 import styled, { keyframes } from "styled-components";
 
 import { SettingOutlined } from "@ant-design/icons";
+
+import { clearSelectedCardId } from "../../store/slices/selectedCardSlice";
+import { clearMessages } from "../../store/slices/chatSlice";
+import { clearSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
+import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 
 const pulsate = keyframes`
   0% { border-color: transparent; }
@@ -43,6 +50,9 @@ const LargeSettingOutlined = styled(SettingOutlined)`
 
 const SettingsMenu: React.FC = () => {
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -52,6 +62,10 @@ const SettingsMenu: React.FC = () => {
   });
 
   const handleLogout = () => {
+    dispatch(clearMessages());
+    dispatch(clearSelectedCardId());
+    dispatch(setSelectedDialogueId(""));
+    dispatch(clearSelectedDialogue());
     logoutUser();
     navigate("/landing");
   };

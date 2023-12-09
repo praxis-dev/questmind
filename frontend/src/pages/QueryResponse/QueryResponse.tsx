@@ -15,6 +15,7 @@ import {
   setMessages,
 } from "../../store/slices/chatSlice";
 import { setSelectedCardId } from "../../store/slices/selectedCardSlice";
+import { clearMessages } from "../../store/slices/chatSlice";
 
 import { RootState } from "../../store";
 
@@ -108,6 +109,7 @@ const QueryResponse: React.FC = () => {
   const dialogue = useSelector(selectDialogue);
 
   const isFirstRender = useRef(true);
+
   useEffect(() => {
     if (
       isFirstRender.current &&
