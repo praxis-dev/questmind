@@ -35,6 +35,8 @@ import styled, { keyframes } from "styled-components";
 
 import messagesConfig from "../../utils/messagesConfig";
 
+import "./DialogueMenu.css";
+
 const LargeUnorderedListOutlined = styled(UnorderedListOutlined)`
   font-size: 25px;
   color: grey;
@@ -233,6 +235,8 @@ const DialogueMenu: React.FC = () => {
         onClose={onClose}
         open={isOpen}
         key={"left"}
+        // styles={{ body: { overflow: "hidden" } }}
+        className="ant-design-drawer"
       >
         <Space direction="vertical" style={{ width: "100%" }}>
           <Flipper flipKey={sortedDialogues}>

@@ -1,0 +1,15 @@
+.ant-drawer-body {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d9d9d9 transparent;
+}
+
+.ant-drawer-body::-webkit-scrollbar {
+  width: 1px;
+  color: #cd7f32;
+}
+
+.ant-drawer-body::-webkit-scrollbar-thumb {
+  background-color: #cd7f32;
+  /* border-radius: 2px; */
+}
