@@ -14,7 +14,7 @@ import BasicForm from "../../components/BasicForm/BasicForm";
 
 import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/PulsatingButtonWithText";
 
-import Logo from "../../assets/logo.png";
+import Logo from "../../assets/logo_optimized.png";
 
 const Landing: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
