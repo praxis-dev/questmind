@@ -203,7 +203,12 @@ const BasicForm: React.FC = () => {
             <Button
               type="link"
               onClick={handleRecoverPassword}
-              style={{ padding: 0, height: "auto", lineHeight: "inherit" }}
+              style={{
+                padding: 0,
+                height: "auto",
+                lineHeight: "inherit",
+                color: "#cd7f32",
+              }}
             >
               Recover password
             </Button>
