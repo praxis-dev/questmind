@@ -86,8 +86,7 @@ export class UsersService {
 
     try {
       await sgMail.send(msg);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {

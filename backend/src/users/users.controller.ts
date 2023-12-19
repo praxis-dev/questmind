@@ -1,6 +1,12 @@
 // users.controller.ts (backend)
 
-import { Controller, Post, Body, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -14,15 +20,14 @@ export class UsersController {
   ) {
     try {
       await this.usersService.createUser(email, password);
-      return this.loginUser( email, password );
+      return this.loginUser(email, password);
     } catch (error) {
       if (error instanceof ConflictException) {
-        throw error; 
+        throw error;
       }
       throw new BadRequestException('Error creating user');
     }
   }
-  
 
   @Post('login')
   async loginUser(

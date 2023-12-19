@@ -19,6 +19,8 @@ import { PASSWORD_REGEX } from "../../utils/constants";
 
 import PulsatingButtonWithText from "../PulsatingButtonWithText/PulsatingButtonWithText";
 
+import GoogleSignInButton from "../../GoogleSignInButton/GoogleSignInButton";
+
 const SubmitButton = ({ form }: { form: FormInstance }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
@@ -198,7 +200,6 @@ const BasicForm: React.FC = () => {
           >
             <Input.Password />
           </Form.Item>
-
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button
               type="link"
@@ -213,6 +214,7 @@ const BasicForm: React.FC = () => {
               Recover password
             </Button>
           </Form.Item>
+          <GoogleSignInButton />
         </>
       )}
 

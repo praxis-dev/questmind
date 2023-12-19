@@ -7,6 +7,8 @@ import { DatabaseModule } from '../database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './entities/user.entity';
+import { GoogleStrategy } from './google.strategy';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { UserSchema } from './entities/user.entity';
       signOptions: { expiresIn: '7d' },
     }),
   ],
-  providers: [UsersService],
-  controllers: [UsersController],
+  providers: [UsersService, GoogleStrategy],
+  controllers: [UsersController, AuthController],
 })
 export class UsersModule {}
