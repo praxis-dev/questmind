@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Divider, Space } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -214,12 +214,21 @@ const BasicForm: React.FC = () => {
               Recover password
             </Button>
           </Form.Item>
-          <GoogleSignInButton />
         </>
       )}
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <SubmitButton form={form} />
+        <Space
+          align="center"
+          direction="horizontal"
+          style={{
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+          size="large"
+        >
+          <SubmitButton form={form} /> <GoogleSignInButton />
+        </Space>
       </Form.Item>
     </Form>
   );
