@@ -8,17 +8,17 @@ export class AuthController {
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {
-    // Initiates the Google OAuth2 login flow
+    console.log('Initiating Google OAuth');
   }
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req, @Res() res) {
-    // Handles the Google OAuth2 callback
+    console.log('Google OAuth callback received');
+
     const user = req.user;
     console.log(user);
-    res.redirect('https://questmind.ai/users/google/callback');
-
+    res.redirect('http://localhost:3000');
     // Here, implement what to do with the user info, e.g., token creation
   }
 }
