@@ -29,16 +29,18 @@ export class AuthController {
 
     const googleUser = req.user;
     this.logger.debug(`Google user info: ${JSON.stringify(googleUser)}`);
-
     try {
+      // Create or get the user from the database
       const user = await this.usersService.createOrGetGoogleUser(
         googleUser.email,
       );
       this.logger.debug(`User from DB: ${JSON.stringify(user)}`);
 
+      // Create token for the user
       const token = await this.usersService.createToken(user);
       this.logger.debug(`Generated token: ${token}`);
 
+      // Redirect with token to frontend
       res.redirect(`http://localhost:3000/landing/?token=${token}`);
       // deploycheck
     } catch (error) {
