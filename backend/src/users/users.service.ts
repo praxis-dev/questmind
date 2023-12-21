@@ -21,6 +21,17 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
+  async createOrGetGoogleUser(email: string) {
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      user = new this.userModel({ email });
+      await user.save();
+    }
+
+    return user;
+  }
+
   async createUser(email: string, password: string): Promise<any> {
     const userExists = await this.userModel.findOne({ email }).exec();
     if (userExists) {

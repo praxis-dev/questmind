@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // If you're using React Router
+import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -17,6 +19,8 @@ import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/Pu
 import Logo from "../../assets/logo_optimized.png";
 
 const Landing: React.FC = () => {
+  const location = useLocation(); // Get the current location object
+
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
     [Breakpoint.Large]: largeScreenStyles,
@@ -29,6 +33,7 @@ const Landing: React.FC = () => {
   const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const formState = useSelector((state: RootState) => state.form.form);
 
@@ -73,6 +78,21 @@ const Landing: React.FC = () => {
     setIsSignupModalVisible(false);
   };
 
+  useEffect(() => {
+    // Function to extract the token from the URL
+    const getTokenFromUrl = () => {
+      const query = new URLSearchParams(location.search);
+      return query.get("token");
+    };
+
+    const token = getTokenFromUrl();
+
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/");
+    }
+  }, [location]);
+
   return (
     <Row>
       <Col span={24} style={styles.mainCol}>
@@ -82,15 +102,6 @@ const Landing: React.FC = () => {
           <h2>
             Unlock Your Potential with Our AI-Powered Psychological Advisor
           </h2>
-
-          <div style={styles.textArea}>
-            Tailored to guide you through life's challenges, it offers unique
-            insights and expert advice, blending advanced AI with psychological
-            acumen.
-          </div>
-          <div style={styles.textArea}>
-            Start your journey today and discover your true potential.
-          </div>
 
           <Space direction="horizontal" style={styles.contentSpace}>
             <PulsatingButtonWithText disabled={false} onClick={showLoginModal}>
