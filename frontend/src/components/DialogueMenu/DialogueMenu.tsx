@@ -135,7 +135,6 @@ const DialogueMenu: React.FC = () => {
       })
       .catch((error) => {
         console.log("Error fetching dialogue:", error);
-        // console.error("Error fetching dialogue:", error);
       });
   };
 
@@ -213,9 +212,9 @@ const DialogueMenu: React.FC = () => {
     };
   }, [sortedDialogues, socket]);
 
-  if (status === "failed") {
-    return <p>Failed to fetch dialogues.</p>;
-  }
+  // if (status === "failed") {
+  //   return <p>Failed to fetch dialogues.</p>;
+  // }
 
   return (
     <>

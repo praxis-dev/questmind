@@ -17,7 +17,6 @@ export const resetPassword = async (
     if (axios.isAxiosError(error) && error.response) {
       return Promise.reject(error.response.data.message);
     } else {
-      // console.error("Error resetting password:", error);
       return Promise.reject("An unknown error occurred.");
     }
   }

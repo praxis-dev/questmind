@@ -45,7 +45,7 @@ const PulsatingButton = styled(Button)`
     border: 1px solid black;
 
     svg {
-      color: #cd7f32; // Change icon color on hover
+      color: #cd7f32;
     }
   }
 `;

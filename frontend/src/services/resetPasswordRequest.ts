@@ -20,7 +20,6 @@ export const resetPasswordRequest = async (
         console.log("Axios error with response:", error.response);
         return Promise.reject(error.response.data.message);
       }
-      // console.error("Axios error without response:", error);
       return Promise.reject(error.message);
     } else if (error instanceof Error) {
       console.log("Non-Axios Error:", error);

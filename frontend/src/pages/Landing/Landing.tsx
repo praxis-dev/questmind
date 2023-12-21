@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // If you're using React Router
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -19,7 +19,7 @@ import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/Pu
 import Logo from "../../assets/logo_optimized.png";
 
 const Landing: React.FC = () => {
-  const location = useLocation(); // Get the current location object
+  const location = useLocation();
 
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -79,7 +79,6 @@ const Landing: React.FC = () => {
   };
 
   useEffect(() => {
-    // Function to extract the token from the URL
     const getTokenFromUrl = () => {
       const query = new URLSearchParams(location.search);
       return query.get("token");
