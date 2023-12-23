@@ -3,7 +3,9 @@ import { FcGoogle } from "react-icons/fc";
 
 const GoogleSignInButton = () => {
   const handleSignIn = () => {
-    window.location.href = "http://localhost:3001/api/auth/google";
+    // window.location.href = "http://localhost:3001/api/auth/google";
+    window.location.href =
+      "https://www.igorchesnokov.com/api/auth/google/callback";
     // deploycheck
   };
 

@@ -9,7 +9,7 @@ import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: ['https://www.questmind.ai', 'https://questmind.ai', "http://localhost:3000"],
+    origin: ['https://www.questmind.ai', 'https://questmind.ai', 'https://igorchesnokov.com', 'https://www.igorchesnokov.com', "http://localhost:3000"],
     credentials: true,
   },
 })
@@ -28,7 +28,6 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
-    // Additional logging for debugging
     client.on('error', (error) => {
       this.logger.error(`Error on client ${client.id}: ${error}`);
     });
@@ -36,7 +35,6 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
-    // Log the disconnect reason if available
     client.on('disconnect', (reason) => {
       this.logger.log(`Client ${client.id} disconnected: ${reason}`);
     });

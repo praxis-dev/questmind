@@ -28,7 +28,9 @@ export class AuthController {
 
       const token = await this.usersService.createToken(user);
 
-      res.redirect(`http://localhost:3000/landing/?token=${token}`);
+      // res.redirect(`http://localhost:3000/landing/?token=${token}`);
+      res.redirect(`http://igorchesnokov.com/landing/?token=${token}`);
+
       // deploycheck
     } catch (error) {
       throw new BadRequestException('Authentication failed');

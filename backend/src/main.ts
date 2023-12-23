@@ -21,6 +21,8 @@ async function bootstrap() {
     origin: [
       'https://www.questmind.ai',
       'https://questmind.ai',
+      'https://www.igorchesnokov.com',
+      'https://igorchesnokov.com',
       'http://localhost:3000',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
