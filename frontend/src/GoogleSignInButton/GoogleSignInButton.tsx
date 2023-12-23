@@ -5,8 +5,7 @@ const GoogleSignInButton = () => {
   const handleSignIn = () => {
     // window.location.href = "http://localhost:3001/api/auth/google";
     window.location.href =
-      "https://www.igorchesnokov.com/api/auth/google/callback";
-    // deploycheck
+      process.env.REACT_APP_CURRENT_DEPLOYMENT + "/api/auth/google/callback";
   };
 
   return (
