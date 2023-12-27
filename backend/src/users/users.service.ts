@@ -85,9 +85,7 @@ export class UsersService {
       )
       .exec();
 
-    // const resetUrl = `https://www.questmind.ai/password-recovery?token=${resetToken}`;
-    // const resetUrl = `http://localhost:3000/password-recovery?token=${resetToken}`;
-    const resetUrl = `http://igorchesnokov.com/password-recovery?token=${resetToken}`;
+    const resetUrl = process.env.CURRENT_DEPLOYMENT + `/password-recovery?token=${resetToken}`;
 
     // deploycheck
 

@@ -222,10 +222,10 @@ const BasicForm: React.FC = () => {
           align="center"
           direction="horizontal"
           style={{
-            width: "100%",
+            // width: "100%",
             justifyContent: "space-between",
           }}
-          size="large"
+          // size="large"
         >
           <SubmitButton form={form} /> <GoogleSignInButton />
         </Space>
