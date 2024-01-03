@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Modal } from "antd";
+import { Row, Col, Space, Modal, Typography } from "antd";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -96,11 +96,23 @@ const Landing: React.FC = () => {
     <Row>
       <Col span={24} style={styles.mainCol}>
         <Space direction="vertical" size="small" style={styles.contentSpace}>
-          <img src={Logo} width="200" alt="Description" />
+          <img
+            src={Logo}
+            width="200"
+            alt="QuestMind.AI Logo - AI-Powered Psychological Advisor"
+          />
           <h1>QuestMind.AI</h1>
-          <h2>
-            Unlock Your Potential with Our AI-Powered Psychological Advisor
-          </h2>
+          <h2>Explore Advanced Psychological Insights with AI Coaching</h2>
+          <Space direction="vertical" style={styles.textArea}>
+            <Typography>
+              Join our community and discover how AI can transform your
+              psychological well-being and personal growth.
+            </Typography>
+            <Typography>
+              Our AI-powered tools offer personalized coaching and mental health
+              support.
+            </Typography>
+          </Space>
 
           <Space direction="horizontal" style={styles.contentSpace}>
             <PulsatingButtonWithText disabled={false} onClick={showLoginModal}>
