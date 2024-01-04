@@ -76,7 +76,11 @@ def get_response(request: RequestModel) -> StreamingResponse:
     from langchain.prompts import PromptTemplate
     from langchain.vectorstores import FAISS
     from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+    from queue import Queue, Empty
+    from threading import Thread
     import json
+    from langchain.callbacks.base import BaseCallbackHandler
+    from typing import Any
 
     def count_tokens(text):
         import tiktoken
@@ -154,7 +158,45 @@ def get_response(request: RequestModel) -> StreamingResponse:
     print("total_input_tokens", total_input_tokens)
     print("max_input_tokens", max_input_tokens)
 
-    callbacks = [StreamingStdOutCallbackHandler()]
+    output_queue = Queue()
+
+    class QueueCallbackHandler(BaseCallbackHandler):
+        def __init__(self, queue):
+            self.queue = queue
+
+        def on_llm_new_token(self, token: str, **kwargs) -> None:
+            self.queue.put(
+                {
+                    "event": "message",
+                    "id": "message_id",
+                    "retry": 1,
+                    "data": token,
+                }
+            )
+
+        def on_llm_end(self, *args, **kwargs) -> Any:
+            return self.queue.empty()
+
+    def stream():
+        job_done = object()
+
+        def task():
+            qa.run(query)
+            output_queue.put(job_done)
+
+        t = Thread(target=task)
+        t.start()
+
+        while True:
+            try:
+                item = output_queue.get(True, timeout=1)
+                if item is job_done:
+                    break
+                yield f"data: {json.dumps(item)}\n\n"
+            except Empty:
+                continue
+
+    callbacks = [QueueCallbackHandler(output_queue)]
 
     PROMPT = PromptTemplate(
         template=prompt_template, input_variables=["context", "question"]
@@ -171,27 +213,7 @@ def get_response(request: RequestModel) -> StreamingResponse:
     print("trimmed_query_length", count_tokens(query))
     print(query)
 
-    response = qa.stream(query)
-
-    async def generate_response():
-        chunk_count = 0
-        if isinstance(response, str):
-            print(f"Yielding chunk {chunk_count}")
-            yield response
-            chunk_count += 1
-        else:
-            for item in response:
-                print(f"Yielding chunk {chunk_count}")
-                if isinstance(item, dict):
-                    # Convert dict to JSON string
-                    yield json.dumps(item) + "\n"
-                else:
-                    yield str(item)  # Ensure it's a string
-                chunk_count += 1
-
-        print(f"Total chunks produced: {chunk_count}")
-
-    return StreamingResponse(generate_response(), media_type="text/event-stream")
+    return StreamingResponse(stream(), media_type="text/event-stream")
 
 
 @stub.local_entrypoint()
