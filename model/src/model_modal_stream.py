@@ -1,3 +1,4 @@
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 import modal
@@ -21,7 +22,7 @@ image = Image.debian_slim().pip_install(
     local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
 
 
-stub = modal.Stub("model_modal")
+stub = modal.Stub("model_modal_stream")
 data_volume = modal.NetworkFileSystem.persisted("data_volume")
 db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume")
 questions_volume = modal.NetworkFileSystem.persisted("questions_volume")
@@ -65,8 +66,8 @@ class RequestModel(BaseModel):
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(method="POST")
-def get_response(request: RequestModel) -> str:
+@web_endpoint(label="model-endpoint-2", method="POST")
+def get_response(request: RequestModel) -> StreamingResponse:
 
     from langchain.llms import OpenAI
     from langchain.embeddings.openai import OpenAIEmbeddings
@@ -75,7 +76,7 @@ def get_response(request: RequestModel) -> str:
     from langchain.prompts import PromptTemplate
     from langchain.vectorstores import FAISS
     from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-    from fastapi.responses import StreamingResponse
+    import json
 
     def count_tokens(text):
         import tiktoken
@@ -170,8 +171,27 @@ def get_response(request: RequestModel) -> str:
     print("trimmed_query_length", count_tokens(query))
     print(query)
 
-    response = qa.run(query)
-    return response
+    response = qa.stream(query)
+
+    async def generate_response():
+        chunk_count = 0
+        if isinstance(response, str):
+            print(f"Yielding chunk {chunk_count}")
+            yield response
+            chunk_count += 1
+        else:
+            for item in response:
+                print(f"Yielding chunk {chunk_count}")
+                if isinstance(item, dict):
+                    # Convert dict to JSON string
+                    yield json.dumps(item) + "\n"
+                else:
+                    yield str(item)  # Ensure it's a string
+                chunk_count += 1
+
+        print(f"Total chunks produced: {chunk_count}")
+
+    return StreamingResponse(generate_response(), media_type="text/event-stream")
 
 
 @stub.local_entrypoint()
