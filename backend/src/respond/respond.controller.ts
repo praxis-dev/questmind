@@ -40,19 +40,19 @@ export class RespondController {
   ) {}
   
   @UseGuards(AuthGuard('jwt'))
-  @Post()
+  @Post('/respond')
   async respond(
     @Body() body: { question: string; dialogueId: string },
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
-  
+
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
         throw new Error('API_ENDPOINT is not defined in the environment');
       }
-  
+
       let dialogue;
       if (body.dialogueId) {
         const objectId = new Types.ObjectId(body.dialogueId);
@@ -61,7 +61,6 @@ export class RespondController {
           throw new NotFoundException('Dialogue not found');
         }
       } else {
-        // Create a new dialogue if no dialogueId is provided
         dialogue = await this.dialogueModel.create({
           userId: user._id,
           messages: [],
@@ -70,42 +69,73 @@ export class RespondController {
           updatedAt: new Date(),
         });
       }
-  
-      const combinedInput = dialogue.messages.map(msg => `${msg.sender}: ${msg.message}`).join('\n') + `\nuser: ${body.question}`;
-      const response = await firstValueFrom(
-        this.httpService.post(
-          apiEndpoint,
-          { query: combinedInput },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        ),
-      );
-  
-      // Update the dialogue with the new question and AI response
-      dialogue.messages.push(
-        {
-          sender: 'user',
-          message: body.question,
-          timestamp: new Date(),
-          important: false,
-        },
-        {
-          sender: 'ai',
-          message: response.data,
-          timestamp: new Date(),
-          important: false,
-        },
-      );
-      dialogue.updatedAt = new Date();
-      await dialogue.save();
-      this.wsGateway.notifyClient(dialogue._id.toString(), {
-        updatedAt: dialogue.updatedAt,
+
+      dialogue.messages.push({
+        sender: 'user',
+        message: body.question,
+        timestamp: new Date(),
+        important: false,
       });
-  
-      return { data: response.data, dialogueId: dialogue._id.toString() };
+
+      const combinedInput = dialogue.messages.map(msg => `${msg.sender}: ${msg.message}`).join('\n');
+      
+      const response = this.httpService.post(apiEndpoint, { query: combinedInput }, { responseType: 'stream' });
+      response.subscribe({
+        next: (response) => {
+          const stream = response.data;
+          let messageBuffer = '';
+      
+          stream.on('data', (chunk) => {
+            const chunkAsString = chunk.toString();
+            if (chunkAsString.startsWith('data: ')) {
+              const jsonPart = chunkAsString.substring(6).trim();
+              if (jsonPart) {
+                // Use a regex to extract the JSON string
+                const match = jsonPart.match(/{.*?}/);
+                if (match) {
+                  const validJsonPart = match[0];
+                  try {
+                    const parsedChunk = JSON.parse(validJsonPart);
+                    if (parsedChunk && parsedChunk.data) {
+                      const messageContent = parsedChunk.data;
+                      messageBuffer += messageContent; // Accumulate the message fragment
+      
+                      // Send each chunk to the frontend
+                      this.wsGateway.notifyClient(dialogue._id.toString(), {
+                        message: messageContent,
+                      });
+                    }
+                  } catch (error) {
+                    console.error('Error parsing chunk: ', error, 'Chunk:', validJsonPart);
+                  }
+                }
+              }
+            }
+          });
+      
+          stream.on('end', async () => {
+            if (messageBuffer.trim() !== '') {
+              dialogue.messages.push({
+                sender: 'ai',
+                message: messageBuffer,
+                timestamp: new Date(),
+                important: false,
+              });
+              await dialogue.save();
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error in response:', err);
+        },
+        complete: () => {
+          console.log('Stream complete');
+        }
+      });
+      
+      
+      
+      return { dialogueId: dialogue._id.toString() };
     } catch (error) {
       throw new InternalServerErrorException('Model communication failed.');
     }

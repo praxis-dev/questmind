@@ -21,10 +21,10 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   notifyClient(dialogueId: string, updatedData: any) {
     this.logger.log(
-      `Emitting to client - Dialogue ID: ${dialogueId}, Data: ${JSON.stringify(updatedData)}`,
+      `Emitting to client - Dialogue ID: ${dialogueId}, Data: ${updatedData.message}`,
     );
     this.server.emit('dialogueUpdated', { dialogueId, updatedData });
-  }
+  }  
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
