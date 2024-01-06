@@ -134,9 +134,6 @@ export class RespondController {
         }
       });
       
-      
-      
-      
       return { dialogueId: dialogue._id.toString() };
     } catch (error) {
       throw new InternalServerErrorException('Model communication failed.');
