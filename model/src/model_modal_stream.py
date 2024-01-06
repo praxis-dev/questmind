@@ -187,12 +187,21 @@ def get_response(request: RequestModel) -> StreamingResponse:
         t = Thread(target=task)
         t.start()
 
+        sentence = ''
         while True:
             try:
                 item = output_queue.get(True, timeout=1)
                 if item is job_done:
+                    if sentence:
+                        yield f"data: {json.dumps({'data': sentence})}\n\n"
                     break
-                yield f"data: {json.dumps(item)}\n\n"
+                else:
+                    token = item['data']
+                    sentence += token
+                    # Check for sentence delimiters
+                    if any(token.endswith(delimiter) for delimiter in ('.', '?', '!', '\n')):
+                        yield f"data: {json.dumps({'data': sentence})}\n\n"
+                        sentence = ''  # Reset the sentence buffer after yielding
             except Empty:
                 continue
 

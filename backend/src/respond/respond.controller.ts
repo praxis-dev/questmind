@@ -90,7 +90,7 @@ export class RespondController {
             if (chunkAsString.startsWith('data: ')) {
               const jsonPart = chunkAsString.substring(6).trim();
               if (jsonPart) {
-                // Use a regex to extract the JSON string
+                // Extract JSON string using regex
                 const match = jsonPart.match(/{.*?}/);
                 if (match) {
                   const validJsonPart = match[0];
@@ -115,6 +115,7 @@ export class RespondController {
       
           stream.on('end', async () => {
             if (messageBuffer.trim() !== '') {
+              // Save the full message to the dialogue once the stream ends
               dialogue.messages.push({
                 sender: 'ai',
                 message: messageBuffer,
@@ -132,6 +133,7 @@ export class RespondController {
           console.log('Stream complete');
         }
       });
+      
       
       
       
