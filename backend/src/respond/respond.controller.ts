@@ -11,6 +11,7 @@ import {
   NotFoundException,
   Param,
   Delete,
+  Res
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
@@ -25,6 +26,9 @@ import { Dialogue } from './entities/dialogue.entity';
 import { User } from '../users/entities/user.entity';
 
 import { WsGateway } from '../websockets/ws.gateway';
+
+import { Response } from 'express';
+import { Observable } from 'rxjs';
 
 interface RequestWithUser extends Request {
   user: User;
@@ -43,6 +47,7 @@ export class RespondController {
   @Post('/respond')
   async respond(
     @Body() body: { question: string; dialogueId: string },
+    @Res() res: Response, // Inject response object,
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
@@ -78,13 +83,17 @@ export class RespondController {
       });
 
       const combinedInput = dialogue.messages.map(msg => `${msg.sender}: ${msg.message}`).join('\n');
+
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
       
-      const response = this.httpService.post(apiEndpoint, { query: combinedInput }, { responseType: 'stream' });
+      const response: Observable<any> = this.httpService.post(apiEndpoint, { query: combinedInput }, { responseType: 'stream' });
       response.subscribe({
         next: (response) => {
           const stream = response.data;
           let messageBuffer = '';
-      
+  
           stream.on('data', (chunk) => {
             const chunkAsString = chunk.toString();
             if (chunkAsString.startsWith('data: ')) {
@@ -99,11 +108,9 @@ export class RespondController {
                     if (parsedChunk && parsedChunk.data) {
                       const messageContent = parsedChunk.data;
                       messageBuffer += messageContent; // Accumulate the message fragment
-      
-                      // Send each chunk to the frontend
-                      this.wsGateway.notifyClient(dialogue._id.toString(), {
-                        message: messageContent,
-                      });
+  
+                      // Write chunk to HTTP response
+                      res.write(`data: ${messageContent}\n\n`);
                     }
                   } catch (error) {
                     console.error('Error parsing chunk: ', error, 'Chunk:', validJsonPart);
@@ -112,7 +119,7 @@ export class RespondController {
               }
             }
           });
-      
+  
           stream.on('end', async () => {
             if (messageBuffer.trim() !== '') {
               // Save the full message to the dialogue once the stream ends
@@ -124,17 +131,16 @@ export class RespondController {
               });
               await dialogue.save();
             }
+            res.end(); // Close the HTTP response
           });
         },
         error: (err) => {
           console.error('Error in response:', err);
+          res.status(500).send('Stream error');
         },
-        complete: () => {
-          console.log('Stream complete');
-        }
       });
       
-      return { dialogueId: dialogue._id.toString() };
+      // return { dialogueId: dialogue._id.toString() };
     } catch (error) {
       throw new InternalServerErrorException('Model communication failed.');
     }
