@@ -55,31 +55,41 @@ const QueryResponse: React.FC = () => {
 
   const chatMessages = useSelector(selectChatMessages);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     try {
       dispatch(addMessage({ type: "user", text: question }));
 
       setQuestion("");
       dispatch(setIsLoading(true));
-
-      const responseText = await fetchResponse(question, selectedDialogueId);
-      dispatch(setSelectedDialogueId(responseText.dialogueId));
-      dispatch(setSelectedCardId(responseText.dialogueId));
-
       setIsTyping(true);
 
-      setTimeout(() => {
-        dispatch(addMessage({ type: "ai", text: responseText.data }));
+      // Set up the stream
+      const closeStream = fetchResponse(
+        question,
+        selectedDialogueId,
+        (chunk) => {
+          // Handle each chunk of data
+          console.log("Received chunk:", chunk); // Log the received chunk
+          dispatch(addMessage({ type: "ai", text: chunk }));
+        },
+        () => {
+          // Handle stream closure
+          dispatch(setIsLoading(false));
+          setIsTyping(false);
+          if (!selectedDialogueId) {
+            dispatch(fetchDialogues());
+          }
+        }
+      );
 
-        dispatch(setIsLoading(false));
-        setIsTyping(false);
-      }, 500);
-      if (!selectedDialogueId) {
-        dispatch(fetchDialogues());
-      }
+      // Optional: Close the stream after a certain timeout or based on some condition
+      // setTimeout(() => {
+      //   closeStream();
+      // }, 10000);
     } catch (error: unknown) {
-      console.error("Error fetching response:", error);
+      console.error("Error setting up response stream:", error);
       dispatch(setIsLoading(false));
+      setIsTyping(false);
 
       let errorMessage: string;
       if (typeof error === "object" && error !== null && "response" in error) {

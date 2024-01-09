@@ -11,7 +11,8 @@ import {
   NotFoundException,
   Param,
   Delete,
-  Res
+  Res,
+  Query,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
@@ -44,23 +45,24 @@ export class RespondController {
   ) {}
   
   @UseGuards(AuthGuard('jwt'))
-  @Post('/respond')
+  @Get('/respond')
   async respond(
-    @Body() body: { question: string; dialogueId: string },
-    @Res() res: Response, // Inject response object,
+    @Query('question') question: string,
+    @Query('dialogueId') dialogueId: string,
+    @Res() res: Response, 
     @Req() req: RequestWithUser,
   ): Promise<any> {
     try {
       const user = req.user;
-
+  
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
         throw new Error('API_ENDPOINT is not defined in the environment');
       }
-
+  
       let dialogue;
-      if (body.dialogueId) {
-        const objectId = new Types.ObjectId(body.dialogueId);
+      if (dialogueId) {
+        const objectId = new Types.ObjectId(dialogueId);
         dialogue = await this.dialogueModel.findById(objectId);
         if (!dialogue) {
           throw new NotFoundException('Dialogue not found');
@@ -74,16 +76,16 @@ export class RespondController {
           updatedAt: new Date(),
         });
       }
-
+  
       dialogue.messages.push({
         sender: 'user',
-        message: body.question,
+        message: question,
         timestamp: new Date(),
         important: false,
       });
-
+  
       const combinedInput = dialogue.messages.map(msg => `${msg.sender}: ${msg.message}`).join('\n');
-
+  
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
@@ -97,9 +99,9 @@ export class RespondController {
           stream.on('data', (chunk) => {
             const chunkAsString = chunk.toString();
             if (chunkAsString.startsWith('data: ')) {
+              console.log('Chunk:', chunkAsString);
               const jsonPart = chunkAsString.substring(6).trim();
               if (jsonPart) {
-                // Extract JSON string using regex
                 const match = jsonPart.match(/{.*?}/);
                 if (match) {
                   const validJsonPart = match[0];
@@ -109,7 +111,6 @@ export class RespondController {
                       const messageContent = parsedChunk.data;
                       messageBuffer += messageContent; // Accumulate the message fragment
   
-                      // Write chunk to HTTP response
                       res.write(`data: ${messageContent}\n\n`);
                     }
                   } catch (error) {
@@ -121,8 +122,9 @@ export class RespondController {
           });
   
           stream.on('end', async () => {
+            console.log('Stream ended. Final message:', messageBuffer); 
+  
             if (messageBuffer.trim() !== '') {
-              // Save the full message to the dialogue once the stream ends
               dialogue.messages.push({
                 sender: 'ai',
                 message: messageBuffer,
@@ -139,12 +141,11 @@ export class RespondController {
           res.status(500).send('Stream error');
         },
       });
-      
-      // return { dialogueId: dialogue._id.toString() };
     } catch (error) {
       throw new InternalServerErrorException('Model communication failed.');
     }
   }
+  
   
 
   @UseGuards(AuthGuard('jwt'))

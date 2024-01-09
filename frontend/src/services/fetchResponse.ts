@@ -1,17 +1,14 @@
-import axios from "axios";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
-const endpoint = "/respond";
+const endpoint = "/respond/respond";
 const apiUrl = `${process.env.REACT_APP_API_URL}${endpoint}`;
 
-type RequestBody = {
-  question: string;
-  dialogueId: string | null;
-};
-
-export const fetchResponse = async (
+export const fetchResponse = (
   question: string,
-  dialogueId: string | null
-): Promise<{ data: string; dialogueId: string }> => {
+  dialogueId: string | null,
+  onChunkReceived: (chunk: string) => void,
+  onStreamClosed: () => void
+) => {
   if (!apiUrl) {
     throw new Error("REACT_APP_API_URL environment variable not set");
   }
@@ -22,20 +19,29 @@ export const fetchResponse = async (
     throw new Error("No authentication token found.");
   }
 
-  try {
-    const requestBody: RequestBody = { question, dialogueId };
-    if (dialogueId) {
-      requestBody.dialogueId = dialogueId;
-    }
+  const urlWithParams = `${apiUrl}?question=${encodeURIComponent(
+    question
+  )}&dialogueId=${dialogueId || ""}`;
 
-    const result = await axios.post(apiUrl, requestBody, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const eventSource = new EventSourcePolyfill(urlWithParams, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    return result.data;
-  } catch (error) {
-    throw new Error("Error fetching response.");
-  }
+  // @ts-ignore
+  eventSource.onmessage = (ev: MessageEvent) => {
+    onChunkReceived(ev.data);
+  };
+
+  // @ts-ignore
+  eventSource.onerror = (ev: Event) => {
+    console.error("EventSource failed:", ev);
+    eventSource.close();
+    onStreamClosed();
+  };
+
+  return () => {
+    eventSource.close();
+  };
 };
