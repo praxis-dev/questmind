@@ -1,3 +1,5 @@
+// messageCard.tsx (frontend component for an individual message card)
+
 import React, { ReactNode } from "react";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -5,7 +7,7 @@ import { SocialIcon } from "react-social-icons";
 
 interface MessageCardProps {
   title: string;
-  content: string | ReactNode;
+  content: string[];
   type: "user" | "ai";
   onContentUpdate?: () => void;
   showShareButton?: boolean;
@@ -46,6 +48,10 @@ const MessageCard: React.FC<MessageCardProps> = ({
 
   const processedContent = preprocessContent(content);
 
+  const renderContentChunks = content.map((chunk, index) => (
+    <p key={index}>{chunk}</p>
+  ));
+
   const shareToTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
     const aiResponse = title === "QuestMind:" ? contentStr : "";
@@ -70,7 +76,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
           />
         )}
       </div>
-      <div style={styles.cardContent}>{processedContent}</div>
+      <div style={styles.cardContent}> {renderContentChunks}</div>
     </div>
   );
 };

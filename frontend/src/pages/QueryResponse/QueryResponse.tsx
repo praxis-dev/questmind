@@ -1,3 +1,5 @@
+// QueryResponse.tsx (frontend main page)
+
 import React, { useState, useEffect, useRef } from "react";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -55,6 +57,10 @@ const QueryResponse: React.FC = () => {
 
   const chatMessages = useSelector(selectChatMessages);
 
+  const [currentMessageChunks, setCurrentMessageChunks] = useState<string[]>(
+    []
+  );
+
   const handleSubmit = () => {
     try {
       dispatch(addMessage({ type: "user", text: question }));
@@ -63,17 +69,18 @@ const QueryResponse: React.FC = () => {
       dispatch(setIsLoading(true));
       setIsTyping(true);
 
-      // Set up the stream
       const closeStream = fetchResponse(
         question,
         selectedDialogueId,
         (chunk) => {
-          // Handle each chunk of data
-          console.log("Received chunk:", chunk); // Log the received chunk
-          dispatch(addMessage({ type: "ai", text: chunk }));
+          console.log("Received chunk:", chunk);
+          setCurrentMessageChunks((prevChunks) => [...prevChunks, chunk]);
         },
         () => {
-          // Handle stream closure
+          dispatch(
+            addMessage({ type: "ai", text: currentMessageChunks.join(" ") })
+          );
+          setCurrentMessageChunks([]);
           dispatch(setIsLoading(false));
           setIsTyping(false);
           if (!selectedDialogueId) {
@@ -220,7 +227,7 @@ const QueryResponse: React.FC = () => {
               <MessageCard
                 key={index}
                 title={message.type === "user" ? "You:" : "QuestMind:"}
-                content={message.text}
+                content={[message.text]}
                 type={message.type}
                 onContentUpdate={() => {
                   if (!hasUserScrolled && chatSpaceRef.current) {
@@ -252,6 +259,13 @@ const QueryResponse: React.FC = () => {
               <Space style={{ display: "flex", justifyContent: "center" }}>
                 <ScalingSquaresSpinner color="#cd7f32" size={27} />
               </Space>
+            )}
+            {isLoading && currentMessageChunks.length > 0 && (
+              <MessageCard
+                title="QuestMind:"
+                content={currentMessageChunks}
+                type="ai"
+              />
             )}
           </Space>
           <div style={styles.querySpace}>
