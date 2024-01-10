@@ -29,32 +29,13 @@ const MessageCard: React.FC<MessageCardProps> = ({
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const isStringContent = typeof content === "string";
-  const contentStr = isStringContent ? content : "";
-
-  const preprocessContent = (
-    content: string | ReactNode
-  ): string | ReactNode => {
-    if (typeof content !== "string") return content;
-
-    let modifiedContent = content.replace(/\[Your\s+Name\]/gi, "QuestMind.AI");
-
-    modifiedContent = modifiedContent.startsWith("\n")
-      ? modifiedContent.slice(1)
-      : modifiedContent;
-
-    return modifiedContent;
-  };
-
-  const processedContent = preprocessContent(content);
-
   const renderContentChunks = content.map((chunk, index) => (
-    <p key={index}>{chunk}</p>
+    <p key={`${chunk}-${index}`}>{chunk}</p> // Using a combination of chunk and index as key
   ));
 
   const shareToTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
-    const aiResponse = title === "QuestMind:" ? contentStr : "";
+    const aiResponse = content.join(" "); // Joining all content chunks
     const tweetText = encodeURIComponent(
       `Question: ${userQuestion}\n\nQuestMind: ${aiResponse} \n\n#QuestMind \n\nAsk your own question at https://questmind.ai`
     );
@@ -68,7 +49,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
         <div style={styles.cardTitle}>{title}</div>
         {type === "ai" && showShareButton && (
           <SocialIcon
-            url="www.x.com"
+            url="www.x.com" // Replace with actual URL
             style={styles.shareIcon}
             fgColor="black"
             bgColor="transparent"

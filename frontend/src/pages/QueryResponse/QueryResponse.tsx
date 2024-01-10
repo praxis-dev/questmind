@@ -16,6 +16,9 @@ import {
   selectChatMessages,
   setMessages,
 } from "../../store/slices/chatSlice";
+
+import { addChunk, resetChunks } from "../../store/slices/currentMessageSlice";
+
 import { setSelectedCardId } from "../../store/slices/selectedCardSlice";
 
 import { RootState } from "../../store";
@@ -57,8 +60,8 @@ const QueryResponse: React.FC = () => {
 
   const chatMessages = useSelector(selectChatMessages);
 
-  const [currentMessageChunks, setCurrentMessageChunks] = useState<string[]>(
-    []
+  const accumulatedChunks = useSelector(
+    (state: RootState) => state.currentMessage.chunks
   );
 
   const handleSubmit = () => {
@@ -69,18 +72,24 @@ const QueryResponse: React.FC = () => {
       dispatch(setIsLoading(true));
       setIsTyping(true);
 
-      const closeStream = fetchResponse(
+      fetchResponse(
         question,
         selectedDialogueId,
         (chunk) => {
-          console.log("Received chunk:", chunk);
-          setCurrentMessageChunks((prevChunks) => [...prevChunks, chunk]);
+          // Append each chunk to the current message chunks array in the Redux store
+          dispatch(addChunk(chunk));
         },
         () => {
-          dispatch(
-            addMessage({ type: "ai", text: currentMessageChunks.join(" ") })
-          );
-          setCurrentMessageChunks([]);
+          // Combine all accumulated chunks into a single message
+          const completeMessage = accumulatedChunks.join(" ");
+
+          // Dispatch the complete message to chatMessages
+          dispatch(addMessage({ type: "ai", text: completeMessage }));
+
+          // Reset the chunks in the Redux store
+          dispatch(resetChunks());
+
+          // Handle other tasks after stream closure
           dispatch(setIsLoading(false));
           setIsTyping(false);
           if (!selectedDialogueId) {
@@ -88,11 +97,6 @@ const QueryResponse: React.FC = () => {
           }
         }
       );
-
-      // Optional: Close the stream after a certain timeout or based on some condition
-      // setTimeout(() => {
-      //   closeStream();
-      // }, 10000);
     } catch (error: unknown) {
       console.error("Error setting up response stream:", error);
       dispatch(setIsLoading(false));
@@ -260,10 +264,11 @@ const QueryResponse: React.FC = () => {
                 <ScalingSquaresSpinner color="#cd7f32" size={27} />
               </Space>
             )}
-            {isLoading && currentMessageChunks.length > 0 && (
+            {isLoading && accumulatedChunks.length > 0 && (
               <MessageCard
+                key="ongoing-message"
                 title="QuestMind:"
-                content={currentMessageChunks}
+                content={accumulatedChunks}
                 type="ai"
               />
             )}
