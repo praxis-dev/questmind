@@ -1,8 +1,8 @@
-// src/store/slices/chatSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../index";
 
 interface ChatMessage {
+  id: string;
   type: "user" | "ai";
   text: string;
 }

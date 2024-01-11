@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+import { v4 } from "uuid";
+
 import { Button, Drawer, Space, Card, Typography } from "antd";
 import { UnorderedListOutlined, CloseOutlined } from "@ant-design/icons";
 import { useResponsiveStyles } from "../../library/hooks";
@@ -151,7 +153,13 @@ const DialogueMenu: React.FC = () => {
           );
           const randomIntroductoryMessage =
             messagesConfig.introductory[randomIndex];
-          dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
+          dispatch(
+            addMessage({
+              id: v4(),
+              type: "ai",
+              text: randomIntroductoryMessage,
+            })
+          );
 
           dispatch(setIntroMessageAdded(true));
           dispatch(setSelectedDialogueId(""));

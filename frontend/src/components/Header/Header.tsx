@@ -1,6 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
+import { v4 as uuidv4 } from "uuid";
+
 import { Button, Space } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -69,7 +71,9 @@ const Header: React.FC = () => {
 
     dispatch(setSelectedDialogueId(""));
     dispatch(clearMessages());
-    dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
+    dispatch(
+      addMessage({ id: uuidv4(), type: "ai", text: randomIntroductoryMessage })
+    );
   };
 
   return (

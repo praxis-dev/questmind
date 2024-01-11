@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
+import { v4 as uuidv4, v4 } from "uuid";
+
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
@@ -19,8 +21,6 @@ import {
 
 import { addChunk, resetChunks } from "../../store/slices/currentMessageSlice";
 
-import { setSelectedCardId } from "../../store/slices/selectedCardSlice";
-
 import { RootState } from "../../store";
 
 import QueryInput from "../../components/QueryInput/QueryInput";
@@ -33,8 +33,6 @@ import { ScalingSquaresSpinner } from "react-epic-spinners";
 import { Space } from "antd";
 
 import "./QueryResponse.css";
-
-import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
 
 import messagesConfig from "../../utils/messagesConfig";
 
@@ -64,9 +62,11 @@ const QueryResponse: React.FC = () => {
     (state: RootState) => state.currentMessage.chunks
   );
 
+  const [messageChunks, setMessageChunks] = useState<string[]>([]);
+
   const handleSubmit = () => {
     try {
-      dispatch(addMessage({ type: "user", text: question }));
+      dispatch(addMessage({ id: uuidv4(), type: "user", text: question }));
 
       setQuestion("");
       dispatch(setIsLoading(true));
@@ -76,20 +76,17 @@ const QueryResponse: React.FC = () => {
         question,
         selectedDialogueId,
         (chunk) => {
-          // Append each chunk to the current message chunks array in the Redux store
           dispatch(addChunk(chunk));
         },
         () => {
-          // Combine all accumulated chunks into a single message
           const completeMessage = accumulatedChunks.join(" ");
 
-          // Dispatch the complete message to chatMessages
-          dispatch(addMessage({ type: "ai", text: completeMessage }));
+          dispatch(
+            addMessage({ id: uuidv4(), type: "ai", text: completeMessage })
+          );
 
-          // Reset the chunks in the Redux store
           dispatch(resetChunks());
 
-          // Handle other tasks after stream closure
           dispatch(setIsLoading(false));
           setIsTyping(false);
           if (!selectedDialogueId) {
@@ -114,7 +111,7 @@ const QueryResponse: React.FC = () => {
         errorMessage = messagesConfig.networkError;
       }
 
-      dispatch(addMessage({ type: "ai", text: errorMessage }));
+      dispatch(addMessage({ id: uuidv4(), type: "ai", text: errorMessage }));
     }
   };
 
@@ -142,7 +139,13 @@ const QueryResponse: React.FC = () => {
       const randomIntroductoryMessage =
         messagesConfig.introductory[randomIndex];
 
-      dispatch(addMessage({ type: "ai", text: randomIntroductoryMessage }));
+      dispatch(
+        addMessage({
+          id: v4(),
+          type: "ai",
+          text: randomIntroductoryMessage,
+        })
+      );
       isFirstRender.current = false;
     }
   }, [chatMessages.length, dialogue, dispatch]);
@@ -164,6 +167,7 @@ const QueryResponse: React.FC = () => {
           msg.sender === "user" || msg.sender === "ai" ? msg.sender : "ai";
 
         return {
+          id: v4(),
           type: messageType,
           text: msg.message,
         };
