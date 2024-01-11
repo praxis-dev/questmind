@@ -1,3 +1,5 @@
+// fetchResponse.ts (frontend service)
+
 import { EventSourcePolyfill } from "event-source-polyfill";
 
 const endpoint = "/respond/respond";
