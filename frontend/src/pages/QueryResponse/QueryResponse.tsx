@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
-import { v4 as uuidv4, v4 } from "uuid";
+import { v4 } from "uuid";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -64,7 +64,7 @@ const QueryResponse: React.FC = () => {
 
   const handleSubmit = () => {
     try {
-      dispatch(addMessage({ id: uuidv4(), type: "user", text: question }));
+      dispatch(addMessage({ id: v4(), type: "user", text: question }));
 
       setQuestion("");
       dispatch(setIsLoading(true));
@@ -101,14 +101,14 @@ const QueryResponse: React.FC = () => {
         errorMessage = messagesConfig.networkError;
       }
 
-      dispatch(addMessage({ id: uuidv4(), type: "ai", text: errorMessage }));
+      dispatch(addMessage({ id: v4(), type: "ai", text: errorMessage }));
     }
   };
 
   useEffect(() => {
     if (accumulatedChunks.length > 0 && !isLoading) {
       const completeMessage = accumulatedChunks.join(" ");
-      dispatch(addMessage({ id: uuidv4(), type: "ai", text: completeMessage }));
+      dispatch(addMessage({ id: v4(), type: "ai", text: completeMessage }));
       dispatch(resetChunks());
     }
   }, [accumulatedChunks, isLoading, dispatch]);
