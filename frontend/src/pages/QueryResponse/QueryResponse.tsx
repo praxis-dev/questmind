@@ -62,8 +62,6 @@ const QueryResponse: React.FC = () => {
     (state: RootState) => state.currentMessage.chunks
   );
 
-  const [messageChunks, setMessageChunks] = useState<string[]>([]);
-
   const handleSubmit = () => {
     try {
       dispatch(addMessage({ id: uuidv4(), type: "user", text: question }));
@@ -79,14 +77,6 @@ const QueryResponse: React.FC = () => {
           dispatch(addChunk(chunk));
         },
         () => {
-          const completeMessage = accumulatedChunks.join(" ");
-
-          dispatch(
-            addMessage({ id: uuidv4(), type: "ai", text: completeMessage })
-          );
-
-          dispatch(resetChunks());
-
           dispatch(setIsLoading(false));
           setIsTyping(false);
           if (!selectedDialogueId) {
@@ -116,9 +106,12 @@ const QueryResponse: React.FC = () => {
   };
 
   useEffect(() => {
-    if (selectedDialogueId) {
+    if (accumulatedChunks.length > 0 && !isLoading) {
+      const completeMessage = accumulatedChunks.join(" ");
+      dispatch(addMessage({ id: uuidv4(), type: "ai", text: completeMessage }));
+      dispatch(resetChunks());
     }
-  }, [selectedDialogueId]);
+  }, [accumulatedChunks, isLoading, dispatch]);
 
   const selectDialogue = (state: RootState) =>
     state.dialogueDetails.selectedDialogue;

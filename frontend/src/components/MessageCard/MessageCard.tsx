@@ -30,12 +30,12 @@ const MessageCard: React.FC<MessageCardProps> = ({
   });
 
   const renderContentChunks = content.map((chunk, index) => (
-    <p key={`${chunk}-${index}`}>{chunk}</p> // Using a combination of chunk and index as key
+    <span key={`${chunk}-${index}`}>{chunk}</span>
   ));
 
   const shareToTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
-    const aiResponse = content.join(" "); // Joining all content chunks
+    const aiResponse = content.join(" ");
     const tweetText = encodeURIComponent(
       `Question: ${userQuestion}\n\nQuestMind: ${aiResponse} \n\n#QuestMind \n\nAsk your own question at https://questmind.ai`
     );
@@ -49,7 +49,7 @@ const MessageCard: React.FC<MessageCardProps> = ({
         <div style={styles.cardTitle}>{title}</div>
         {type === "ai" && showShareButton && (
           <SocialIcon
-            url="www.x.com" // Replace with actual URL
+            url="www.x.com"
             style={styles.shareIcon}
             fgColor="black"
             bgColor="transparent"
