@@ -87,7 +87,7 @@ const QueryResponse: React.FC = () => {
         },
         (newDialogueId) => {
           console.log("Received newDialogueId:", newDialogueId);
-          setSelectedDialogueId(newDialogueId);
+          dispatch(setSelectedDialogueId(newDialogueId));
         }
       );
     } catch (error: unknown) {

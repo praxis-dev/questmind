@@ -10,7 +10,7 @@ export const fetchResponse = (
   dialogueId: string | null,
   onChunkReceived: (chunk: string) => void,
   onStreamClosed: () => void,
-  onNewDialogueIdReceived: (newDialogueId: string) => void // New parameter
+  onNewDialogueIdReceived: (newDialogueId: string) => void
 ) => {
   if (!apiUrl) {
     throw new Error("REACT_APP_API_URL environment variable not set");
@@ -34,11 +34,11 @@ export const fetchResponse = (
 
   // @ts-ignore
   eventSource.onmessage = (ev: MessageEvent) => {
-    console.log("Received data:", ev.data); // Log all received data
+    console.log("Received data:", ev.data);
 
     if (ev.data.startsWith("id: ")) {
       const newDialogueId = ev.data.substring(4).trim();
-      onNewDialogueIdReceived(newDialogueId); // Call the new callback with the new dialogueId
+      onNewDialogueIdReceived(newDialogueId);
     } else {
       onChunkReceived(ev.data);
     }

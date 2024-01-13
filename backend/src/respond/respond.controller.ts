@@ -17,7 +17,6 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -131,7 +130,7 @@ export class RespondController {
               console.log("Created new Dialogue with ID:", dialogue._id);
               console.log("Sending new Dialogue ID:", dialogue._id);
 
-              res.write(`data: id: ${dialogue._id}\n\n`); // Immediately send the new dialogueId
+              res.write(`data: id: ${dialogue._id}\n\n`); 
             }
   
             if (messageBuffer.trim() !== '') {
@@ -143,7 +142,7 @@ export class RespondController {
               });
               await dialogue.save();
             }
-            res.end(); // Close the HTTP response
+            res.end(); 
           });
         },
         error: (err) => {
