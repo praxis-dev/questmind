@@ -21,6 +21,8 @@ import {
 
 import { addChunk, resetChunks } from "../../store/slices/currentMessageSlice";
 
+import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+
 import { RootState } from "../../store";
 
 import QueryInput from "../../components/QueryInput/QueryInput";
@@ -82,6 +84,10 @@ const QueryResponse: React.FC = () => {
           if (!selectedDialogueId) {
             dispatch(fetchDialogues());
           }
+        },
+        (newDialogueId) => {
+          console.log("Received newDialogueId:", newDialogueId);
+          setSelectedDialogueId(newDialogueId);
         }
       );
     } catch (error: unknown) {
@@ -119,6 +125,10 @@ const QueryResponse: React.FC = () => {
   const dialogue = useSelector(selectDialogue);
 
   const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    console.log("Updated selectedDialogueId:", selectedDialogueId);
+  }, [selectedDialogueId]);
 
   useEffect(() => {
     if (

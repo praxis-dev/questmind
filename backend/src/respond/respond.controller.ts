@@ -54,6 +54,8 @@ export class RespondController {
   ): Promise<any> {
     try {
       const user = req.user;
+      let isNewDialogue = false;
+
   
       const apiEndpoint = process.env.API_ENDPOINT;
       if (!apiEndpoint) {
@@ -68,6 +70,8 @@ export class RespondController {
           throw new NotFoundException('Dialogue not found');
         }
       } else {
+        isNewDialogue = true;
+
         dialogue = await this.dialogueModel.create({
           userId: user._id,
           messages: [],
@@ -123,6 +127,12 @@ export class RespondController {
   
           stream.on('end', async () => {
             console.log('Stream ended. Final message:', messageBuffer); 
+            if (isNewDialogue) {
+              console.log("Created new Dialogue with ID:", dialogue._id);
+              console.log("Sending new Dialogue ID:", dialogue._id);
+
+              res.write(`data: id: ${dialogue._id}\n\n`); // Immediately send the new dialogueId
+            }
   
             if (messageBuffer.trim() !== '') {
               dialogue.messages.push({
