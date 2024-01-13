@@ -6,12 +6,7 @@ config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-import { Logger } from '@nestjs/common';
-
 async function bootstrap() {
-  console.log('Starting Nest application...');
-  const logger = new Logger('Bootstrap');
-  logger.log('Starting applicationnnn...');
 
   const app = await NestFactory.create(AppModule);
 

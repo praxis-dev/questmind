@@ -102,7 +102,6 @@ export class RespondController {
           stream.on('data', (chunk) => {
             const chunkAsString = chunk.toString();
             if (chunkAsString.startsWith('data: ')) {
-              console.log('Chunk:', chunkAsString);
               const jsonPart = chunkAsString.substring(6).trim();
               if (jsonPart) {
                 const match = jsonPart.match(/{.*?}/);
@@ -125,11 +124,7 @@ export class RespondController {
           });
   
           stream.on('end', async () => {
-            console.log('Stream ended. Final message:', messageBuffer); 
             if (isNewDialogue) {
-              console.log("Created new Dialogue with ID:", dialogue._id);
-              console.log("Sending new Dialogue ID:", dialogue._id);
-
               res.write(`data: id: ${dialogue._id}\n\n`); 
             }
   

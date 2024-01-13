@@ -34,8 +34,6 @@ export const fetchResponse = (
 
   // @ts-ignore
   eventSource.onmessage = (ev: MessageEvent) => {
-    console.log("Received data:", ev.data);
-
     if (ev.data.startsWith("id: ")) {
       const newDialogueId = ev.data.substring(4).trim();
       onNewDialogueIdReceived(newDialogueId);

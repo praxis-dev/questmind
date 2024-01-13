@@ -86,7 +86,6 @@ const QueryResponse: React.FC = () => {
           }
         },
         (newDialogueId) => {
-          console.log("Received newDialogueId:", newDialogueId);
           dispatch(setSelectedDialogueId(newDialogueId));
         }
       );
@@ -126,9 +125,7 @@ const QueryResponse: React.FC = () => {
 
   const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    console.log("Updated selectedDialogueId:", selectedDialogueId);
-  }, [selectedDialogueId]);
+  useEffect(() => {}, [selectedDialogueId]);
 
   useEffect(() => {
     if (
@@ -266,11 +263,7 @@ const QueryResponse: React.FC = () => {
                 }
               />
             ))}
-            {isLoading && (
-              <Space style={{ display: "flex", justifyContent: "center" }}>
-                <ScalingSquaresSpinner color="#cd7f32" size={27} />
-              </Space>
-            )}
+
             {isLoading && accumulatedChunks.length > 0 && (
               <MessageCard
                 key="ongoing-message"
@@ -278,6 +271,11 @@ const QueryResponse: React.FC = () => {
                 content={accumulatedChunks}
                 type="ai"
               />
+            )}
+            {isLoading && (
+              <Space style={{ display: "flex", justifyContent: "center" }}>
+                <ScalingSquaresSpinner color="#cd7f32" size={27} />
+              </Space>
             )}
           </Space>
           <div style={styles.querySpace}>
