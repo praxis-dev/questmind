@@ -100,8 +100,6 @@ export class RespondController {
           let messageBuffer = '';
   
           stream.on('data', (chunk) => {
-            console.log('Stream data event triggered');
-
             const chunkAsString = chunk.toString();
             if (chunkAsString.startsWith('data: ')) {
               const jsonPart = chunkAsString.substring(6).trim();
@@ -114,8 +112,6 @@ export class RespondController {
                     if (parsedChunk && parsedChunk.data) {
                       const messageContent = parsedChunk.data;
                       messageBuffer += messageContent; 
-                      console.log('messageBuffer:', messageBuffer);
-                      console.log(`data: ${messageContent}\n\n`);
   
                       res.write(`data: ${messageContent}\n\n`);
                     }
@@ -128,7 +124,6 @@ export class RespondController {
           });
   
           stream.on('end', async () => {
-            console.log('Stream end event triggered');
 
             if (isNewDialogue) {
               res.write(`data: id: ${dialogue._id}\n\n`); 

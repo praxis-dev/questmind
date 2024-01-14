@@ -33,11 +33,7 @@ export const fetchResponse = (
   });
 
   eventSource.onmessage = function (this: EventSource, ev) {
-    console.log("Received event:", ev);
-
     if ("data" in ev && typeof ev.data === "string") {
-      console.log("Event data:", ev.data);
-
       if (ev.data.startsWith("id: ")) {
         const newDialogueId = ev.data.substring(4).trim();
         onNewDialogueIdReceived(newDialogueId);
@@ -51,11 +47,9 @@ export const fetchResponse = (
 
   eventSource.onerror = function (this: EventSource, ev: any) {
     if (this.readyState === EventSource.CLOSED) {
-      console.log("EventSource closed normally.");
       onStreamClosed();
     } else {
       if (isKnownEndOfStreamError(ev)) {
-        console.log("Known end of stream error encountered, ignoring.");
       } else {
         console.error("EventSource encountered an error:", ev);
         if (ev instanceof ErrorEvent) {
