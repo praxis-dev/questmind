@@ -32,22 +32,35 @@ export const fetchResponse = (
     },
   });
 
-  // @ts-ignore
-  eventSource.onmessage = (ev: MessageEvent) => {
-    if (ev.data.startsWith("id: ")) {
-      const newDialogueId = ev.data.substring(4).trim();
-      onNewDialogueIdReceived(newDialogueId);
+  eventSource.onmessage = function (this: EventSource, ev) {
+    console.log("Received event:", ev);
+
+    // Directly check if 'data' property exists instead of using instanceof MessageEvent
+    if ("data" in ev && typeof ev.data === "string") {
+      console.log("Event data:", ev.data);
+
+      if (ev.data.startsWith("id: ")) {
+        const newDialogueId = ev.data.substring(4).trim();
+        onNewDialogueIdReceived(newDialogueId);
+      } else {
+        onChunkReceived(ev.data);
+      }
     } else {
-      onChunkReceived(ev.data);
+      console.error("Unexpected event format or data type:", ev);
     }
   };
 
-  // @ts-ignore
-  eventSource.onerror = (ev: Event) => {
+  eventSource.onerror = function (this: EventSource, ev) {
     console.error("EventSource failed:", ev);
+
     if (ev instanceof ErrorEvent) {
       console.error("Error message:", ev.message);
+      console.error("Filename:", ev.filename);
+      console.error("Line number:", ev.lineno);
+      console.error("Column number:", ev.colno);
+      console.error("Error object:", ev.error);
     }
+
     eventSource.close();
     onStreamClosed();
   };
