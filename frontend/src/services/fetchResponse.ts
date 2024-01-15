@@ -33,7 +33,12 @@ export const fetchResponse = (
   });
 
   eventSource.onmessage = function (this: EventSource, ev) {
+    // console.log("Received event:", ev);
+
+    // Directly check if 'data' property exists instead of using instanceof MessageEvent
     if ("data" in ev && typeof ev.data === "string") {
+      // console.log("Event data:", ev.data);
+
       if (ev.data.startsWith("id: ")) {
         const newDialogueId = ev.data.substring(4).trim();
         onNewDialogueIdReceived(newDialogueId);
@@ -41,29 +46,31 @@ export const fetchResponse = (
         onChunkReceived(ev.data);
       }
     } else {
-      console.error("Unexpected event format or data type:", ev);
+      // console.error("Unexpected event format or data type:", ev);
     }
   };
 
-  eventSource.onerror = function (this: EventSource, ev: any) {
-    if (this.readyState === EventSource.CLOSED) {
-      onStreamClosed();
-    } else {
-      if (isKnownEndOfStreamError(ev)) {
-      } else {
-        console.error("EventSource encountered an error:", ev);
-        if (ev instanceof ErrorEvent) {
-          console.error("Error message:", ev.message);
-        }
-        onStreamClosed();
-      }
-    }
+  eventSource.onerror = function (this: EventSource, ev) {
+    // // Check if the event source is closed, which might indicate a normal closure
+    // if (this.readyState === EventSource.CLOSED) {
+    //   console.log("EventSource closed normally.");
+    // } else {
+    //   // Handle actual errors
+    //   console.error("EventSource encountered an error:", ev);
+
+    //   if (ev instanceof ErrorEvent) {
+    //     console.error("Error message:", ev.message);
+    //     console.error("Filename:", ev.filename);
+    //     console.error("Line number:", ev.lineno);
+    //     console.error("Column number:", ev.colno);
+    //     console.error("Error object:", ev.error);
+    //   }
+    // }
+
+    // // Close the event source and invoke the stream closed callback
     this.close();
+    onStreamClosed();
   };
-
-  function isKnownEndOfStreamError(event: any): boolean {
-    return event.type === "error" && event.error === undefined;
-  }
 
   return () => {
     eventSource.close();
