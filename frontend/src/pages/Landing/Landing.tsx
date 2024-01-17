@@ -101,6 +101,7 @@ const Landing: React.FC = () => {
             width="200"
             alt="QuestMind.AI Logo - AI-Powered Psychological Advisor"
           />
+
           <h1>QuestMind.AI</h1>
           <h2>Explore Advanced Psychological Insights with AI Coaching</h2>
           <Space direction="vertical" style={styles.textArea}>
@@ -113,7 +114,6 @@ const Landing: React.FC = () => {
               support.
             </Typography>
           </Space>
-
           <Space direction="horizontal" style={styles.contentSpace}>
             <PulsatingButtonWithText disabled={false} onClick={showLoginModal}>
               Login
@@ -143,6 +143,7 @@ const Landing: React.FC = () => {
               <BasicForm />
             </Modal>
           </Space>
+          <Typography>v 0.2.1</Typography>
         </Space>
       </Col>
     </Row>
