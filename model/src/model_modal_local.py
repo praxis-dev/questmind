@@ -22,7 +22,7 @@ image = Image.debian_slim().pip_install(
     local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
 
 
-stub = modal.Stub("model_modal_stream")
+stub = modal.Stub("local_model_modal")
 data_volume = modal.NetworkFileSystem.persisted("data_volume")
 db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume")
 questions_volume = modal.NetworkFileSystem.persisted("questions_volume")
@@ -290,7 +290,7 @@ class RequestModel(BaseModel):
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(label="model-endpoint-2", method="POST")
+@web_endpoint(label="local_model-endpoint, method="POST")
 def get_response(request: RequestModel) -> StreamingResponse:
 
     from langchain.llms import OpenAI
