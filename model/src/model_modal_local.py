@@ -218,6 +218,13 @@ def get_response(request: RequestModel) -> StreamingResponse:
 
     chain_type_kwargs = {"prompt": PROMPT}
 
+    model_name_or_path = "TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ"
+
+    # model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+    #                                          device_map="auto",
+    #                                          trust_remote_code=False,
+    #                                          revision="main")
+
     llm = OpenAI(model_name="gpt-3.5-turbo-instruct", temperature=0.9, max_tokens=allocated_for_output,
                  callbacks=callbacks, streaming=True,)
 
