@@ -227,7 +227,8 @@ const BasicForm: React.FC = () => {
           }}
           // size="large"
         >
-          <SubmitButton form={form} /> <GoogleSignInButton />
+          <SubmitButton form={form} />
+          {/* <GoogleSignInButton /> */}
         </Space>
       </Form.Item>
     </Form>

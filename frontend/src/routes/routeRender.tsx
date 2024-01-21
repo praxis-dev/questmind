@@ -6,6 +6,7 @@ import Header from "../components/Header/Header";
 import QueryResponse from "../pages/QueryResponse/QueryResponse";
 import Landing from "../pages/Landing/Landing";
 import PasswordRecovery from "../pages/PasswordRecovery/PasswordRecovery";
+import Privacy from "../pages/Privacy/Privacy";
 import { isAuthenticated } from "../utils/isAuthenticated";
 
 const PrivateRoute = ({
@@ -38,14 +39,20 @@ export function RouteRender() {
     }
   }, [navigate]);
 
+  const shouldRenderHeader = ![
+    "/landing",
+    "/password-recovery",
+    "/privacy",
+  ].includes(window.location.pathname);
+
   return (
     <>
-      {window.location.pathname !== "/landing" &&
-        window.location.pathname !== "/password-recovery" && <Header />}
+      {shouldRenderHeader && <Header />}
 
       <Routes>
         <Route path="/" element={<PrivateRoute component={QueryResponse} />} />
         <Route path="/landing" element={<PublicRoute component={Landing} />} />
+        <Route path="/privacy" element={<PublicRoute component={Privacy} />} />
         <Route
           path="/password-recovery"
           element={<PublicRoute component={PasswordRecovery} />}

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Modal, Typography } from "antd";
+import { Row, Col, Space, Modal, Typography, Button } from "antd";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -78,6 +78,10 @@ const Landing: React.FC = () => {
     setIsSignupModalVisible(false);
   };
 
+  const handlePrivacyClick = () => {
+    navigate("/privacy");
+  };
+
   useEffect(() => {
     const getTokenFromUrl = () => {
       const query = new URLSearchParams(location.search);
@@ -143,7 +147,21 @@ const Landing: React.FC = () => {
               <BasicForm />
             </Modal>
           </Space>
-          <Typography>v 0.2.1</Typography>
+          <Space direction="vertical">
+            <Typography>v 0.2.1</Typography>
+            <Button
+              style={{
+                padding: 0,
+                height: "auto",
+                lineHeight: "inherit",
+                color: "grey",
+              }}
+              type="link"
+              onClick={handlePrivacyClick}
+            >
+              Privacy Policy
+            </Button>
+          </Space>
         </Space>
       </Col>
     </Row>

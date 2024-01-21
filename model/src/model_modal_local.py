@@ -11,7 +11,6 @@ image = Image.debian_slim().pip_install(
     "langchain-community",
     "langchain-openai",
     "langchain-together",
-    "pydantic",
     "accelerate",
     "transformers",
     "bitsandbytes",
@@ -63,15 +62,11 @@ def create_vector_db():
 
     print("DB saved")
 
-from pydantic import BaseModel
-
-class RequestModel(BaseModel):
-    query: str
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secrets=[modal.Secret.from_name("QM_key"), modal.Secret.from_name("together_api_key")])
 @web_endpoint(label="model-endpoint-2", method="POST")
-def get_response(request: RequestModel) -> StreamingResponse:
+def get_response(request) -> StreamingResponse:
 
     from langchain.llms import OpenAI
     from langchain_openai import OpenAIEmbeddings
