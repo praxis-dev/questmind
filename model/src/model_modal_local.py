@@ -1,5 +1,4 @@
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
 import modal
 
@@ -11,6 +10,7 @@ image = Image.debian_slim().pip_install(
     "langchain",
     "langchain-community",
     "langchain-openai",
+    "langchain-together",
     "pydantic",
     "accelerate",
     "transformers",
@@ -25,12 +25,12 @@ image = Image.debian_slim().pip_install(
     local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
 
 
-stub = modal.Stub("local_model_modal")
-data_volume = modal.NetworkFileSystem.persisted("data_volume")
-db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume")
-questions_volume = modal.NetworkFileSystem.persisted("questions_volume")
+stub = modal.Stub("model_modal_2")
+data_volume = modal.NetworkFileSystem.persisted("data_volume_2")
+db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume_2")
+questions_volume = modal.NetworkFileSystem.persisted("questions_volume_2")
 philosophical_embeddings_volume = modal.NetworkFileSystem.persisted(
-    "philosophical_embeddings_volume")
+    "philosophical_embeddings_volume_2")
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
@@ -63,13 +63,14 @@ def create_vector_db():
 
     print("DB saved")
 
+from pydantic import BaseModel
 
 class RequestModel(BaseModel):
     query: str
 
 
-@stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(label="local-model-endpoint", method="POST")
+@stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secrets=[modal.Secret.from_name("QM_key"), modal.Secret.from_name("together_api_key")])
+@web_endpoint(label="model-endpoint-2", method="POST")
 def get_response(request: RequestModel) -> StreamingResponse:
 
     from langchain.llms import OpenAI
@@ -83,7 +84,8 @@ def get_response(request: RequestModel) -> StreamingResponse:
     from threading import Thread
     import json
     from langchain.callbacks.base import BaseCallbackHandler
-    from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+    from langchain_together import Together
+    import os
 
     from typing import Any
 
@@ -115,15 +117,22 @@ def get_response(request: RequestModel) -> StreamingResponse:
 
     prompt_template = """
 
-        You are a psychological advisor and coach. If the query is offensive or trollish in nature, handle it with wit and poise and offer to focus on productive conversation. For sincere inquiries, utilize your knowledge to provide both theoretical insights and actionable guidance. This is a chat; conclude messages in a way that is informal yet respectful. Your message should be formatted as a chat message without farewells at the end. Aim for the highest standards in grammar, spelling, and punctuation. 
+        <s>[INST] <<SYS>> {{
+
+
+        You are a psychological advisor and coach. If the query is offensive or trollish in nature, handle it with wit and poise and offer to focus on productive conversation. For sincere inquiries, utilize your knowledge to provide both theoretical insights and actionable guidance. This is a chat; conclude messages in a way that is informal yet respectful. Your message should be formatted as a chat message without farewells at the end. Aim for the highest standards in grammar, spelling, and punctuation.
 
         Start by analyzing the problem presented. Ask the user any question if you need to understand the situation thoroughly. You don't have to fill the entire token limit. Be concise when investigating the issue and asking quiestions and eloquent when you are ready to make a conclusion. Instead of providing direct advice, strive to ask question that will prompt the client to start the process of self-reflection and come to the right conclusions themselves, where possible.  When you don't know the answer, you just say so without making up the response. You don't send the user to a therapist, psychologist, counselor, or coach; you are the psychologist, counselor, or coach. You are the therapist, psychologist, counselor, and coach, and you are here to help. You don't start your response with "ai:" and you don't end it with "Sincerely, [your name]".
-        
+
 
         {context}
 
-        Question: {question}
-        Useful answer:
+        }}
+        <</SYS>>
+
+        {{ {question} }}
+
+        [/INST]
 
         """
 
@@ -203,10 +212,9 @@ def get_response(request: RequestModel) -> StreamingResponse:
                 else:
                     token = item['data']
                     sentence += token
-                    # Check for sentence delimiters
                     if any(token.endswith(delimiter) for delimiter in ('.', '?', '!', '\n')):
                         yield f"data: {json.dumps({'data': sentence})}\n\n"
-                        sentence = ''  # Reset the sentence buffer after yielding
+                        sentence = ''  
             except Empty:
                 continue
 
@@ -218,16 +226,14 @@ def get_response(request: RequestModel) -> StreamingResponse:
 
     chain_type_kwargs = {"prompt": PROMPT}
 
-    model_name_or_path = "TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ"
-
-    llm = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                               device_map="auto",
-                                               trust_remote_code=False,
-                                               revision="main",
-                                               temperature=0.9,
-                                               max_tokens=allocated_for_output,
-                                               callbacks=callbacks,
-                                               streaming=True)
+    llm = Together(
+    model="togethercomputer/llama-2-70b-chat",
+    temperature=0.7,
+    max_tokens=allocated_for_output,
+    top_k=1,
+    callbacks=callbacks,
+    together_api_key=os.environ["together_api_key"]
+    )
 
     qa = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=retriever, chain_type_kwargs=chain_type_kwargs)
