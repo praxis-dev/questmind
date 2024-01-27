@@ -104,10 +104,13 @@ const Landing: React.FC = () => {
             src={Logo}
             width="200"
             alt="QuestMind.AI Logo - AI-Powered mentor and advisor"
+            style={styles.alteredMargin}
           />
 
-          <h1>QuestMind.AI</h1>
-          <h2>Your companion in the quest for understanding</h2>
+          <h1 style={styles.alteredMargin}>QuestMind.AI</h1>
+          <h2 style={styles.alteredMargin}>
+            Your companion in the quest for understanding
+          </h2>
           <Space direction="vertical" style={styles.textArea}>
             <Typography>
               Hi! My name is Igor. I'm building QuestMind.AI to have an
@@ -182,6 +185,10 @@ const Landing: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  alteredMargin: {
+    margin: "0 0 0 0",
+  },
+
   mainCol: {
     height: "97vh",
     display: "flex",
@@ -197,6 +204,7 @@ const baseStyles: ViewStyles = {
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
+    border: "1px solid red",
   },
 
   textArea: {
