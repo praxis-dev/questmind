@@ -1,4 +1,5 @@
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 import modal
 
@@ -8,9 +9,7 @@ image = Image.debian_slim().pip_install(
     "torch",
     "sentence-transformers",
     "langchain",
-    "langchain-community",
-    "langchain-openai",
-    "langchain-together",
+    "pydantic",
     "accelerate",
     "transformers",
     "bitsandbytes",
@@ -18,18 +17,17 @@ image = Image.debian_slim().pip_install(
     "cohere",
     "tiktoken",
     "faiss-gpu",
-    "transformers",
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt").copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
 
 
-stub = modal.Stub("model_modal_2")
-data_volume = modal.NetworkFileSystem.persisted("data_volume_2")
-db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume_2")
-questions_volume = modal.NetworkFileSystem.persisted("questions_volume_2")
+stub = modal.Stub("model_modal_test")
+data_volume = modal.NetworkFileSystem.persisted("data_volume_test")
+db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume_test")
+questions_volume = modal.NetworkFileSystem.persisted("questions_volume_test")
 philosophical_embeddings_volume = modal.NetworkFileSystem.persisted(
-    "philosophical_embeddings_volume_2")
+    "philosophical_embeddings_volume_test")
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
@@ -39,10 +37,10 @@ PHILOSOPHICAL_EMBEDDINGS_PATH = '/app/vectorstores'
 
 @stub.function(image=image, gpu="T4", network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
 def create_vector_db():
-    from langchain_openai import OpenAIEmbeddings
-    from langchain_community.document_loaders import DirectoryLoader, TextLoader
+    from langchain.embeddings.openai import OpenAIEmbeddings
+    from langchain.document_loaders import DirectoryLoader, TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
-    from langchain_community.vectorstores import FAISS
+    from langchain.vectorstores import FAISS
     import os
 
     print("Starting the creation of vector database.")
@@ -63,25 +61,25 @@ def create_vector_db():
     print("DB saved")
 
 
+class RequestModel(BaseModel):
+    query: str
 
-@stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secrets=[modal.Secret.from_name("QM_key"), modal.Secret.from_name("together_api_key")])
-@web_endpoint(label="model-endpoint-2", method="POST")
-def get_response(request) -> StreamingResponse:
+
+@stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
+@web_endpoint(label="model-endpoint-test", method="POST")
+def get_response(request: RequestModel) -> StreamingResponse:
 
     from langchain.llms import OpenAI
-    from langchain_openai import OpenAIEmbeddings
+    from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.prompts import PromptTemplate
     from langchain.chains import RetrievalQA
     from langchain.prompts import PromptTemplate
-    from langchain_community.vectorstores import FAISS
+    from langchain.vectorstores import FAISS
     from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
     from queue import Queue, Empty
     from threading import Thread
     import json
     from langchain.callbacks.base import BaseCallbackHandler
-    from langchain_together import Together
-    import os
-
     from typing import Any
 
     def count_tokens(text):
@@ -112,22 +110,15 @@ def get_response(request) -> StreamingResponse:
 
     prompt_template = """
 
-        <s>[INST] <<SYS>> {{
-
-
-        You are a psychological advisor and coach. If the query is offensive or trollish in nature, handle it with wit and poise and offer to focus on productive conversation. For sincere inquiries, utilize your knowledge to provide both theoretical insights and actionable guidance. This is a chat; conclude messages in a way that is informal yet respectful. Your message should be formatted as a chat message without farewells at the end. Aim for the highest standards in grammar, spelling, and punctuation.
+        You are a psychological advisor and coach. If the query is offensive or trollish in nature, handle it with wit and poise and offer to focus on productive conversation. For sincere inquiries, utilize your knowledge to provide both theoretical insights and actionable guidance. This is a chat; conclude messages in a way that is informal yet respectful. Your message should be formatted as a chat message without farewells at the end. Aim for the highest standards in grammar, spelling, and punctuation. 
 
         Start by analyzing the problem presented. Ask the user any question if you need to understand the situation thoroughly. You don't have to fill the entire token limit. Be concise when investigating the issue and asking quiestions and eloquent when you are ready to make a conclusion. Instead of providing direct advice, strive to ask question that will prompt the client to start the process of self-reflection and come to the right conclusions themselves, where possible.  When you don't know the answer, you just say so without making up the response. You don't send the user to a therapist, psychologist, counselor, or coach; you are the psychologist, counselor, or coach. You are the therapist, psychologist, counselor, and coach, and you are here to help. You don't start your response with "ai:" and you don't end it with "Sincerely, [your name]".
-
+        
 
         {context}
 
-        }}
-        <</SYS>>
-
-        {{ {question} }}
-
-        [/INST]
+        Question: {question}
+        Useful answer:
 
         """
 
@@ -207,9 +198,10 @@ def get_response(request) -> StreamingResponse:
                 else:
                     token = item['data']
                     sentence += token
+                    # Check for sentence delimiters
                     if any(token.endswith(delimiter) for delimiter in ('.', '?', '!', '\n')):
                         yield f"data: {json.dumps({'data': sentence})}\n\n"
-                        sentence = ''  
+                        sentence = ''  # Reset the sentence buffer after yielding
             except Empty:
                 continue
 
@@ -221,14 +213,8 @@ def get_response(request) -> StreamingResponse:
 
     chain_type_kwargs = {"prompt": PROMPT}
 
-    llm = Together(
-    model="togethercomputer/llama-2-70b-chat",
-    temperature=0.7,
-    max_tokens=allocated_for_output,
-    top_k=1,
-    callbacks=callbacks,
-    together_api_key=os.environ["together_api_key"]
-    )
+    llm = OpenAI(model_name="gpt-3.5-turbo-instruct", temperature=0.9, max_tokens=allocated_for_output,
+                 callbacks=callbacks, streaming=True,)
 
     qa = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=retriever, chain_type_kwargs=chain_type_kwargs)

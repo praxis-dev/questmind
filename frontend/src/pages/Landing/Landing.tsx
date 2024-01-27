@@ -103,19 +103,32 @@ const Landing: React.FC = () => {
           <img
             src={Logo}
             width="200"
-            alt="QuestMind.AI Logo - AI-Powered Psychological Advisor"
+            alt="QuestMind.AI Logo - AI-Powered mentor and advisor"
           />
 
           <h1>QuestMind.AI</h1>
-          <h2>Explore Advanced Psychological Insights with AI Coaching</h2>
+          <h2>Your companion in the quest for understanding</h2>
           <Space direction="vertical" style={styles.textArea}>
             <Typography>
-              Join our community and discover how AI can transform your
-              psychological well-being and personal growth.
+              Hi! My name is Igor. I'm building QuestMind.AI to have an
+              assistant to think through life situations and produce a
+              constructive frame of mind.
             </Typography>
             <Typography>
-              Our AI-powered tools offer personalized coaching and mental health
-              support.
+              Ask it a question, and the collective wisdom of humanity responds.
+              But it won't lecture you. Instead, it will try to prompt you into
+              finding a solution by yourself.
+            </Typography>
+            <Typography>
+              It's a work in progress. For feedback and suggestions, please{" "}
+              <Typography.Link
+                href="https://twitter.com/InferenceOne"
+                target="_blank"
+                style={{ color: "#cd7f32" }}
+              >
+                reach out
+              </Typography.Link>{" "}
+              to me at X.
             </Typography>
           </Space>
           <Space direction="horizontal" style={styles.contentSpace}>
