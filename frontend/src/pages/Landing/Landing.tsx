@@ -6,6 +6,7 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { Row, Col, Space, Modal, Typography, Button } from "antd";
+import AnimateHeight from "react-animate-height";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -96,6 +97,8 @@ const Landing: React.FC = () => {
     }
   }, [location]);
 
+  const [height, setHeight] = useState(0);
+
   return (
     <Row>
       <Col span={24} style={styles.mainCol}>
@@ -112,27 +115,41 @@ const Landing: React.FC = () => {
             Your companion in the quest for understanding
           </h2>
           <Space direction="vertical" style={styles.textArea}>
-            <Typography>
-              Hi! My name is Igor. I'm building QuestMind.AI to have an
-              assistant to think through life situations and produce a
-              constructive frame of mind.
-            </Typography>
-            <Typography>
-              Ask it a question, and the collective wisdom of humanity responds.
-              But it won't lecture you. Instead, it will try to prompt you into
-              finding a solution by yourself.
-            </Typography>
-            <Typography>
-              It's a work in progress. For feedback and suggestions, please{" "}
-              <Typography.Link
-                href="https://twitter.com/InferenceOne"
-                target="_blank"
-                style={{ color: "#cd7f32" }}
-              >
-                reach out
-              </Typography.Link>{" "}
-              to me at X.
-            </Typography>
+            <button
+              aria-expanded={height !== 0}
+              aria-controls="example-panel"
+              onClick={() => setHeight(height === 0 ? 270 : 0)}
+            >
+              {height === 0 ? "Open" : "Close"}
+            </button>
+
+            <AnimateHeight
+              id="example-panel"
+              duration={500}
+              height={height} // see props documentation below
+            >
+              <Typography>
+                Hi! My name is Igor. I'm building QuestMind.AI to have an
+                assistant to think through life situations and produce a
+                constructive frame of mind.
+              </Typography>
+              <Typography>
+                Ask it a question, and the collective wisdom of humanity
+                responds. But it won't lecture you. Instead, it will try to
+                prompt you into finding a solution by yourself.
+              </Typography>
+              <Typography>
+                It's a work in progress. For feedback and suggestions, please{" "}
+                <Typography.Link
+                  href="https://twitter.com/InferenceOne"
+                  target="_blank"
+                  style={{ color: "#cd7f32" }}
+                >
+                  reach out
+                </Typography.Link>{" "}
+                to me at X.
+              </Typography>
+            </AnimateHeight>
           </Space>
           <Space direction="horizontal" style={styles.contentSpace}>
             <PulsatingButtonWithText disabled={false} onClick={showLoginModal}>
