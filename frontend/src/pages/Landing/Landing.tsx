@@ -105,6 +105,9 @@ const Landing: React.FC = () => {
 
 const baseStyles: ViewStyles = {
   importFormContainer: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
     overflow: "hidden",
   },
   closeAboutIcon: {

@@ -292,7 +292,9 @@ const BasicForm: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
-  formContainer: {},
+  formContainer: {
+    // border: "1px solid grey",
+  },
 
   form: {},
 
