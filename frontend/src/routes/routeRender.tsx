@@ -6,6 +6,9 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { useResponsiveStyles } from "../library/hooks";
+import { Breakpoint, ViewStyles } from "../library/styles";
+
 import Header from "../components/Header/Header";
 import QueryResponse from "../pages/QueryResponse/QueryResponse";
 import Landing from "../pages/Landing/Landing";
@@ -34,6 +37,14 @@ export function RouteRender() {
   let navigate = useNavigate();
   let location = useLocation();
 
+  const styles = useResponsiveStyles(baseStyles, {
+    [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
+    [Breakpoint.Large]: largeScreenStyles,
+    [Breakpoint.Medium]: mediumScreenStyles,
+    [Breakpoint.Small]: smallScreenStyles,
+    [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
+  });
+
   React.useEffect(() => {
     if (isAuthenticated()) {
       if (
@@ -56,18 +67,53 @@ export function RouteRender() {
   return (
     <>
       {shouldRenderHeader && <Header />}
+      <div style={styles.pageContainer}>
+        <div style={styles.contentWrap}>
+          <Routes>
+            <Route
+              path="/"
+              element={<PrivateRoute component={QueryResponse} />}
+            />
+            <Route
+              path="/landing"
+              element={<PublicRoute component={Landing} />}
+            />
+            <Route
+              path="/privacy"
+              element={<PublicRoute component={Privacy} />}
+            />
+            <Route
+              path="/password-recovery"
+              element={<PublicRoute component={PasswordRecovery} />}
+            />
+          </Routes>
+        </div>
 
-      <Routes>
-        <Route path="/" element={<PrivateRoute component={QueryResponse} />} />
-        <Route path="/landing" element={<PublicRoute component={Landing} />} />
-        <Route path="/privacy" element={<PublicRoute component={Privacy} />} />
-        <Route
-          path="/password-recovery"
-          element={<PublicRoute component={PasswordRecovery} />}
-        />
-      </Routes>
-
-      {isLandingPage && <Footer />}
+        {isLandingPage && <Footer />}
+      </div>
     </>
   );
 }
+
+const baseStyles: ViewStyles = {
+  pageContainer: {
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+    border: "1px solid red",
+  },
+
+  contentWrap: {
+    flex: 1,
+  },
+};
+
+const extraLargeScreenStyles: ViewStyles = {};
+
+const largeScreenStyles: ViewStyles = {};
+
+const mediumScreenStyles: ViewStyles = {};
+
+const smallScreenStyles: ViewStyles = {};
+
+const extraSmallScreenStyles: ViewStyles = {};

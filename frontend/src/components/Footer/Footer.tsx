@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
 const baseStyles: ViewStyles = {
   footerContainer: {
     width: "100%",
-    minHeight: "5vh",
+    height: "5vh",
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -68,18 +68,7 @@ const baseStyles: ViewStyles = {
     boxSizing: "border-box",
     padding: "0 10px",
     borderBottom: "1px solid grey",
-  },
-
-  aboutIcon: {
-    fontSize: 20,
-    color: "grey",
-  },
-
-  aboutButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
+    backgroundColor: "grey",
   },
 
   lowerButton: {

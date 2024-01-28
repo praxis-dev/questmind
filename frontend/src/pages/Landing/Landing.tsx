@@ -12,8 +12,6 @@ import AnimateHeight from "react-animate-height";
 
 import BasicForm from "../../components/BasicForm/BasicForm";
 
-import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/PulsatingButtonWithText";
-
 import { setHeight, selectHeight } from "../../store/slices/heightSlice";
 
 import Logo from "../../assets/logo_optimized.png";
@@ -121,7 +119,7 @@ const baseStyles: ViewStyles = {
   },
 
   mainCol: {
-    height: "95vh",
+    height: "92vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
