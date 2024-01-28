@@ -1,12 +1,17 @@
-// routeRender.tsx
-
 import React from "react";
-import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import Header from "../components/Header/Header";
 import QueryResponse from "../pages/QueryResponse/QueryResponse";
 import Landing from "../pages/Landing/Landing";
 import PasswordRecovery from "../pages/PasswordRecovery/PasswordRecovery";
 import Privacy from "../pages/Privacy/Privacy";
+import Footer from "../components/Footer/Footer";
 import { isAuthenticated } from "../utils/isAuthenticated";
 
 const PrivateRoute = ({
@@ -27,6 +32,7 @@ const PublicRoute = ({
 
 export function RouteRender() {
   let navigate = useNavigate();
+  let location = useLocation();
 
   React.useEffect(() => {
     if (isAuthenticated()) {
@@ -43,7 +49,9 @@ export function RouteRender() {
     "/landing",
     "/password-recovery",
     "/privacy",
-  ].includes(window.location.pathname);
+  ].includes(location.pathname);
+
+  const isLandingPage = location.pathname === "/landing";
 
   return (
     <>
@@ -58,6 +66,8 @@ export function RouteRender() {
           element={<PublicRoute component={PasswordRecovery} />}
         />
       </Routes>
+
+      {isLandingPage && <Footer />}
     </>
   );
 }

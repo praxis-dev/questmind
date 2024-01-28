@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -14,10 +14,14 @@ import BasicForm from "../../components/BasicForm/BasicForm";
 
 import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/PulsatingButtonWithText";
 
+import { setHeight, selectHeight } from "../../store/slices/heightSlice";
+
 import Logo from "../../assets/logo_optimized.png";
 
 const Landing: React.FC = () => {
   const location = useLocation();
+
+  const dispatch = useDispatch();
 
   const styles = useResponsiveStyles(baseStyles, {
     [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
@@ -28,10 +32,6 @@ const Landing: React.FC = () => {
   });
 
   const navigate = useNavigate();
-
-  const handlePrivacyClick = () => {
-    navigate("/privacy");
-  };
 
   useEffect(() => {
     const getTokenFromUrl = () => {
@@ -47,7 +47,7 @@ const Landing: React.FC = () => {
     }
   }, [location]);
 
-  const [height, setHeight] = useState(0);
+  const height = useSelector(selectHeight);
 
   return (
     <Row>
@@ -89,35 +89,13 @@ const Landing: React.FC = () => {
                   to me at X.
                 </Typography>
                 <Space direction="horizontal" style={styles.closeAboutSpace}>
-                  <Button type="link" onClick={() => setHeight(0)}>
+                  <Button type="link" onClick={() => dispatch(setHeight(0))}>
                     <UpOutlined style={styles.closeAboutIcon} />
                   </Button>
                 </Space>
               </AnimateHeight>
               <BasicForm />
             </Space>
-          </Space>
-
-          <Space direction="horizontal">
-            <Typography>v 0.2.1</Typography>
-            <Divider type="vertical" />
-            <Button
-              type="text"
-              style={styles.lowerButton}
-              aria-expanded={height !== 0}
-              aria-controls="example-panel"
-              onClick={() => setHeight(height === 0 ? 300 : 0)}
-            >
-              About
-            </Button>
-            <Divider type="vertical" />
-            <Button
-              style={styles.lowerButton}
-              type="link"
-              onClick={handlePrivacyClick}
-            >
-              Privacy Policy
-            </Button>
           </Space>
         </Space>
       </Col>
@@ -143,7 +121,7 @@ const baseStyles: ViewStyles = {
   },
 
   mainCol: {
-    height: "100vh",
+    height: "95vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -163,18 +141,6 @@ const baseStyles: ViewStyles = {
     maxWidth: "400px",
     marginTop: "10px",
     textAlign: "left",
-  },
-
-  lowerButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    border: "none",
-    backgroundColor: "transparent",
-    padding: 0,
-    height: "auto",
-    lineHeight: "inherit",
-    color: "black",
   },
 };
 

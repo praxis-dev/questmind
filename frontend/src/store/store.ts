@@ -10,6 +10,7 @@ import chatReducer from "./slices/chatSlice";
 import drawerReducer from "./slices/drawerSlice";
 import selectedCardReducer from "./slices/selectedCardSlice";
 import currentMessageReducer from "./slices/currentMessageSlice";
+import heightSliceReducer from "./slices/heightSlice";
 
 const rootReducer = combineReducers({
   dialogueIndex: dialogueIndexReducer,
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
   chat: chatReducer,
   drawer: drawerReducer,
   selectedCard: selectedCardReducer,
-  currentMessage: currentMessageReducer, // Correctly added here
+  currentMessage: currentMessageReducer,
+  height: heightSliceReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
