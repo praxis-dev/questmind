@@ -103,7 +103,7 @@ const baseStyles: ViewStyles = {
   },
 
   contentWrap: {
-    minHeight: "96vh",
+    minHeight: "92vh",
   },
 
   footerWrap: {
