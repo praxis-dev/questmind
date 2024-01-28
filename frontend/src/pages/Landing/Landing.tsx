@@ -64,32 +64,40 @@ const Landing: React.FC = () => {
               Your companion in the quest for understanding
             </h2>
             <Space direction="vertical" style={styles.textArea}>
-              <AnimateHeight id="example-panel" duration={500} height={height}>
-                <Typography>
-                  Hi! My name is Igor. I'm building QuestMind.AI to have an
-                  assistant to think through life situations and produce a
-                  constructive frame of mind.
-                </Typography>
-                <Typography>
-                  Ask it a question, and the collective wisdom of humanity
-                  responds. But it won't lecture you. Instead, it will try to
-                  prompt you into finding a solution by yourself.
-                </Typography>
-                <Typography>
-                  It's a work in progress. For feedback and suggestions, please{" "}
-                  <Typography.Link
-                    href="https://twitter.com/InferenceOne"
-                    target="_blank"
-                    style={{ color: "#cd7f32" }}
-                  >
-                    reach out
-                  </Typography.Link>{" "}
-                  to me at X.
-                </Typography>
-                <Space direction="horizontal" style={styles.closeAboutSpace}>
-                  <Button type="link" onClick={() => dispatch(setHeight(0))}>
-                    <UpOutlined style={styles.closeAboutIcon} />
-                  </Button>
+              <AnimateHeight
+                id="example-panel"
+                duration={500}
+                height={height}
+                style={styles.animateHeight}
+              >
+                <Space direction="vertical" style={styles.border}>
+                  <Typography>
+                    Hi! My name is Igor. I'm building QuestMind.AI to have an
+                    assistant to think through life situations and produce a
+                    constructive frame of mind.
+                  </Typography>
+                  <Typography>
+                    Ask it a question, and the collective wisdom of humanity
+                    responds. But it won't lecture you. Instead, it will try to
+                    prompt you into finding a solution by yourself.
+                  </Typography>
+                  <Typography>
+                    It's a work in progress. For feedback and suggestions,
+                    please{" "}
+                    <Typography.Link
+                      href="https://twitter.com/InferenceOne"
+                      target="_blank"
+                      style={{ color: "#cd7f32" }}
+                    >
+                      reach out
+                    </Typography.Link>{" "}
+                    to me at X.
+                  </Typography>
+                  <Space direction="horizontal" style={styles.closeAboutSpace}>
+                    <Button type="link" onClick={() => dispatch(setHeight(0))}>
+                      <UpOutlined style={styles.closeAboutIcon} />
+                    </Button>
+                  </Space>
                 </Space>
               </AnimateHeight>
               <Space style={styles.importFormContainer}>
@@ -104,7 +112,19 @@ const Landing: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  animateHeight: {
+    marginBottom: "0px",
+  },
+
+  border: {
+    border: "1px solid #cd7f32",
+    padding: "10px",
+    borderRadius: "10px",
+    margin: "0px",
+  },
+
   importFormContainer: {
+    marginTop: "0px",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -132,7 +152,6 @@ const baseStyles: ViewStyles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // border: "1px solid black",
   },
 
   contentSpace: {

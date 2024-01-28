@@ -293,12 +293,15 @@ const BasicForm: React.FC = () => {
 
 const baseStyles: ViewStyles = {
   formContainer: {
-    // border: "1px solid grey",
+    boxSizing: "border-box",
+    margin: "0 0 40px",
   },
 
   form: {},
 
-  formItem: {},
+  formItem: {
+    margin: "0 0 10px",
+  },
 
   input: {},
 };

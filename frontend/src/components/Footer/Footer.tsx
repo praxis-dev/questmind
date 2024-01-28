@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
           style={styles.lowerButton}
           aria-expanded={height !== 0}
           aria-controls="example-panel"
-          onClick={() => dispatch(setHeight(height === 0 ? 300 : 0))}
+          onClick={() => dispatch(setHeight(height === 0 ? 392 : 0))}
         >
           About
         </Button>
