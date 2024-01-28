@@ -108,6 +108,9 @@ const baseStyles: ViewStyles = {
 
   footerWrap: {
     minHeight: "4vh",
+    position: "fixed",
+    bottom: 0,
+    width: "100%",
   },
 };
 

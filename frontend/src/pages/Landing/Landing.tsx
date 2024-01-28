@@ -92,7 +92,7 @@ const Landing: React.FC = () => {
                   </Button>
                 </Space>
               </AnimateHeight>
-              <Space>
+              <Space style={styles.importFormContainer}>
                 <BasicForm />
               </Space>
             </Space>
@@ -104,6 +104,9 @@ const Landing: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  importFormContainer: {
+    overflow: "hidden",
+  },
   closeAboutIcon: {
     fontSize: "32px",
     color: "#cd7f32",
