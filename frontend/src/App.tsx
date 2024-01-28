@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
@@ -8,7 +8,7 @@ import "./App.css";
 
 import { RouteRender } from "./routes/routeRender";
 
-function App() {
+function Seneca() {
   return (
     <ConfigProvider
       theme={{
@@ -29,4 +29,4 @@ function App() {
   );
 }
 
-export default App;
+export default Seneca;

@@ -92,7 +92,9 @@ const Landing: React.FC = () => {
                   </Button>
                 </Space>
               </AnimateHeight>
-              <BasicForm />
+              <Space>
+                <BasicForm />
+              </Space>
             </Space>
           </Space>
         </Space>
@@ -120,9 +122,11 @@ const baseStyles: ViewStyles = {
 
   mainCol: {
     height: "96vh",
+    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    // border: "1px solid black",
   },
 
   contentSpace: {

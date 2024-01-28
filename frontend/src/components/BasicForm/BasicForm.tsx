@@ -9,6 +9,9 @@ import { authenticateUser } from "../../services/authenticateUser";
 import { createUser } from "../../services/createUser";
 import { resetPasswordRequest } from "../../services/resetPasswordRequest";
 
+import { useResponsiveStyles } from "../../library/hooks";
+import { Breakpoint, ViewStyles } from "../../library/styles";
+
 import type { FormInstance } from "antd";
 
 import { useDispatch } from "react-redux";
@@ -61,6 +64,14 @@ type RecoverValues = {
 type FormValues = SignupValues | LoginValues | RecoverValues;
 
 const BasicForm: React.FC = () => {
+  const styles = useResponsiveStyles(baseStyles, {
+    [Breakpoint.ExtraLarge]: extraLargeScreenStyles,
+    [Breakpoint.Large]: largeScreenStyles,
+    [Breakpoint.Medium]: mediumScreenStyles,
+    [Breakpoint.Small]: smallScreenStyles,
+    [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
+  });
+
   const [form] = Form.useForm();
   const formState = useSelector((state: RootState) => state.form.form);
 
@@ -85,10 +96,6 @@ const BasicForm: React.FC = () => {
           : "An unknown error occurred.";
       message.error(errorMessage);
     }
-  };
-
-  const formIsNowLogin = () => {
-    dispatch(setFormState("login"));
   };
 
   type FormState = "signup" | "login" | "recover" | "noform";
@@ -179,109 +186,133 @@ const BasicForm: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      autoComplete="on"
-      style={{
-        maxWidth: 500,
-        margin: "0 auto",
-        overflow: "hidden",
-      }}
-    >
-      <Typography.Title
-        level={4}
-        style={{ textAlign: "center", margin: "0 0 20px" }}
+    <div style={styles.formContainer}>
+      <Form
+        form={form}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        autoComplete="on"
+        style={styles.form}
       >
-        {getFormTitle(formState)}
-      </Typography.Title>
-      <Form.Item
-        label="Email"
-        name="email"
-        rules={[
-          { required: true, message: "Please input your email!" },
-          { type: "email", message: "The input is not a valid email!" },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      {formState !== "recover" && (
-        <>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please enter password.",
-              },
-              {
-                message: "8 characters long including at least one number.",
-                validator: (_, value) => {
-                  if (PASSWORD_REGEX.test(value)) {
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject(
-                      "Password must be at least 8 characters long and include at least one number."
-                    );
-                  }
-                },
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-        </>
-      )}
-
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Space
-          align="center"
-          direction="horizontal"
-          style={{
-            justifyContent: "space-between",
-          }}
+        <Typography.Title
+          level={4}
+          style={{ textAlign: "center", margin: "0 0 20px" }}
         >
-          <SubmitButton form={form} />
-          <GoogleSignInButton />
-        </Space>
-      </Form.Item>
+          {getFormTitle(formState)}
+        </Typography.Title>
+        <Form.Item
+          style={styles.formItem}
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: "Please input your email!" },
+            { type: "email", message: "The input is not a valid email!" },
+          ]}
+        >
+          <Input style={styles.input} />
+        </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Space direction="horizontal" size="small">
-          <Button
-            type="link"
-            disabled={false}
-            onClick={toggleFormState}
+        {formState !== "recover" && (
+          <>
+            <Form.Item
+              style={styles.formItem}
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter password.",
+                },
+                {
+                  message: "8 characters long including at least one number.",
+                  validator: (_, value) => {
+                    if (PASSWORD_REGEX.test(value)) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject(
+                        "Password must be at least 8 characters long and include at least one number."
+                      );
+                    }
+                  },
+                },
+              ]}
+            >
+              <Input.Password style={styles.input} />
+            </Form.Item>
+          </>
+        )}
+
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={styles.formItem}>
+          <Space
+            align="center"
+            direction="horizontal"
             style={{
-              padding: 0,
-              height: "auto",
-              lineHeight: "inherit",
-              color: "#cd7f32",
+              justifyContent: "space-between",
             }}
           >
-            {formState === "signup" ? "Login" : "Sign Up"}
-          </Button>
-          <Button
-            type="link"
-            onClick={handleRecoverPassword}
-            style={{
-              padding: 0,
-              height: "auto",
-              lineHeight: "inherit",
-              color: "#cd7f32",
-            }}
-          >
-            Recover password
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+            <SubmitButton form={form} />
+            <GoogleSignInButton />
+          </Space>
+        </Form.Item>
+
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={styles.formItem}>
+          <Space direction="horizontal" size="small">
+            <Button
+              type="link"
+              disabled={false}
+              onClick={toggleFormState}
+              style={{
+                padding: 0,
+                height: "auto",
+                lineHeight: "inherit",
+                color: "#cd7f32",
+              }}
+            >
+              {formState === "signup" ? "Login" : "Sign Up"}
+            </Button>
+            <Button
+              type="link"
+              onClick={handleRecoverPassword}
+              style={{
+                padding: 0,
+                height: "auto",
+                lineHeight: "inherit",
+                color: "#cd7f32",
+              }}
+            >
+              Recover password
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </div>
   );
+};
+
+const baseStyles: ViewStyles = {
+  formContainer: {},
+
+  form: {},
+
+  formItem: {},
+
+  input: {},
+};
+
+const extraLargeScreenStyles: ViewStyles = {};
+
+const largeScreenStyles: ViewStyles = {};
+
+const mediumScreenStyles: ViewStyles = {};
+
+const smallScreenStyles: ViewStyles = {};
+
+const extraSmallScreenStyles: ViewStyles = {
+  headerContainer: {
+    minHeight: "6vh",
+  },
 };
 
 export default BasicForm;
