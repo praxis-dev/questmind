@@ -70,7 +70,7 @@ const SettingsMenu: React.FC = () => {
     navigate("/landing");
   };
 
-  const renderButton = () => {
+  const renderLogoutButton = () => {
     return (
       <>
         <Space direction="vertical">
@@ -82,7 +82,24 @@ const SettingsMenu: React.FC = () => {
     );
   };
 
-  const items = [{ label: renderButton(), key: "item-1" }];
+  const handlePatreonClick = () => {
+    window.open("https://www.patreon.com/questmindai", "_blank");
+  };
+
+  const renderPatreonButton = () => (
+    <Button
+      type="link"
+      onClick={handlePatreonClick}
+      style={styles.patreonButton}
+    >
+      Patreon
+    </Button>
+  );
+
+  const items = [
+    { label: renderPatreonButton(), key: "item-1" },
+    { label: renderLogoutButton(), key: "item-2" },
+  ];
 
   return (
     <Dropdown menu={{ items }}>
@@ -106,6 +123,10 @@ const baseStyles: ViewStyles = {
     maxWidth: 500,
     width: "100%",
     height: "100%",
+  },
+
+  patreonButton: {
+    color: "black",
   },
 };
 

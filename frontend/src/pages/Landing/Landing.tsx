@@ -93,6 +93,19 @@ const Landing: React.FC = () => {
                     </Typography.Link>{" "}
                     to me at X.
                   </Typography>
+                  <Typography>
+                    If you find it useful, please support the development of
+                    QuestMind.AI on{" "}
+                    <Typography.Link
+                      href="https://www.patreon.com/questmindai"
+                      target="_blank"
+                      style={{ color: "#cd7f32" }}
+                    >
+                      Patreon
+                    </Typography.Link>
+                    .
+                  </Typography>
+
                   <Space direction="horizontal" style={styles.closeAboutSpace}>
                     <Button type="link" onClick={() => dispatch(setHeight(0))}>
                       <UpOutlined style={styles.closeAboutIcon} />

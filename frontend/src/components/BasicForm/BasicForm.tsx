@@ -294,7 +294,7 @@ const BasicForm: React.FC = () => {
 const baseStyles: ViewStyles = {
   formContainer: {
     boxSizing: "border-box",
-    margin: "0 0 40px",
+    margin: "0 0 50px",
   },
 
   form: {},

@@ -4,12 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 import { setHeight, selectHeight } from "../../store/slices/heightSlice";
 
-import { Button, Space, Divider } from "antd";
+import { Button, Space, Divider, Typography } from "antd";
 
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
-
-import Typography from "antd/es/typography/Typography";
 
 const Footer: React.FC = () => {
   const styles = useResponsiveStyles(baseStyles, {
@@ -19,6 +17,8 @@ const Footer: React.FC = () => {
     [Breakpoint.Small]: smallScreenStyles,
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
+
+  const { Link } = Typography;
 
   const dispatch = useDispatch();
 
@@ -33,14 +33,20 @@ const Footer: React.FC = () => {
   return (
     <div style={styles.footerContainer}>
       <Space direction="horizontal">
-        <Typography>v 0.2.1</Typography>
+        <Link
+          href="https://www.patreon.com/questmindai"
+          target="_blank"
+          style={styles.versionText}
+        >
+          v 0.2.2
+        </Link>
         <Divider type="vertical" />
         <Button
           type="text"
           style={styles.lowerButton}
           aria-expanded={height !== 0}
           aria-controls="example-panel"
-          onClick={() => dispatch(setHeight(height === 0 ? 392 : 0))}
+          onClick={() => dispatch(setHeight(height === 0 ? 421 : 0))}
         >
           About
         </Button>
@@ -58,6 +64,10 @@ const Footer: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
+  versionText: {
+    color: "black",
+  },
+
   footerContainer: {
     width: "100%",
     height: "4vh",
