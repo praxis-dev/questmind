@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Form, Input, message, Divider, Space, Typography } from "antd";
+import React, { useEffect } from "react";
+import { Button, Form, Input, message, Space, Typography } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -64,9 +64,6 @@ const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
   const formState = useSelector((state: RootState) => state.form.form);
 
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
-  const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -90,24 +87,8 @@ const BasicForm: React.FC = () => {
     }
   };
 
-  const showLoginModal = () => {
+  const formIsNowLogin = () => {
     dispatch(setFormState("login"));
-    setIsLoginModalVisible(true);
-  };
-
-  const showSignupModal = () => {
-    dispatch(setFormState("signup"));
-    setIsSignupModalVisible(true);
-  };
-
-  const handleLoginOk = () => {
-    dispatch(setFormState("noform"));
-    setIsLoginModalVisible(false);
-  };
-
-  const handleSignupOk = () => {
-    dispatch(setFormState("noform"));
-    setIsSignupModalVisible(false);
   };
 
   type FormState = "signup" | "login" | "recover" | "noform";
@@ -202,7 +183,7 @@ const BasicForm: React.FC = () => {
       onFinish={onFinish}
       autoComplete="on"
     >
-      <Typography.Title level={2} style={{ textAlign: "center" }}>
+      <Typography.Title level={4} style={{ textAlign: "center" }}>
         {getFormTitle(formState)}
       </Typography.Title>
       <Form.Item
@@ -261,31 +242,33 @@ const BasicForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button
-          type="link"
-          disabled={false}
-          onClick={showLoginModal}
-          style={{
-            padding: 0,
-            height: "auto",
-            lineHeight: "inherit",
-            color: "#cd7f32",
-          }}
-        >
-          Login
-        </Button>
-        <Button
-          type="link"
-          onClick={handleRecoverPassword}
-          style={{
-            padding: 0,
-            height: "auto",
-            lineHeight: "inherit",
-            color: "#cd7f32",
-          }}
-        >
-          Recover password
-        </Button>
+        <Space direction="horizontal" size="small">
+          <Button
+            type="link"
+            disabled={false}
+            onClick={formIsNowLogin}
+            style={{
+              padding: 0,
+              height: "auto",
+              lineHeight: "inherit",
+              color: "#cd7f32",
+            }}
+          >
+            Login
+          </Button>
+          <Button
+            type="link"
+            onClick={handleRecoverPassword}
+            style={{
+              padding: 0,
+              height: "auto",
+              lineHeight: "inherit",
+              color: "#cd7f32",
+            }}
+          >
+            Recover password
+          </Button>
+        </Space>
       </Form.Item>
     </Form>
   );

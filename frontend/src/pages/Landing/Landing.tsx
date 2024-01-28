@@ -5,15 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Modal, Typography, Button, Divider } from "antd";
+import { Row, Col, Space, Typography, Button, Divider } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 
 import AnimateHeight from "react-animate-height";
-
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { useDispatch } from "react-redux";
-import { setFormState } from "../../store/slices/formSlice";
 
 import BasicForm from "../../components/BasicForm/BasicForm";
 
@@ -99,45 +94,25 @@ const Landing: React.FC = () => {
                   </Button>
                 </Space>
               </AnimateHeight>
-            </Space>
-            <Space direction="vertical" style={styles.contentSpace}>
-              {/* <Modal
-                style={{ top: 20 }}
-                title={loginModalTitle}
-                open={isLoginModalVisible}
-                onOk={handleLoginOk}
-                onCancel={() => setIsLoginModalVisible(false)}
-                footer={[null]}
-              >
-                <BasicForm />
-              </Modal> */}
-
-              <Divider />
               <BasicForm />
             </Space>
           </Space>
 
           <Space direction="horizontal">
             <Typography>v 0.2.1</Typography>
+            <Divider type="vertical" />
             <Button
               type="text"
-              // shape="circle"
-              style={styles.aboutButton}
+              style={styles.lowerButton}
               aria-expanded={height !== 0}
               aria-controls="example-panel"
               onClick={() => setHeight(height === 0 ? 270 : 0)}
             >
-              {/* {height === 0 ? "Open" : "Close"} */}
-              {/* <DownOutlined /> */}
               About
             </Button>
+            <Divider type="vertical" />
             <Button
-              style={{
-                padding: 0,
-                height: "auto",
-                lineHeight: "inherit",
-                color: "grey",
-              }}
+              style={styles.lowerButton}
               type="link"
               onClick={handlePrivacyClick}
             >
@@ -190,13 +165,16 @@ const baseStyles: ViewStyles = {
     textAlign: "left",
   },
 
-  aboutButton: {
+  lowerButton: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
     border: "none",
     backgroundColor: "transparent",
+    padding: 0,
+    height: "auto",
+    lineHeight: "inherit",
+    color: "black",
   },
 };
 
