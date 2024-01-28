@@ -106,7 +106,7 @@ const Landing: React.FC = () => {
               style={styles.lowerButton}
               aria-expanded={height !== 0}
               aria-controls="example-panel"
-              onClick={() => setHeight(height === 0 ? 270 : 0)}
+              onClick={() => setHeight(height === 0 ? 300 : 0)}
             >
               About
             </Button>
@@ -143,7 +143,7 @@ const baseStyles: ViewStyles = {
   },
 
   mainCol: {
-    height: "97vh",
+    height: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -152,7 +152,7 @@ const baseStyles: ViewStyles = {
   contentSpace: {
     margin: "auto auto",
     boxSizing: "border-box",
-    padding: "40px 20px 20px",
+    padding: "20px 20px 20px",
     maxWidth: "450px",
     height: "100%",
     alignItems: "center",

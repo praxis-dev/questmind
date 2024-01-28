@@ -170,6 +170,10 @@ const BasicForm: React.FC = () => {
     dispatch(setFormState("recover"));
   };
 
+  const toggleFormState = () => {
+    dispatch(setFormState(formState === "login" ? "signup" : "login"));
+  };
+
   useEffect(() => {
     dispatch(setFormState("signup"));
   }, [dispatch]);
@@ -183,7 +187,10 @@ const BasicForm: React.FC = () => {
       onFinish={onFinish}
       autoComplete="on"
     >
-      <Typography.Title level={4} style={{ textAlign: "center" }}>
+      <Typography.Title
+        level={4}
+        style={{ textAlign: "center", margin: "0 0 20px" }}
+      >
         {getFormTitle(formState)}
       </Typography.Title>
       <Form.Item
@@ -231,10 +238,8 @@ const BasicForm: React.FC = () => {
           align="center"
           direction="horizontal"
           style={{
-            // width: "100%",
             justifyContent: "space-between",
           }}
-          // size="large"
         >
           <SubmitButton form={form} />
           <GoogleSignInButton />
@@ -246,7 +251,7 @@ const BasicForm: React.FC = () => {
           <Button
             type="link"
             disabled={false}
-            onClick={formIsNowLogin}
+            onClick={toggleFormState}
             style={{
               padding: 0,
               height: "auto",
@@ -254,7 +259,7 @@ const BasicForm: React.FC = () => {
               color: "#cd7f32",
             }}
           >
-            Login
+            {formState === "signup" ? "Login" : "Sign Up"}
           </Button>
           <Button
             type="link"
