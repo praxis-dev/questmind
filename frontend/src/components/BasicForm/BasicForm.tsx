@@ -190,11 +190,8 @@ const BasicForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (formState === "noform") {
-      setIsLoginModalVisible(false);
-      setIsSignupModalVisible(false);
-    }
-  }, [formState]);
+    dispatch(setFormState("signup"));
+  }, [dispatch]);
 
   return (
     <Form
