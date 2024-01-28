@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Form, Input, message, Divider, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Form, Input, message, Divider, Space, Typography } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -64,6 +64,9 @@ const BasicForm: React.FC = () => {
   const [form] = Form.useForm();
   const formState = useSelector((state: RootState) => state.form.form);
 
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -86,6 +89,38 @@ const BasicForm: React.FC = () => {
       message.error(errorMessage);
     }
   };
+
+  const showLoginModal = () => {
+    dispatch(setFormState("login"));
+    setIsLoginModalVisible(true);
+  };
+
+  const showSignupModal = () => {
+    dispatch(setFormState("signup"));
+    setIsSignupModalVisible(true);
+  };
+
+  const handleLoginOk = () => {
+    dispatch(setFormState("noform"));
+    setIsLoginModalVisible(false);
+  };
+
+  const handleSignupOk = () => {
+    dispatch(setFormState("noform"));
+    setIsSignupModalVisible(false);
+  };
+
+  type FormState = "signup" | "login" | "recover" | "noform";
+
+  const formTitles: { [key in FormState]: string } = {
+    signup: "Sign Up",
+    login: "Login",
+    recover: "Recover Password",
+    noform: "Sign Up",
+  };
+
+  const getFormTitle = (formState: FormState): string =>
+    formTitles[formState] || "Sign Up";
 
   const handleLogin = async (values: LoginValues) => {
     try {
@@ -154,6 +189,13 @@ const BasicForm: React.FC = () => {
     dispatch(setFormState("recover"));
   };
 
+  useEffect(() => {
+    if (formState === "noform") {
+      setIsLoginModalVisible(false);
+      setIsSignupModalVisible(false);
+    }
+  }, [formState]);
+
   return (
     <Form
       form={form}
@@ -163,6 +205,9 @@ const BasicForm: React.FC = () => {
       onFinish={onFinish}
       autoComplete="on"
     >
+      <Typography.Title level={2} style={{ textAlign: "center" }}>
+        {getFormTitle(formState)}
+      </Typography.Title>
       <Form.Item
         label="Email"
         name="email"
@@ -217,7 +262,21 @@ const BasicForm: React.FC = () => {
           <GoogleSignInButton />
         </Space>
       </Form.Item>
+
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Button
+          type="link"
+          disabled={false}
+          onClick={showLoginModal}
+          style={{
+            padding: 0,
+            height: "auto",
+            lineHeight: "inherit",
+            color: "#cd7f32",
+          }}
+        >
+          Login
+        </Button>
         <Button
           type="link"
           onClick={handleRecoverPassword}

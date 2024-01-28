@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Modal, Typography, Button } from "antd";
+import { Row, Col, Space, Modal, Typography, Button, Divider } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 
 import AnimateHeight from "react-animate-height";
@@ -20,7 +20,6 @@ import BasicForm from "../../components/BasicForm/BasicForm";
 import PulsatingButtonWithText from "../../components/PulsatingButtonWithText/PulsatingButtonWithText";
 
 import Logo from "../../assets/logo_optimized.png";
-import { Divider } from "rc-menu";
 
 const Landing: React.FC = () => {
   const location = useLocation();
@@ -33,54 +32,7 @@ const Landing: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
-  const [isSignupModalVisible, setIsSignupModalVisible] = useState(false);
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const formState = useSelector((state: RootState) => state.form.form);
-
-  useEffect(() => {
-    if (formState === "noform") {
-      setIsLoginModalVisible(false);
-      setIsSignupModalVisible(false);
-    }
-  }, [formState]);
-
-  const signupModalTitle =
-    formState === "signup"
-      ? "Sign Up"
-      : formState === "recover"
-      ? "Recover Password"
-      : "Login";
-
-  const loginModalTitle =
-    formState === "login"
-      ? "Login"
-      : formState === "recover"
-      ? "Recover Password"
-      : "Login";
-
-  const showLoginModal = () => {
-    dispatch(setFormState("login"));
-    setIsLoginModalVisible(true);
-  };
-
-  const showSignupModal = () => {
-    dispatch(setFormState("signup"));
-    setIsSignupModalVisible(true);
-  };
-
-  const handleLoginOk = () => {
-    dispatch(setFormState("noform"));
-    setIsLoginModalVisible(false);
-  };
-
-  const handleSignupOk = () => {
-    dispatch(setFormState("noform"));
-    setIsSignupModalVisible(false);
-  };
 
   const handlePrivacyClick = () => {
     navigate("/privacy");
@@ -149,7 +101,7 @@ const Landing: React.FC = () => {
               </AnimateHeight>
             </Space>
             <Space direction="vertical" style={styles.contentSpace}>
-              <Modal
+              {/* <Modal
                 style={{ top: 20 }}
                 title={loginModalTitle}
                 open={isLoginModalVisible}
@@ -158,16 +110,10 @@ const Landing: React.FC = () => {
                 footer={[null]}
               >
                 <BasicForm />
-              </Modal>
+              </Modal> */}
 
+              <Divider />
               <BasicForm />
-
-              <PulsatingButtonWithText
-                disabled={false}
-                onClick={showLoginModal}
-              >
-                Login
-              </PulsatingButtonWithText>
             </Space>
           </Space>
 
