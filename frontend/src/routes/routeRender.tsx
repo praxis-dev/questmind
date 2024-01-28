@@ -65,33 +65,30 @@ export function RouteRender() {
   const isLandingPage = location.pathname === "/landing";
 
   return (
-    <>
+    <div style={styles.pageContainer}>
       {shouldRenderHeader && <Header />}
-      <div style={styles.pageContainer}>
-        <div style={styles.contentWrap}>
-          <Routes>
-            <Route
-              path="/"
-              element={<PrivateRoute component={QueryResponse} />}
-            />
-            <Route
-              path="/landing"
-              element={<PublicRoute component={Landing} />}
-            />
-            <Route
-              path="/privacy"
-              element={<PublicRoute component={Privacy} />}
-            />
-            <Route
-              path="/password-recovery"
-              element={<PublicRoute component={PasswordRecovery} />}
-            />
-          </Routes>
-        </div>
-
-        {isLandingPage && <Footer />}
+      <div style={styles.contentWrap}>
+        <Routes>
+          <Route
+            path="/"
+            element={<PrivateRoute component={QueryResponse} />}
+          />
+          <Route
+            path="/landing"
+            element={<PublicRoute component={Landing} />}
+          />
+          <Route
+            path="/privacy"
+            element={<PublicRoute component={Privacy} />}
+          />
+          <Route
+            path="/password-recovery"
+            element={<PublicRoute component={PasswordRecovery} />}
+          />
+        </Routes>
       </div>
-    </>
+      <div style={styles.footerWrap}>{isLandingPage && <Footer />}</div>
+    </div>
   );
 }
 
@@ -100,11 +97,14 @@ const baseStyles: ViewStyles = {
     display: "flex",
     flexDirection: "column",
     minHeight: "100vh",
-    border: "1px solid red",
   },
 
   contentWrap: {
-    flex: 1,
+    minHeight: "96vh",
+  },
+
+  footerWrap: {
+    minHeight: "4vh",
   },
 };
 

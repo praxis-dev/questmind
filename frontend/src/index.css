@@ -1,7 +1,7 @@
 html,
 body,
 #root {
-  height: 100%;
+  height: vh100;
   margin: 0;
   padding: 0;
 }

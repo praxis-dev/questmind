@@ -186,6 +186,11 @@ const BasicForm: React.FC = () => {
       initialValues={{ remember: true }}
       onFinish={onFinish}
       autoComplete="on"
+      style={{
+        maxWidth: 500,
+        margin: "0 auto",
+        overflow: "hidden",
+      }}
     >
       <Typography.Title
         level={4}

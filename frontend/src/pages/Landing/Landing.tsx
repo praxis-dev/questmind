@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
-import { Row, Col, Space, Typography, Button, Divider } from "antd";
+import { Row, Col, Space, Typography, Button } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 
 import AnimateHeight from "react-animate-height";
@@ -119,7 +119,7 @@ const baseStyles: ViewStyles = {
   },
 
   mainCol: {
-    height: "92vh",
+    height: "96vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
