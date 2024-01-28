@@ -200,20 +200,6 @@ const BasicForm: React.FC = () => {
           >
             <Input.Password />
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button
-              type="link"
-              onClick={handleRecoverPassword}
-              style={{
-                padding: 0,
-                height: "auto",
-                lineHeight: "inherit",
-                color: "#cd7f32",
-              }}
-            >
-              Recover password
-            </Button>
-          </Form.Item>
         </>
       )}
 
@@ -230,6 +216,20 @@ const BasicForm: React.FC = () => {
           <SubmitButton form={form} />
           <GoogleSignInButton />
         </Space>
+      </Form.Item>
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Button
+          type="link"
+          onClick={handleRecoverPassword}
+          style={{
+            padding: 0,
+            height: "auto",
+            lineHeight: "inherit",
+            color: "#cd7f32",
+          }}
+        >
+          Recover password
+        </Button>
       </Form.Item>
     </Form>
   );
