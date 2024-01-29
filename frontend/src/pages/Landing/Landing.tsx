@@ -70,16 +70,6 @@ const Landing: React.FC = () => {
               </h2>
               <Space direction="vertical" style={styles.textArea}>
                 <Space direction="vertical" style={styles.animateHeightWrapper}>
-                  {height === 0 && (
-                    <Space style={styles.expandButtonSpace}>
-                      <Button
-                        type="link"
-                        onClick={() => dispatch(setHeight(200))}
-                      >
-                        <DownOutlined style={styles.closeAboutIcon} />
-                      </Button>
-                    </Space>
-                  )}
                   <AnimateHeight
                     id="example-panel"
                     duration={500}
@@ -136,6 +126,16 @@ const Landing: React.FC = () => {
                       </Space>
                     </Space>
                   </AnimateHeight>
+                  {height === 0 && (
+                    <Space style={styles.expandButtonSpace}>
+                      <Button
+                        type="link"
+                        onClick={() => dispatch(setHeight(200))}
+                      >
+                        <DownOutlined style={styles.closeAboutIcon} />
+                      </Button>
+                    </Space>
+                  )}
                 </Space>
                 <Space style={styles.importFormContainer}>
                   <BasicForm />
