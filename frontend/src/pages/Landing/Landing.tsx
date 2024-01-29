@@ -69,15 +69,7 @@ const Landing: React.FC = () => {
                 Your companion in the quest for understanding
               </h2>
               <Space direction="vertical" style={styles.textArea}>
-                <Space
-                  direction="vertical"
-                  style={styles.animateHeightWrapper}
-                  className={`${
-                    height > 0
-                      ? "animateHeightWrapper-expanded"
-                      : "animateHeightWrapper"
-                  }`}
-                >
+                <Space direction="vertical" style={styles.animateHeightWrapper}>
                   {height === 0 && (
                     <Space style={styles.expandButtonSpace}>
                       <Button
@@ -166,6 +158,7 @@ const baseStyles: ViewStyles = {
   },
 
   animateHeight: {
+    padding: "0px",
     marginBottom: "0px",
     maxHeight: "200px",
     overflowY: "auto",
@@ -173,7 +166,7 @@ const baseStyles: ViewStyles = {
 
   animateHeightWrapper: {
     // border: "1px solid #cd7f32",
-    padding: "10px",
+    // padding: "10px",
     borderRadius: "10px",
     margin: "0 auto",
     maxWidth: "300px",
@@ -189,9 +182,11 @@ const baseStyles: ViewStyles = {
     justifyContent: "center",
     overflow: "hidden",
   },
+
   closeAboutIcon: {
-    fontSize: "32px",
+    fontSize: "22px",
     color: "#cd7f32",
+    borderRadius: "50%",
   },
 
   closeAboutSpace: {
