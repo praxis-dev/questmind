@@ -1,3 +1,5 @@
+// Landing.tsx
+
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -6,7 +8,7 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { Row, Col, Space, Typography, Button } from "antd";
-import { UpOutlined } from "@ant-design/icons";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 import AnimateHeight from "react-animate-height";
 
@@ -15,6 +17,8 @@ import BasicForm from "../../components/BasicForm/BasicForm";
 import { setHeight, selectHeight } from "../../store/slices/heightSlice";
 
 import Logo from "../../assets/logo_optimized.png";
+
+import "./Landing.css";
 
 const Landing: React.FC = () => {
   const location = useLocation();
@@ -48,93 +52,135 @@ const Landing: React.FC = () => {
   const height = useSelector(selectHeight);
 
   return (
-    <Row>
-      <Col span={24} style={styles.mainCol}>
-        <Space direction="vertical" size="small" style={styles.contentSpace}>
-          <Space direction="vertical" style={styles.alteredMargin}>
-            <img
-              src={Logo}
-              width="200"
-              alt="QuestMind.AI Logo - AI-Powered mentor and advisor"
-              style={styles.alteredMargin}
-            />
+    <div className="hide-scrollbar">
+      <Row>
+        <Col span={24} style={styles.mainCol}>
+          <Space direction="vertical" size="small" style={styles.contentSpace}>
+            <Space direction="vertical" style={styles.alteredMargin}>
+              <img
+                src={Logo}
+                width="200"
+                alt="QuestMind.AI Logo - AI-Powered mentor and advisor"
+                style={styles.alteredMargin}
+              />
 
-            <h1 style={styles.alteredMargin}>QuestMind.AI</h1>
-            <h2 style={styles.alteredMargin}>
-              Your companion in the quest for understanding
-            </h2>
-            <Space direction="vertical" style={styles.textArea}>
-              <AnimateHeight
-                id="example-panel"
-                duration={500}
-                height={height}
-                style={styles.animateHeight}
-              >
-                <Space direction="vertical" style={styles.border}>
-                  <Typography>
-                    Hi! My name is Igor. I'm building QuestMind.AI to have an
-                    assistant to think through life situations and produce a
-                    constructive frame of mind.
-                  </Typography>
-                  <Typography>
-                    Ask it a question, and the collective wisdom of humanity
-                    responds. But it won't lecture you. Instead, it will try to
-                    prompt you into finding a solution by yourself.
-                  </Typography>
-                  <Typography>
-                    It's a work in progress. For feedback and suggestions,
-                    please{" "}
-                    <Typography.Link
-                      href="https://twitter.com/InferenceOne"
-                      target="_blank"
-                      style={{ color: "#cd7f32" }}
-                    >
-                      reach out
-                    </Typography.Link>{" "}
-                    to me at X.
-                  </Typography>
-                  <Typography>
-                    If you find it useful, please support the development of
-                    QuestMind.AI on{" "}
-                    <Typography.Link
-                      href="https://www.patreon.com/questmindai"
-                      target="_blank"
-                      style={{ color: "#cd7f32" }}
-                    >
-                      Patreon
-                    </Typography.Link>
-                    .
-                  </Typography>
+              <h1 style={styles.alteredMargin}>QuestMind.AI</h1>
+              <h2 style={styles.alteredMargin}>
+                Your companion in the quest for understanding
+              </h2>
+              <Space direction="vertical" style={styles.textArea}>
+                <Space
+                  direction="vertical"
+                  style={styles.animateHeightWrapper}
+                  className={`${
+                    height > 0
+                      ? "animateHeightWrapper-expanded"
+                      : "animateHeightWrapper"
+                  }`}
+                >
+                  {height === 0 && (
+                    <Space style={styles.expandButtonSpace}>
+                      <Button
+                        type="link"
+                        onClick={() => dispatch(setHeight(200))}
+                      >
+                        <DownOutlined style={styles.closeAboutIcon} />
+                      </Button>
+                    </Space>
+                  )}
+                  <AnimateHeight
+                    id="example-panel"
+                    duration={500}
+                    height={height}
+                    style={styles.animateHeight}
+                    className="textAreaStyle"
+                  >
+                    <Space direction="vertical" style={styles.border}>
+                      <Typography>
+                        Hi! My name is Igor. I'm building QuestMind.AI to have
+                        an assistant to think through life situations and
+                        produce a constructive frame of mind.
+                      </Typography>
+                      <Typography>
+                        Ask it a question, and the collective wisdom of humanity
+                        responds. But it won't lecture you. Instead, it will try
+                        to prompt you into finding a solution by yourself.
+                      </Typography>
+                      <Typography>
+                        It's a work in progress. For feedback and suggestions,
+                        please{" "}
+                        <Typography.Link
+                          href="https://twitter.com/InferenceOne"
+                          target="_blank"
+                          style={{ color: "#cd7f32" }}
+                        >
+                          reach out
+                        </Typography.Link>{" "}
+                        to me at X.
+                      </Typography>
+                      <Typography>
+                        If you find it useful, please support the development of
+                        QuestMind.AI on{" "}
+                        <Typography.Link
+                          href="https://www.patreon.com/questmindai"
+                          target="_blank"
+                          style={{ color: "#cd7f32" }}
+                        >
+                          Patreon
+                        </Typography.Link>
+                        .
+                      </Typography>
 
-                  <Space direction="horizontal" style={styles.closeAboutSpace}>
-                    <Button type="link" onClick={() => dispatch(setHeight(0))}>
-                      <UpOutlined style={styles.closeAboutIcon} />
-                    </Button>
-                  </Space>
+                      <Space
+                        direction="horizontal"
+                        style={styles.closeAboutSpace}
+                      >
+                        <Button
+                          type="link"
+                          onClick={() => dispatch(setHeight(0))}
+                        >
+                          <UpOutlined style={styles.closeAboutIcon} />
+                        </Button>
+                      </Space>
+                    </Space>
+                  </AnimateHeight>
                 </Space>
-              </AnimateHeight>
-              <Space style={styles.importFormContainer}>
-                <BasicForm />
+                <Space style={styles.importFormContainer}>
+                  <BasicForm />
+                </Space>
               </Space>
             </Space>
           </Space>
-        </Space>
-      </Col>
-    </Row>
+        </Col>
+      </Row>
+    </div>
   );
 };
 
 const baseStyles: ViewStyles = {
-  animateHeight: {
-    marginBottom: "0px",
+  expandButtonSpace: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
-  border: {
-    border: "1px solid #cd7f32",
+  animateHeight: {
+    marginBottom: "0px",
+    maxHeight: "200px",
+    overflowY: "auto",
+  },
+
+  animateHeightWrapper: {
+    // border: "1px solid #cd7f32",
     padding: "10px",
     borderRadius: "10px",
-    margin: "0px",
+    margin: "0 auto",
+    maxWidth: "300px",
+    transition: "border-width 0.5s ease",
   },
+
+  border: {},
 
   importFormContainer: {
     marginTop: "0px",
@@ -181,6 +227,7 @@ const baseStyles: ViewStyles = {
   textArea: {
     maxWidth: "400px",
     marginTop: "10px",
+    alignItems: "center",
     textAlign: "left",
   },
 };

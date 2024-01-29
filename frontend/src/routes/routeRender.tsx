@@ -9,8 +9,6 @@ import {
 import { useResponsiveStyles } from "../library/hooks";
 import { Breakpoint, ViewStyles } from "../library/styles";
 
-import { Space } from "antd";
-
 import Header from "../components/Header/Header";
 import QueryResponse from "../pages/QueryResponse/QueryResponse";
 import Landing from "../pages/Landing/Landing";
