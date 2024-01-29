@@ -165,6 +165,7 @@ const baseStyles: ViewStyles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    overflowX: "hidden",
   },
 
   contentSpace: {

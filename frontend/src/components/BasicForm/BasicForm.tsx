@@ -207,8 +207,8 @@ const BasicForm: React.FC = () => {
           label="Email"
           name="email"
           rules={[
-            { required: true, message: "Please input your email!" },
-            { type: "email", message: "The input is not a valid email!" },
+            { required: true, message: "Input your email." },
+            { type: "email", message: "Input valid email." },
           ]}
         >
           <Input style={styles.input} />
@@ -223,17 +223,15 @@ const BasicForm: React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: "Please enter password.",
+                  message: "Enter password.",
                 },
                 {
-                  message: "8 characters long including at least one number.",
+                  message: "8 chars, 1 number.",
                   validator: (_, value) => {
                     if (PASSWORD_REGEX.test(value)) {
                       return Promise.resolve();
                     } else {
-                      return Promise.reject(
-                        "Password must be at least 8 characters long and include at least one number."
-                      );
+                      return Promise.reject("8 characters, 1 number.");
                     }
                   },
                 },
@@ -300,10 +298,12 @@ const baseStyles: ViewStyles = {
   form: {},
 
   formItem: {
-    margin: "0 0 10px",
+    margin: "0 0 20px",
   },
 
-  input: {},
+  input: {
+    maxWidth: 320,
+  },
 };
 
 const extraLargeScreenStyles: ViewStyles = {};
