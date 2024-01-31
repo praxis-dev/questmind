@@ -18,3 +18,11 @@
   -ms-overflow-style: none !important;
   transition: border-color 1s ease; /* Add this line for border transition */
 }
+
+.icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.rotate {
+  transform: rotate(180deg);
+}

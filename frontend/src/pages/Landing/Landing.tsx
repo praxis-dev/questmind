@@ -116,26 +116,20 @@ const Landing: React.FC = () => {
                       <Space
                         direction="horizontal"
                         style={styles.closeAboutSpace}
-                      >
-                        <Button
-                          type="link"
-                          onClick={() => dispatch(setHeight(0))}
-                        >
-                          <UpOutlined style={styles.closeAboutIcon} />
-                        </Button>
-                      </Space>
+                      ></Space>
                     </Space>
-                  </AnimateHeight>
-                  {height === 0 && (
                     <Space style={styles.expandButtonSpace}>
                       <Button
                         type="link"
-                        onClick={() => dispatch(setHeight(200))}
+                        onClick={() => dispatch(setHeight(0))}
                       >
-                        <DownOutlined style={styles.closeAboutIcon} />
+                        <DownOutlined
+                          style={styles.closeAboutIcon}
+                          className={`${height !== 0 ? "rotate" : ""} icon`}
+                        />
                       </Button>
                     </Space>
-                  )}
+                  </AnimateHeight>
                 </Space>
                 <Space style={styles.importFormContainer}>
                   <BasicForm />
@@ -158,19 +152,20 @@ const baseStyles: ViewStyles = {
   },
 
   animateHeight: {
-    padding: "0px",
+    padding: "0px 0px 10px",
     marginBottom: "0px",
     maxHeight: "200px",
     overflowY: "auto",
+    borderBottom: "1px solid #cd7f32",
+    borderRadius: "0px",
   },
 
   animateHeightWrapper: {
     // border: "1px solid #cd7f32",
     // padding: "10px",
-    borderRadius: "10px",
+    // borderRadius: "10px",
     margin: "0 auto",
     maxWidth: "300px",
-    transition: "border-width 0.5s ease",
   },
 
   border: {},
