@@ -19,15 +19,16 @@ image = Image.debian_slim().pip_install(
     "faiss-gpu",
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt").copy_local_file(
-    local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt")
+    local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt").copy_local_file(
+    local_path="/home/i/code/seneca/project/model/data/texts/meditations.txt", remote_path="/app/data/texts/meditations.txt")
 
 
-stub = modal.Stub("model_modal_test")
-data_volume = modal.NetworkFileSystem.persisted("data_volume_test")
-db_faiss_volume = modal.NetworkFileSystem.persisted("db_faiss_volume_test")
-questions_volume = modal.NetworkFileSystem.persisted("questions_volume_test")
+stub = modal.Stub("test_deployment")
+data_volume = modal.NetworkFileSystem.persisted("test_data_volume")
+db_faiss_volume = modal.NetworkFileSystem.persisted("test_db_faiss_volume")
+questions_volume = modal.NetworkFileSystem.persisted("test_questions_volume")
 philosophical_embeddings_volume = modal.NetworkFileSystem.persisted(
-    "philosophical_embeddings_volume_test")
+    "test_philosophical_embeddings_volume")
 
 DATA_PATH = "/app/data/texts"
 DB_FAISS_PATH = "/app/vectorstores/db_faiss"
@@ -66,7 +67,7 @@ class RequestModel(BaseModel):
 
 
 @stub.function(image=image, network_file_systems={DB_FAISS_PATH: db_faiss_volume}, allow_cross_region_volumes=True, secret=modal.Secret.from_name("QM_key"))
-@web_endpoint(label="model-endpoint-test", method="POST")
+@web_endpoint(label="test-endpoint", method="POST")
 def get_response(request: RequestModel) -> StreamingResponse:
 
     from langchain.llms import OpenAI

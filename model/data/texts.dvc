@@ -1,5 +1,6 @@
 outs:
-- md5: cf7d083e777b33c58532bf42c4310dd2.dir
-  nfiles: 2
+- md5: ff11b5c972d3f361b6017d15e923903e.dir
+  nfiles: 3
   hash: md5
   path: texts
+  size: 3230333
