@@ -20,7 +20,8 @@ image = Image.debian_slim().pip_install(
 ).copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/combined_corpus.txt", remote_path="/app/data/texts/combined_corpus.txt").copy_local_file(
     local_path="/home/i/code/seneca/project/model/data/texts/JTE.txt", remote_path="/app/data/texts/JTE.txt").copy_local_file(
-    local_path="/home/i/code/seneca/project/model/data/texts/meditations.txt", remote_path="/app/data/texts/meditations.txt")
+    local_path="/home/i/code/seneca/project/model/data/texts/meditations.txt", remote_path="/app/data/texts/meditations.txt").copy_local_file(
+    local_path="/home/i/code/seneca/project/model/data/texts/enchiridion.txt", remote_path="/app/data/texts/enchiridion.txt")
 
 
 stub = modal.Stub("model_modal_stream")

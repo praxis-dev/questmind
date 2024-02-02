@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
           target="_blank"
           style={styles.versionText}
         >
-          v 0.2.2
+          v 0.2.4
         </Link>
         <Divider type="vertical" />
         <Button
