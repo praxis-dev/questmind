@@ -79,18 +79,22 @@ const Landing: React.FC = () => {
                   >
                     <Space direction="vertical" style={styles.border}>
                       <Typography>
-                        Hi! My name is Igor. I'm building QuestMind.AI to have
-                        an assistant to think through life situations and
-                        produce a constructive frame of mind.
+                        The dataset of QuestMind.AI is now enriched with the
+                        timeless insights of Seneca, Marcus Aurelius, and
+                        Epictetus.
                       </Typography>
                       <Typography>
-                        Ask it a question, and the collective wisdom of humanity
-                        responds. But it won't lecture you. Instead, it will try
-                        to prompt you into finding a solution by yourself.
+                        Ask a question, and discover how the stoic wisdom of
+                        ages can guide you towards a constructive frame of mind,
+                        encouraging you to find solutions within.
                       </Typography>
                       <Typography>
-                        It's a work in progress. For feedback and suggestions,
-                        please{" "}
+                        Its style is modern to focus on the essence of the Stoic
+                        philosophy instead of the archaic language of the
+                        original texts.
+                      </Typography>
+                      <Typography>
+                        This is a work in progress. For suggestions please{" "}
                         <Typography.Link
                           href="https://twitter.com/InferenceOne"
                           target="_blank"
@@ -101,8 +105,8 @@ const Landing: React.FC = () => {
                         to me at X.
                       </Typography>
                       <Typography>
-                        If you find it useful, please support the development of
-                        QuestMind.AI on{" "}
+                        If QuestMind.AI aids you in your journey, consider
+                        supporting its development on{" "}
                         <Typography.Link
                           href="https://www.patreon.com/questmindai"
                           target="_blank"
@@ -112,12 +116,12 @@ const Landing: React.FC = () => {
                         </Typography.Link>
                         .
                       </Typography>
-
                       <Space
                         direction="horizontal"
                         style={styles.closeAboutSpace}
                       ></Space>
                     </Space>
+
                     <Space style={styles.expandButtonSpace}>
                       <Button
                         type="link"

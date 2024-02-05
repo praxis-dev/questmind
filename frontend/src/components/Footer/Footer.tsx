@@ -33,14 +33,6 @@ const Footer: React.FC = () => {
   return (
     <div style={styles.footerContainer}>
       <Space direction="horizontal">
-        <Link
-          href="https://www.patreon.com/questmindai"
-          target="_blank"
-          style={styles.versionText}
-        >
-          v 0.2.4
-        </Link>
-        <Divider type="vertical" />
         <Button
           type="text"
           style={styles.lowerButton}
@@ -48,7 +40,7 @@ const Footer: React.FC = () => {
           aria-controls="example-panel"
           onClick={() => dispatch(setHeight(height === 0 ? 421 : 0))}
         >
-          About
+          v 0.2.5 Progress notes
         </Button>
         <Divider type="vertical" />
         <Button
