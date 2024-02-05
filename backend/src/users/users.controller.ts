@@ -6,12 +6,35 @@ import {
   Body,
   BadRequestException,
   ConflictException,
+  Delete,
+  Param,
+  HttpException,
+  HttpStatus,
+  UseGuards,
+  Req,
+
 } from '@nestjs/common';
+
+import { AuthGuard } from '@nestjs/passport';
+
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('me')
+  async deleteUser(@Req() req: any) {
+      const requestingUser = req.user;
+      console.log(requestingUser);
+      
+      try {
+          await this.usersService.deleteUser(requestingUser._id);
+          return { message: 'User deleted successfully' };
+      } catch (error) {
+          throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+  }  
 
   @Post()
   async createUser(

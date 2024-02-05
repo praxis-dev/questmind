@@ -8,6 +8,7 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { logoutUser } from "../../services/logoutUser";
+import { deleteUser } from "../../services/deleteUser";
 
 import styled, { keyframes } from "styled-components";
 
@@ -96,9 +97,29 @@ const SettingsMenu: React.FC = () => {
     </Button>
   );
 
+  const renderDeleteAccountButton = () => {
+    const handleDeleteAccount = () => {
+      dispatch(clearMessages());
+      dispatch(clearSelectedCardId());
+      dispatch(setSelectedDialogueId(""));
+      dispatch(clearSelectedDialogue());
+      deleteUser();
+      navigate("/landing");
+    };
+
+    return (
+      <Space direction="vertical">
+        <Button danger type="link" onClick={handleDeleteAccount}>
+          Delete Account
+        </Button>
+      </Space>
+    );
+  };
+
   const items = [
     { label: renderPatreonButton(), key: "item-1" },
     { label: renderLogoutButton(), key: "item-2" },
+    { label: renderDeleteAccountButton(), key: "item-3" },
   ];
 
   return (

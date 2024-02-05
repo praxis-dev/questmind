@@ -54,6 +54,15 @@ export class UsersService {
     };
   }
 
+
+  async deleteUser(userId: string): Promise<void> {
+    const result = await this.userModel.findByIdAndDelete(userId).exec();
+    if (!result) {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userModel.findOne({ email }).exec();
     if (user && (await bcrypt.compare(password, user.password))) {
