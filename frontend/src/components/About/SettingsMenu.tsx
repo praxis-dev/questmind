@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
-import { Space, Button, Dropdown } from "antd";
+import { Space, Button, Dropdown, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import { useResponsiveStyles } from "../../library/hooks";
@@ -98,15 +98,47 @@ const SettingsMenu: React.FC = () => {
     </Button>
   );
 
-  const handleDeleteAccount = async () => {
-    try {
-      await deleteUser(); // Wait for the deleteUser promise to resolve
-      navigate("/landing"); // Navigate to landing after successful deletion
-    } catch (error) {
-      console.error("Failed to delete account:", error);
-      // Optionally handle the error, e.g., by showing an error message to the user
-    }
+  const cancelButtonStyles = {
+    backgroundColor: "transparent",
+    borderColor: "#cd7f32",
+    color: "#cd7f32",
   };
+
+  const okButtonStyles = {
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    color: "red",
+  };
+
+  const handleDeleteAccount = () => {
+    Modal.confirm({
+      title: "Are you sure you want to delete your account?",
+      content: "This action is irreversible. ",
+      okText: "Yes, delete it",
+      okType: "danger",
+      maskClosable: true,
+      cancelText: "No, cancel",
+      okButtonProps: {
+        style: okButtonStyles,
+      },
+      cancelButtonProps: {
+        style: cancelButtonStyles,
+      },
+      onOk: async () => {
+        try {
+          await deleteUser();
+          dispatch(clearMessages());
+          dispatch(clearSelectedCardId());
+          dispatch(setSelectedDialogueId(""));
+          dispatch(clearSelectedDialogue());
+          navigate("/landing");
+        } catch (error) {
+          console.error("Failed to delete account:", error);
+        }
+      },
+    });
+  };
+
   const renderDeleteAccountButton = () => {
     return (
       <Space direction="vertical">
