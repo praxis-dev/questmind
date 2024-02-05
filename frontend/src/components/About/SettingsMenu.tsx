@@ -18,6 +18,7 @@ import { clearSelectedCardId } from "../../store/slices/selectedCardSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 import { clearSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+import { log } from "console";
 
 const pulsate = keyframes`
   0% { border-color: transparent; }
@@ -97,16 +98,16 @@ const SettingsMenu: React.FC = () => {
     </Button>
   );
 
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteUser(); // Wait for the deleteUser promise to resolve
+      navigate("/landing"); // Navigate to landing after successful deletion
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      // Optionally handle the error, e.g., by showing an error message to the user
+    }
+  };
   const renderDeleteAccountButton = () => {
-    const handleDeleteAccount = () => {
-      dispatch(clearMessages());
-      dispatch(clearSelectedCardId());
-      dispatch(setSelectedDialogueId(""));
-      dispatch(clearSelectedDialogue());
-      deleteUser();
-      navigate("/landing");
-    };
-
     return (
       <Space direction="vertical">
         <Button danger type="link" onClick={handleDeleteAccount}>

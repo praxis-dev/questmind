@@ -11,7 +11,6 @@ const deleteUserApiUrl = `${process.env.REACT_APP_API_URL}/users/me`;
 export const deleteUser = async (): Promise<DeleteUserResponse> => {
   try {
     const token = localStorage.getItem("token");
-    console.log(token);
     if (!token) {
       throw new Error("Authentication token not found.");
     }
