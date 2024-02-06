@@ -247,7 +247,7 @@ export class RespondController {
         dialogue.shareIdentifier = shareIdentifier;
   
         // Construct the shareable link using the secure identifier
-        dialogue.dialogueLink = `https://yourapp.com/shared/${shareIdentifier}`;
+        dialogue.dialogueLink = `https://questmind.ai/shared/${shareIdentifier}`;
   
         await dialogue.save();
         return { message: 'Dialogue shared successfully', link: dialogue.dialogueLink };

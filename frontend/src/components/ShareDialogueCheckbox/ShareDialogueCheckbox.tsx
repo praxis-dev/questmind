@@ -1,26 +1,28 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { Checkbox, notification, Button } from "antd";
 import { toggleShareDialogue } from "../../services/toggleShareDialogue";
 import { RootState } from "../../store";
 
 const ShareDialogueCheckbox = () => {
-  // Access the selected dialogue ID from the Redux store
   const selectedDialogueId = useSelector(
     (state: RootState) => state.dialogue.selectedDialogueId
   );
   const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
-    // Reset the checkbox state when the selectedDialogueId changes
-    setIsChecked(false); // You might want to fetch the current share status instead
+    setIsChecked(false);
   }, [selectedDialogueId]);
 
-  const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const shouldShare = event.target.checked;
+  const handleCheckboxChange = async (e: any) => {
+    const shouldShare = e.target.checked;
     setIsChecked(shouldShare);
 
     if (!selectedDialogueId) {
-      alert("No dialogue selected.");
+      notification.error({
+        message: "No dialogue selected",
+        placement: "top",
+      });
       return;
     }
 
@@ -30,26 +32,71 @@ const ShareDialogueCheckbox = () => {
         shouldShare
       );
       if (shouldShare) {
-        alert(`Dialogue shared. Link: ${response.link}`);
+        if (response.link) {
+          notification.open({
+            message: "Dialogue Shared",
+            description: `Link: ${response.link}`,
+            placement: "top",
+            btn: (
+              <Button
+                type="primary"
+                size="small"
+                onClick={() => response.link && copyToClipboard(response.link)}
+              >
+                Copy Link
+              </Button>
+            ),
+            duration: 0, // Optional: adjust based on your needs
+          });
+        } else {
+          notification.error({
+            message: "Link is unavailable",
+            placement: "top",
+          });
+        }
       } else {
-        alert("Dialogue unshared.");
+        notification.info({
+          message: "Dialogue Unshared",
+          placement: "top",
+        });
       }
     } catch (error) {
       const errorMessage = (error as Error).message;
       console.error(error);
-      alert(errorMessage);
+      notification.error({
+        message: "Error",
+        description: errorMessage,
+        placement: "top",
+      });
     }
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(
+      () => {
+        notification.success({
+          message: "Success",
+          description: "Link copied to clipboard",
+          placement: "top",
+        });
+      },
+      (err) => {
+        notification.error({
+          message: "Failed to copy link",
+          description: `Error: ${err}`,
+          placement: "top",
+        });
+        console.error("Failed to copy: ", err);
+      }
+    );
+  };
+
   return (
-    <label>
-      Share Dialogue
-      <input
-        type="checkbox"
-        checked={isChecked}
-        onChange={handleCheckboxChange}
-      />
-    </label>
+    <>
+      <Checkbox checked={isChecked} onChange={handleCheckboxChange}>
+        Share Dialogue
+      </Checkbox>
+    </>
   );
 };
 

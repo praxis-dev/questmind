@@ -89,10 +89,10 @@ const Header: React.FC = () => {
           <LargePlusOutlined />
         </PulsatingButton>
       </Space>
-      <div style={styles.iconsContainer}>
+      <Space direction="horizontal" style={styles.iconsContainer}>
         <ShareDialogueCheckbox />
         <SettingsMenu />
-      </div>
+      </Space>
     </div>
   );
 };
