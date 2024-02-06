@@ -30,6 +30,8 @@ import { WsGateway } from '../websockets/ws.gateway';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
 
+import { v4 as uuidv4 } from 'uuid'; 
+
 interface RequestWithUser extends Request {
   user: User;
 }
@@ -217,4 +219,74 @@ export class RespondController {
       throw new InternalServerErrorException('Failed to delete dialogue.');
     }
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/dialogue/:dialogueId/share')
+  async shareDialogue(
+    @Param('dialogueId') dialogueId: string,
+    @Req() req: RequestWithUser,
+  ): Promise<any> {
+    try {
+      const userId = req.user._id;
+      const objectId = new Types.ObjectId(dialogueId);
+      const dialogue = await this.dialogueModel.findOne({ _id: objectId, userId: userId });
+  
+      if (!dialogue) {
+        throw new NotFoundException('Dialogue not found');
+      }
+  
+      // Check if the dialogue is already shared, if not, generate link and update
+      if (!dialogue.isShared) {
+        dialogue.isShared = true;
+  
+        // Generate a unique, secure identifier for the shareable link
+        const shareIdentifier = uuidv4();
+  
+        // Store the identifier in the dialogue document
+        // You might need to add a new field in your dialogue schema for this identifier
+        dialogue.shareIdentifier = shareIdentifier;
+  
+        // Construct the shareable link using the secure identifier
+        dialogue.dialogueLink = `https://yourapp.com/shared/${shareIdentifier}`;
+  
+        await dialogue.save();
+        return { message: 'Dialogue shared successfully', link: dialogue.dialogueLink };
+      } else {
+        return { message: 'Dialogue is already shared', link: dialogue.dialogueLink };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to share dialogue.');
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/dialogue/:dialogueId/unshare')
+  async unshareDialogue(
+    @Param('dialogueId') dialogueId: string,
+    @Req() req: RequestWithUser,
+  ): Promise<any> {
+    try {
+      const userId = req.user._id;
+      const objectId = new Types.ObjectId(dialogueId);
+      const dialogue = await this.dialogueModel.findOne({ _id: objectId, userId: userId });
+
+      if (!dialogue) {
+        throw new NotFoundException('Dialogue not found');
+      }
+
+      // If the dialogue is shared, unshare it
+      if (dialogue.isShared) {
+        dialogue.isShared = false;
+        // Optionally clear or deactivate the link
+        dialogue.dialogueLink = '';
+        await dialogue.save();
+        return { message: 'Dialogue unshared successfully' };
+      } else {
+        return { message: 'Dialogue is not shared' };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to unshare dialogue.');
+    }
+  }
+
 }

@@ -18,7 +18,6 @@ import { clearSelectedCardId } from "../../store/slices/selectedCardSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 import { clearSelectedDialogue } from "../../store/slices/dialogueDetailsSlice";
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
-import { log } from "console";
 
 const pulsate = keyframes`
   0% { border-color: transparent; }

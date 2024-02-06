@@ -10,6 +10,7 @@ import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import DialogueMenu from "../../components/DialogueMenu/DialogueMenu";
 import SettingsMenu from "../About/SettingsMenu";
+import ShareDialogueCheckbox from "../ShareDialogueCheckbox/ShareDialogueCheckbox";
 
 import { PlusOutlined } from "@ant-design/icons";
 
@@ -89,6 +90,7 @@ const Header: React.FC = () => {
         </PulsatingButton>
       </Space>
       <div style={styles.iconsContainer}>
+        <ShareDialogueCheckbox />
         <SettingsMenu />
       </div>
     </div>

@@ -18,6 +18,9 @@ export const dialogueSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date },
+  isShared: { type: Boolean, default: false },
+  shareIdentifier: { type: String, default: null }, 
+  dialogueLink: { type: String },
 });
 
 export interface Message extends mongoose.Document {
@@ -35,4 +38,7 @@ export interface Dialogue extends mongoose.Document {
   parentDialogueId: mongoose.Schema.Types.ObjectId | null;
   createdAt: Date;
   updatedAt?: Date;
+  isShared: boolean;
+  shareIdentifier?: string; 
+  dialogueLink: string;
 }
