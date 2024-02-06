@@ -10,7 +10,7 @@ export const fetchSharedDialogue = async (
   shareIdentifier: string
 ): Promise<Dialogue> => {
   try {
-    const url = `${baseUrl}/shared/${shareIdentifier}`;
+    const url = `${baseUrl}/respond/shared/${shareIdentifier}`;
     const response = await axios.get<Dialogue>(url);
     return response.data;
   } catch (error) {
