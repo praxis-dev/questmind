@@ -1,3 +1,5 @@
+// toggleShareDialogue.ts (frontend)
+
 import axios, { AxiosError } from "axios"; // Import AxiosError for type checking
 
 const endpoint = "/respond/dialogue";
@@ -20,6 +22,7 @@ export const toggleShareDialogue = async (
     const actionUrl = `${apiUrl}/${dialogueId}/${
       isShared ? "share" : "unshare"
     }`;
+    console.log("actionUrl", actionUrl);
     const result = await axios.post(
       actionUrl,
       {},

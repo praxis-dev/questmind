@@ -288,5 +288,19 @@ export class RespondController {
       throw new InternalServerErrorException('Failed to unshare dialogue.');
     }
   }
+  @Get('/shared/:shareIdentifier')
+  async getSharedDialogue(@Param('shareIdentifier') shareIdentifier: string): Promise<any> {
+    try {
+      const dialogue = await this.dialogueModel.findOne({ shareIdentifier: shareIdentifier });
+      console.log('dialogue', dialogue);
+      if (!dialogue) {
+        throw new NotFoundException('Dialogue not found');
+      }
+
+      return dialogue;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch shared dialogue.');
+    }
+  }
 
 }

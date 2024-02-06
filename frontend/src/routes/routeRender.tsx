@@ -15,6 +15,7 @@ import Landing from "../pages/Landing/Landing";
 import PasswordRecovery from "../pages/PasswordRecovery/PasswordRecovery";
 import Privacy from "../pages/Privacy/Privacy";
 import Footer from "../components/Footer/Footer";
+import SharedDialoguePage from "../components/SharedDialoguePage/SharedDialoguePage";
 import { isAuthenticated } from "../utils/isAuthenticated";
 
 const PrivateRoute = ({
@@ -56,11 +57,10 @@ export function RouteRender() {
     }
   }, [navigate]);
 
-  const shouldRenderHeader = ![
-    "/landing",
-    "/password-recovery",
-    "/privacy",
-  ].includes(location.pathname);
+  const shouldRenderHeader =
+    !["/landing", "/password-recovery", "/privacy"].includes(
+      location.pathname
+    ) && !location.pathname.startsWith("/shared/");
 
   const isLandingPage = location.pathname === "/landing";
 
@@ -84,6 +84,10 @@ export function RouteRender() {
           <Route
             path="/password-recovery"
             element={<PublicRoute component={PasswordRecovery} />}
+          />
+          <Route
+            path="/shared/:shareIdentifier"
+            element={<PublicRoute component={SharedDialoguePage} />}
           />
         </Routes>
       </div>
