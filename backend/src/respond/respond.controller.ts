@@ -298,7 +298,7 @@ export class RespondController {
 
       return dialogue;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch shared dialogue.');
+      throw new InternalServerErrorException('Some questions are better left unanswered.');
     }
   }
 
