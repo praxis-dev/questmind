@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -14,8 +14,14 @@ import ShareDialogueCheckbox from "../ShareDialogueCheckbox/ShareDialogueCheckbo
 
 import { PlusOutlined } from "@ant-design/icons";
 
+import { RootState } from "../../store";
+
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
-import { dialogueSharingSlice } from "../../store/slices/dialogueSharingSlice";
+import {
+  setSharedStatus,
+  setDialogueLink,
+} from "../../store/slices/dialogueSharingSlice";
+
 import { clearMessages } from "../../store/slices/chatSlice";
 
 import styled, { keyframes } from "styled-components";
@@ -63,6 +69,10 @@ const Header: React.FC = () => {
     [Breakpoint.ExtraSmall]: extraSmallScreenStyles,
   });
 
+  const selectedDialogueId = useSelector(
+    (state: RootState) => state.dialogue.selectedDialogueId
+  );
+
   const dispatch = useDispatch();
 
   const handlePlusClick = () => {
@@ -91,7 +101,7 @@ const Header: React.FC = () => {
         </PulsatingButton>
       </Space>
       <Space direction="horizontal" style={styles.iconsContainer}>
-        <ShareDialogueCheckbox />
+        {selectedDialogueId && <ShareDialogueCheckbox />}
         <SettingsMenu />
       </Space>
     </div>

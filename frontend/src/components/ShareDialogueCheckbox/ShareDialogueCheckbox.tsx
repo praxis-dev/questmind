@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Button, notification } from "antd";
+import { Checkbox, Button, notification, Space } from "antd";
 import { toggleShareDialogue } from "../../services/toggleShareDialogue";
 import { RootState } from "../../store";
 import {
   setSharedStatus,
   setDialogueLink,
 } from "../../store/slices/dialogueSharingSlice";
+
+import { CopyOutlined } from "@ant-design/icons";
 
 const ShareDialogueCheckbox = () => {
   const dispatch = useDispatch();
@@ -90,19 +92,33 @@ const ShareDialogueCheckbox = () => {
 
   return (
     <>
-      <Checkbox checked={isShared} onChange={handleCheckboxChange}>
-        {isShared ? "Dialogue Shared" : "Share Dialogue"}
-      </Checkbox>
-      {isShared && dialogueLink && (
-        <Button
-          type="primary"
-          size="small"
-          style={{ marginLeft: 8 }}
-          onClick={() => copyToClipboard(dialogueLink)}
+      <Space
+        style={{
+          border: "1px solid grey",
+          borderRadius: "5px",
+          padding: "3px",
+        }}
+      >
+        <Checkbox
+          checked={isShared}
+          onChange={handleCheckboxChange}
+          style={{
+            borderRadius: "5px",
+            padding: "3px",
+          }}
         >
-          Copy Link
-        </Button>
-      )}
+          {isShared ? "Shared" : "Share"}
+        </Checkbox>
+        {isShared && dialogueLink && (
+          <Button
+            type="primary"
+            size="small"
+            style={{ marginLeft: 8 }}
+            onClick={() => copyToClipboard(dialogueLink)}
+            icon={<CopyOutlined />}
+          ></Button>
+        )}
+      </Space>
     </>
   );
 };
