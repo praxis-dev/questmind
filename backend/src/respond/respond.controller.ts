@@ -274,10 +274,9 @@ export class RespondController {
         throw new NotFoundException('Dialogue not found');
       }
 
-      // If the dialogue is shared, unshare it
       if (dialogue.isShared) {
         dialogue.isShared = false;
-        // Optionally clear or deactivate the link
+        dialogue.shareIdentifier = '';
         dialogue.dialogueLink = '';
         await dialogue.save();
         return { message: 'Dialogue unshared successfully' };
