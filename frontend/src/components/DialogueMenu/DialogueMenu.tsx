@@ -249,7 +249,6 @@ const DialogueMenu: React.FC = () => {
         onClose={onClose}
         open={isOpen}
         key={"left"}
-        // styles={{ body: { overflow: "hidden" } }}
         className="ant-design-drawer"
       >
         <Space direction="vertical" style={{ width: "100%" }}>

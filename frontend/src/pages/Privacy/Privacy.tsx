@@ -527,12 +527,7 @@ const Privacy: React.FC = () => {
 };
 
 const baseStyles: ViewStyles = {
-  mainCol: {
-    // height: "97vh",
-    // display: "flex",
-    // alignItems: "center",
-    // justifyContent: "center",
-  },
+  mainCol: {},
 
   contentSpace: {
     margin: "auto auto",

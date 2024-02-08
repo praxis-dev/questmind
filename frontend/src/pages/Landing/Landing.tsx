@@ -8,7 +8,7 @@ import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
 
 import { Row, Col, Space, Typography, Button } from "antd";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { DownOutlined } from "@ant-design/icons";
 
 import AnimateHeight from "react-animate-height";
 
@@ -165,9 +165,6 @@ const baseStyles: ViewStyles = {
   },
 
   animateHeightWrapper: {
-    // border: "1px solid #cd7f32",
-    // padding: "10px",
-    // borderRadius: "10px",
     margin: "0 auto",
     maxWidth: "300px",
   },

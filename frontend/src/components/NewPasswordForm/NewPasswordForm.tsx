@@ -45,7 +45,6 @@ const NewPasswordForm: React.FC = () => {
         message.success("Password reset successfully");
         navigate("/landing");
       } catch (error) {
-        // console.error("Error:", error);
         if (typeof error === "string") {
           message.error(error);
         } else if (error instanceof Error) {

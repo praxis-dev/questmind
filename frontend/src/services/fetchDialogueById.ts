@@ -40,10 +40,8 @@ export const fetchDialogueById = async (
       },
     });
 
-    // Check if the fetched dialogue is shared and handle accordingly
     if (response.data.isShared) {
       console.log(`The dialogue ${dialogueId} is shared.`);
-      // Perform any additional operations based on the dialogue being shared
     } else {
       console.log(`The dialogue ${dialogueId} is not shared.`);
     }

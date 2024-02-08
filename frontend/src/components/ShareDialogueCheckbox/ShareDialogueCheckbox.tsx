@@ -22,10 +22,6 @@ const ShareDialogueCheckbox = () => {
     (state: RootState) => state.dialogueSharing.dialogueLink
   );
 
-  useEffect(() => {
-    // No need to dispatch setSharedStatus here as it's handled in handleCheckboxChange
-  }, [selectedDialogueId, isShared, dialogueLink]);
-
   const handleCheckboxChange = async (e: any) => {
     const shouldShare = e.target.checked;
 
@@ -42,17 +38,17 @@ const ShareDialogueCheckbox = () => {
         selectedDialogueId,
         shouldShare
       );
-      dispatch(setSharedStatus(shouldShare)); // Update shared status in Redux store
+      dispatch(setSharedStatus(shouldShare));
 
       if (shouldShare && response.link) {
-        dispatch(setDialogueLink(response.link)); // Update dialogue link in Redux store
+        dispatch(setDialogueLink(response.link));
         notification.success({
           message: "Dialogue Shared",
           description: "The dialogue has been shared successfully.",
           placement: "top",
         });
       } else if (!shouldShare) {
-        dispatch(setDialogueLink(undefined)); // Clear dialogue link in Redux store
+        dispatch(setDialogueLink(undefined));
         notification.info({
           message: "Dialogue Unshared",
           description: "The dialogue has been unshared.",
