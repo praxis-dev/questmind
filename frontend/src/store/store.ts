@@ -11,6 +11,7 @@ import drawerReducer from "./slices/drawerSlice";
 import selectedCardReducer from "./slices/selectedCardSlice";
 import currentMessageReducer from "./slices/currentMessageSlice";
 import heightSliceReducer from "./slices/heightSlice";
+import dialogueSharingSlice from "./slices/dialogueSharingSlice";
 
 const rootReducer = combineReducers({
   dialogueIndex: dialogueIndexReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   selectedCard: selectedCardReducer,
   currentMessage: currentMessageReducer,
   height: heightSliceReducer,
+  dialogueSharing: dialogueSharingSlice,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

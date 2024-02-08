@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { Spin } from "antd";
 import { format } from "date-fns";
 
@@ -16,13 +15,11 @@ const SharedDialoguePage = () => {
   useEffect(() => {
     const fetchDialogue = async () => {
       if (typeof shareIdentifier === "string") {
-        // Ensure shareIdentifier is defined and is a string
         try {
           const response = await fetchSharedDialogue(shareIdentifier);
           setDialogue(response);
         } catch (err) {
           if (err instanceof Error) {
-            // Type-check the error
             setError(err.message);
           } else {
             setError("An unexpected error occurred");
@@ -39,15 +36,14 @@ const SharedDialoguePage = () => {
     fetchDialogue();
   }, [shareIdentifier]);
 
-  if (loading) return <Spin size="large" />; // Using size "large" for better visibility
-  if (error) return <div>Error: {error}</div>; // Show error state
+  if (loading) return <Spin size="large" />;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
       {dialogue ? (
         <div>
           <h2>Dialogue from {format(new Date(dialogue.createdAt), "PPpp")}</h2>{" "}
-          {/* Formatting the date */}
           {dialogue.messages.map((message, index) => (
             <div key={index}>
               <strong>{message.sender}: </strong>

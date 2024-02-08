@@ -20,6 +20,7 @@ import {
 } from "../../store/slices/chatSlice";
 import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
 import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
+import { dialogueSharingSlice } from "../../store/slices/dialogueSharingSlice";
 import {
   setSelectedCardId,
   clearSelectedCardId,
@@ -134,6 +135,12 @@ const DialogueMenu: React.FC = () => {
     fetchDialogueById(dialogueId)
       .then((dialogue) => {
         dispatch(setSelectedDialogue(dialogue));
+        dispatch(
+          dialogueSharingSlice.actions.setSharedStatus(dialogue.isShared)
+        );
+        dispatch(
+          dialogueSharingSlice.actions.setDialogueLink(dialogue.dialogueLink)
+        );
       })
       .catch((error) => {
         console.log("Error fetching dialogue:", error);

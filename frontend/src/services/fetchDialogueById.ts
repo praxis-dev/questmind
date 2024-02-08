@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export interface Message {
+  messageId: string;
   sender: string;
   message: string;
   timestamp: Date;
@@ -8,13 +9,16 @@ export interface Message {
 }
 
 export interface Dialogue {
-  dialogueId: string;
   _id: string;
+  userId: string;
   messages: Message[];
   isBranch: boolean;
   parentDialogueId?: string | null;
   createdAt: Date;
   updatedAt?: Date;
+  isShared: boolean;
+  shareIdentifier?: string | null;
+  dialogueLink?: string;
 }
 
 const dialogueApiUrl = `${process.env.REACT_APP_API_URL}/respond/dialogue`;
@@ -35,6 +39,14 @@ export const fetchDialogueById = async (
         "Content-Type": "application/json",
       },
     });
+
+    // Check if the fetched dialogue is shared and handle accordingly
+    if (response.data.isShared) {
+      console.log(`The dialogue ${dialogueId} is shared.`);
+      // Perform any additional operations based on the dialogue being shared
+    } else {
+      console.log(`The dialogue ${dialogueId} is not shared.`);
+    }
 
     return response.data;
   } catch (error) {

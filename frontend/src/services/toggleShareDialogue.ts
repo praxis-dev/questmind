@@ -1,6 +1,6 @@
 // toggleShareDialogue.ts (frontend)
 
-import axios, { AxiosError } from "axios"; // Import AxiosError for type checking
+import axios from "axios";
 
 const endpoint = "/respond/dialogue";
 const apiUrl = `${process.env.REACT_APP_API_URL}${endpoint}`;
@@ -33,9 +33,8 @@ export const toggleShareDialogue = async (
       }
     );
 
-    return result.data; // This will contain the message and, if shared, the shareable link
+    return result.data;
   } catch (error) {
-    // Use a type guard to check if the error is an AxiosError
     if (axios.isAxiosError(error)) {
       console.error(
         "Error toggling share status of dialogue.",
@@ -47,7 +46,6 @@ export const toggleShareDialogue = async (
         }`
       );
     } else {
-      // For non-Axios errors, just use a generic message
       console.error("An unexpected error occurred.", error);
       throw new Error("An unexpected error occurred.");
     }

@@ -15,6 +15,7 @@ import ShareDialogueCheckbox from "../ShareDialogueCheckbox/ShareDialogueCheckbo
 import { PlusOutlined } from "@ant-design/icons";
 
 import { setSelectedDialogueId } from "../../store/slices/dialogueIdSlice";
+import { dialogueSharingSlice } from "../../store/slices/dialogueSharingSlice";
 import { clearMessages } from "../../store/slices/chatSlice";
 
 import styled, { keyframes } from "styled-components";
