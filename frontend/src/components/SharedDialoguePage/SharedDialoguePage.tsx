@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Spin } from "antd";
+import { ScalingSquaresSpinner } from "react-epic-spinners";
 import { format } from "date-fns";
 import { useResponsiveStyles } from "../../library/hooks";
 import { Breakpoint, ViewStyles } from "../../library/styles";
@@ -59,13 +59,14 @@ const SharedDialoguePage = () => {
     fetchDialogue();
   }, [shareIdentifier]);
 
-  if (loading) return <Spin size="large" />;
-  if (error) return <div>Error: {error}</div>;
-
   return (
-    <Space direction="horizontal" style={styles.contentWrapper}>
-      {dialogue ? (
-        <Space direction="vertical">
+    <Space direction="vertical" style={styles.contentWrapper}>
+      {loading ? (
+        <ScalingSquaresSpinner color="#cd7f32" size={27} />
+      ) : error ? (
+        <Typography.Paragraph>Error: {error}</Typography.Paragraph>
+      ) : dialogue ? (
+        <>
           <Typography.Title level={2}>
             Dialogue from {format(new Date(dialogue.createdAt), "PPpp")}
           </Typography.Title>
@@ -75,9 +76,9 @@ const SharedDialoguePage = () => {
               <span>{message.message}</span>
             </Typography.Paragraph>
           ))}
-        </Space>
+        </>
       ) : (
-        <Space>No dialogue found</Space>
+        <Typography.Paragraph>No dialogue found</Typography.Paragraph>
       )}
     </Space>
   );
