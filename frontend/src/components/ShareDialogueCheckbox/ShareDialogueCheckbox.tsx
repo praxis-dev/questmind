@@ -1,14 +1,13 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, notification, Space } from "antd";
-import { ShareAltOutlined } from "@ant-design/icons";
+import { ShareAltOutlined, LinkOutlined } from "@ant-design/icons";
 import { toggleShareDialogue } from "../../services/toggleShareDialogue";
 import { RootState } from "../../store";
 import {
   setSharedStatus,
   setDialogueLink,
 } from "../../store/slices/dialogueSharingSlice";
-import { CopyOutlined } from "@ant-design/icons";
 import Switch from "react-switch"; // Importing react-switch
 
 const ShareDialogueCheckbox = () => {
@@ -43,6 +42,7 @@ const ShareDialogueCheckbox = () => {
 
       if (shouldShare && response.link) {
         dispatch(setDialogueLink(response.link));
+        copyToClipboard(response.link);
         notification.success({
           message: "Dialogue Shared",
           description: "The dialogue has been shared successfully.",
@@ -57,11 +57,9 @@ const ShareDialogueCheckbox = () => {
         });
       }
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      console.error(error);
       notification.error({
         message: "Error sharing/unsharing dialogue",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : String(error),
         placement: "top",
       });
     }
@@ -87,23 +85,6 @@ const ShareDialogueCheckbox = () => {
     );
   };
 
-  const ShareOutlinedIconContainer = () => {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-          width: "100%",
-          margin: "auto",
-        }}
-      >
-        <ShareAltOutlined />
-      </div>
-    );
-  };
-
   return (
     <>
       <div
@@ -120,25 +101,23 @@ const ShareDialogueCheckbox = () => {
         <Switch
           onChange={handleSwitchChange}
           checked={isShared}
-          checkedIcon={<ShareOutlinedIconContainer />}
-          uncheckedIcon={<ShareOutlinedIconContainer />}
           height={25}
           width={50}
           handleDiameter={25}
           offColor="grey"
           onColor="grey"
           onHandleColor="#cd7f32"
-          offHandleColor="#cd7f32"
+          offHandleColor="#D3D3D3"
         />
-        {isShared && dialogueLink && (
-          <Button
-            type="primary"
-            size="small"
-            style={{ marginLeft: 8 }}
-            onClick={() => copyToClipboard(dialogueLink)}
-            icon={<CopyOutlined />}
-          ></Button>
-        )}
+        <Button
+          type="text"
+          size="small"
+          style={{ marginLeft: 8 }}
+          onClick={() => dialogueLink && copyToClipboard(dialogueLink)}
+          disabled={!isShared || !dialogueLink}
+        >
+          <ShareAltOutlined style={{ fontSize: 20 }} />
+        </Button>
       </div>
     </>
   );
