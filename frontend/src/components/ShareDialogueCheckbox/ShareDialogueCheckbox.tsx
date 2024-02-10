@@ -65,7 +65,7 @@ const ShareDialogueCheckbox = () => {
       <div
         style={{
           borderRadius: "5px",
-          padding: "3px",
+          padding: "3px 3px 3px 12px",
           border: isShared ? "1px solid #cd7f32" : "1px solid #D3D3D3",
           display: "flex",
           flexDirection: "row",
@@ -76,9 +76,9 @@ const ShareDialogueCheckbox = () => {
         <Switch
           onChange={handleSwitchChange}
           checked={isShared}
-          height={25}
-          width={50}
-          handleDiameter={25}
+          height={2}
+          width={30}
+          handleDiameter={15}
           offColor="grey"
           onColor="#F5F5F5"
           onHandleColor="#cd7f32"
