@@ -1,14 +1,14 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, notification, Space } from "antd";
-import { ShareAltOutlined, LinkOutlined } from "@ant-design/icons";
+import { Button, message } from "antd";
+import { ShareAltOutlined } from "@ant-design/icons";
 import { toggleShareDialogue } from "../../services/toggleShareDialogue";
 import { RootState } from "../../store";
 import {
   setSharedStatus,
   setDialogueLink,
 } from "../../store/slices/dialogueSharingSlice";
-import Switch from "react-switch"; // Importing react-switch
+import Switch from "react-switch";
 
 const ShareDialogueCheckbox = () => {
   const dispatch = useDispatch();
@@ -26,10 +26,7 @@ const ShareDialogueCheckbox = () => {
     const shouldShare = checked;
 
     if (!selectedDialogueId) {
-      notification.error({
-        message: "No dialogue selected",
-        placement: "top",
-      });
+      message.error("No dialogue selected");
       return;
     }
 
@@ -43,44 +40,22 @@ const ShareDialogueCheckbox = () => {
       if (shouldShare && response.link) {
         dispatch(setDialogueLink(response.link));
         copyToClipboard(response.link);
-        notification.success({
-          message: "Dialogue Shared",
-          description: "The dialogue has been shared successfully.",
-          placement: "top",
-        });
       } else if (!shouldShare) {
         dispatch(setDialogueLink(undefined));
-        notification.info({
-          message: "Dialogue Unshared",
-          description: "The dialogue has been unshared.",
-          placement: "top",
-        });
       }
     } catch (error) {
-      notification.error({
-        message: "Error sharing/unsharing dialogue",
-        description: error instanceof Error ? error.message : String(error),
-        placement: "top",
-      });
+      message.error("Error sharing/unsharing dialogue");
     }
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
       () => {
-        notification.success({
-          message: "Success",
-          description: "Link copied to clipboard",
-          placement: "top",
-        });
+        message.success("Dialogue link copied to clipboard");
       },
       (err) => {
-        notification.error({
-          message: "Failed to copy link",
-          description: `Error: ${err}`,
-          placement: "top",
-        });
         console.error("Failed to copy: ", err);
+        message.error("Failed to copy link");
       }
     );
   };
@@ -108,11 +83,12 @@ const ShareDialogueCheckbox = () => {
           onColor="grey"
           onHandleColor="#cd7f32"
           offHandleColor="#D3D3D3"
+          boxShadow=""
+          activeBoxShadow=""
         />
         <Button
           type="text"
           size="small"
-          style={{ marginLeft: 8 }}
           onClick={() => dialogueLink && copyToClipboard(dialogueLink)}
           disabled={!isShared || !dialogueLink}
         >
