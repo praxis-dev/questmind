@@ -80,11 +80,13 @@ const ShareDialogueCheckbox = () => {
           width={50}
           handleDiameter={25}
           offColor="grey"
-          onColor="grey"
+          onColor="#F5F5F5"
           onHandleColor="#cd7f32"
           offHandleColor="#D3D3D3"
           boxShadow=""
           activeBoxShadow=""
+          uncheckedIcon={false}
+          checkedIcon={false}
         />
         <Button
           type="text"
@@ -93,7 +95,9 @@ const ShareDialogueCheckbox = () => {
           onClick={() => dialogueLink && copyToClipboard(dialogueLink)}
           disabled={!isShared || !dialogueLink}
         >
-          <ShareAltOutlined style={{ fontSize: 20 }} />
+          <ShareAltOutlined
+            style={{ fontSize: 20, color: isShared ? "#cd7f32" : "grey" }}
+          />
         </Button>
       </div>
     </>
