@@ -66,7 +66,7 @@ const ShareDialogueCheckbox = () => {
         style={{
           borderRadius: "5px",
           padding: "3px",
-          border: "1px solid #d9d9d9",
+          border: isShared ? "1px solid #cd7f32" : "1px solid #D3D3D3",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -89,6 +89,7 @@ const ShareDialogueCheckbox = () => {
         <Button
           type="text"
           size="small"
+          style={{ marginLeft: "3px" }}
           onClick={() => dialogueLink && copyToClipboard(dialogueLink)}
           disabled={!isShared || !dialogueLink}
         >

@@ -235,19 +235,15 @@ export class RespondController {
         throw new NotFoundException('Dialogue not found');
       }
   
-      // Check if the dialogue is already shared, if not, generate link and update
       if (!dialogue.isShared) {
         dialogue.isShared = true;
   
-        // Generate a unique, secure identifier for the shareable link
         const shareIdentifier = uuidv4();
   
-        // Store the identifier in the dialogue document
-        // You might need to add a new field in your dialogue schema for this identifier
+
         dialogue.shareIdentifier = shareIdentifier;
   
-        // Construct the shareable link using the secure identifier
-        dialogue.dialogueLink = `https://questmind.ai/shared/${shareIdentifier}`;
+        dialogue.dialogueLink = process.env.CURRENT_DEPLOYMENT + `/shared/${shareIdentifier}`;
   
         await dialogue.save();
         return { message: 'Dialogue shared successfully', link: dialogue.dialogueLink };

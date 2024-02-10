@@ -21,6 +21,7 @@ import {
 import { openDrawer, closeDrawer } from "../../store/slices/drawerSlice";
 import { dialogueIndexSlice } from "../../store/slices/dialogueIndexSlice";
 import { dialogueSharingSlice } from "../../store/slices/dialogueSharingSlice";
+
 import {
   setSelectedCardId,
   clearSelectedCardId,
@@ -154,6 +155,8 @@ const DialogueMenu: React.FC = () => {
           dispatch(clearMessages());
           dispatch(clearSelectedCardId());
           dispatch(setIntroMessageAdded(false));
+          dispatch(dialogueSharingSlice.actions.setSharedStatus(false));
+          dispatch(dialogueSharingSlice.actions.setDialogueLink(undefined));
 
           const randomIndex = Math.floor(
             Math.random() * messagesConfig.introductory.length

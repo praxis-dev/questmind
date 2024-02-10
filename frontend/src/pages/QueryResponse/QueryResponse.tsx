@@ -14,6 +14,10 @@ import { AnyAction } from "redux";
 import { setIsLoading } from "../../store/slices/loadingSlice";
 import { fetchDialogues } from "../../store/slices/dialogueIndexSlice";
 import {
+  setSharedStatus,
+  setDialogueLink,
+} from "../../store/slices/dialogueSharingSlice";
+import {
   addMessage,
   selectChatMessages,
   setMessages,
@@ -124,6 +128,17 @@ const QueryResponse: React.FC = () => {
   const dialogue = useSelector(selectDialogue);
 
   const isFirstRender = useRef(true);
+
+  const resetDialogueSharing = () => {
+    return (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+      dispatch(setSharedStatus(false));
+      dispatch(setDialogueLink(undefined));
+    };
+  };
+
+  useEffect(() => {
+    resetDialogueSharing();
+  }, []);
 
   useEffect(() => {}, [selectedDialogueId]);
 
