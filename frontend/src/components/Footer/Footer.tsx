@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
           aria-controls="example-panel"
           onClick={() => dispatch(setHeight(height === 0 ? 421 : 0))}
         >
-          v 0.2.5 Progress notes
+          v 0.2.6 Progress notes
         </Button>
         <Divider type="vertical" />
         <Button

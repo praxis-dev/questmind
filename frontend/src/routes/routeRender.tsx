@@ -87,7 +87,7 @@ export function RouteRender() {
           />
           <Route
             path="/shared/:shareIdentifier"
-            element={<PublicRoute component={SharedDialoguePage} />}
+            element={<SharedDialoguePage />}
           />
         </Routes>
       </div>

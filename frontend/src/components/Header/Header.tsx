@@ -83,6 +83,8 @@ const Header: React.FC = () => {
 
     dispatch(setSelectedDialogueId(""));
     dispatch(clearMessages());
+    dispatch(setSharedStatus(false));
+    dispatch(setDialogueLink(""));
     dispatch(
       addMessage({ id: uuidv4(), type: "ai", text: randomIntroductoryMessage })
     );
