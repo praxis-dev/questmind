@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Button, notification, Space } from "antd";
+import { Button, notification, Space } from "antd";
+import { ShareAltOutlined } from "@ant-design/icons";
 import { toggleShareDialogue } from "../../services/toggleShareDialogue";
 import { RootState } from "../../store";
 import {
   setSharedStatus,
   setDialogueLink,
 } from "../../store/slices/dialogueSharingSlice";
-
 import { CopyOutlined } from "@ant-design/icons";
+import Switch from "react-switch"; // Importing react-switch
 
 const ShareDialogueCheckbox = () => {
   const dispatch = useDispatch();
@@ -22,8 +23,8 @@ const ShareDialogueCheckbox = () => {
     (state: RootState) => state.dialogueSharing.dialogueLink
   );
 
-  const handleCheckboxChange = async (e: any) => {
-    const shouldShare = e.target.checked;
+  const handleSwitchChange = async (checked: boolean) => {
+    const shouldShare = checked;
 
     if (!selectedDialogueId) {
       notification.error({
@@ -86,25 +87,49 @@ const ShareDialogueCheckbox = () => {
     );
   };
 
-  return (
-    <>
-      <Space
+  const ShareOutlinedIconContainer = () => {
+    return (
+      <div
         style={{
-          border: "1px solid grey",
-          borderRadius: "5px",
-          padding: "3px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          width: "100%",
+          margin: "auto",
         }}
       >
-        <Checkbox
+        <ShareAltOutlined />
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          borderRadius: "5px",
+          padding: "3px",
+          border: "1px solid #d9d9d9",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Switch
+          onChange={handleSwitchChange}
           checked={isShared}
-          onChange={handleCheckboxChange}
-          style={{
-            borderRadius: "5px",
-            padding: "3px",
-          }}
-        >
-          {isShared ? "Shared" : "Share"}
-        </Checkbox>
+          checkedIcon={<ShareOutlinedIconContainer />}
+          uncheckedIcon={<ShareOutlinedIconContainer />}
+          height={25}
+          width={50}
+          handleDiameter={25}
+          offColor="grey"
+          onColor="grey"
+          onHandleColor="#cd7f32"
+          offHandleColor="#cd7f32"
+        />
         {isShared && dialogueLink && (
           <Button
             type="primary"
@@ -114,7 +139,7 @@ const ShareDialogueCheckbox = () => {
             icon={<CopyOutlined />}
           ></Button>
         )}
-      </Space>
+      </div>
     </>
   );
 };
