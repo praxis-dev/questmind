@@ -16,7 +16,7 @@ You'll have to deploy the RAG script on modal.com anyway. Add OPENAI_API_KEY to 
 
 modal run && modal deploy
 
-Add this to .env in modal folder:
+Add this to .env in model folder:
 
 API_ENDPOINT=rag_script_deployed_on_modal.com_enpoint
 MDB_URI=mongodb_uri
